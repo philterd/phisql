@@ -1,0 +1,194 @@
+# PhiSQL v0.1 entity type catalog.
+#
+# Each entry maps a PhiSQL entity type name to its location in the Phileas
+# JSON policy schema. This catalog is the source of truth for entity types.
+# Implementations load this file directly; do not duplicate the mapping.
+#
+# Status: DRAFT. Subject to change before v1.0.
+#
+# Schema:
+#   version          : PhiSQL spec version this catalog targets.
+#   phileas_schema_ref : URL to the Phileas schema the mappings are
+#                        verified against.
+#   entities         : list of entity entries.
+#     name           : the PhiSQL entity type identifier (case-insensitive).
+#     phileas_field  : the property name under identifiers in Phileas JSON.
+#     phileas_strategies_field : the strategies array name on the filter object.
+#     description    : human-readable description (informative).
+
+version: v0.1
+phileas_schema_ref: https://github.com/philterd/phileas/blob/main/policy-schema/redaction-policy-schema.json
+
+entities:
+  - name: AGE
+    phileas_field: age
+    phileas_strategies_field: ageFilterStrategies
+    description: Age values (e.g., "35 years old", "age 42").
+
+  - name: BANK_ROUTING_NUMBER
+    phileas_field: bankRoutingNumber
+    phileas_strategies_field: bankRoutingNumberFilterStrategies
+    description: Bank routing numbers.
+
+  - name: BITCOIN_ADDRESS
+    phileas_field: bitcoinAddress
+    # Note: the field name is `bitcoinFilterStrategies` (not
+    # `bitcoinAddressFilterStrategies`) on the filterBitcoinAddress filter.
+    # This is a Phileas backward-compat quirk; implementations must emit
+    # the abbreviated name.
+    phileas_strategies_field: bitcoinFilterStrategies
+    description: Bitcoin wallet addresses.
+
+  - name: CITY
+    phileas_field: city
+    phileas_strategies_field: cityFilterStrategies
+    description: City names (dictionary matching).
+
+  - name: COUNTY
+    phileas_field: county
+    phileas_strategies_field: countyFilterStrategies
+    description: County names (dictionary matching).
+
+  - name: CREDIT_CARD
+    phileas_field: creditCard
+    phileas_strategies_field: creditCardFilterStrategies
+    description: Credit card numbers.
+
+  - name: CURRENCY
+    phileas_field: currency
+    phileas_strategies_field: currencyFilterStrategies
+    description: Currency values (e.g., "$100.00", "50 EUR").
+
+  - name: DATE
+    phileas_field: date
+    phileas_strategies_field: dateFilterStrategies
+    description: Date values in various formats.
+
+  - name: DRIVERS_LICENSE
+    phileas_field: driversLicense
+    phileas_strategies_field: driversLicenseFilterStrategies
+    description: Driver's license numbers.
+
+  - name: EMAIL_ADDRESS
+    phileas_field: emailAddress
+    phileas_strategies_field: emailAddressFilterStrategies
+    description: Email addresses.
+
+  - name: FIRST_NAME
+    phileas_field: firstName
+    phileas_strategies_field: firstNameFilterStrategies
+    description: Person first names (dictionary + fuzzy).
+
+  - name: HOSPITAL
+    phileas_field: hospital
+    phileas_strategies_field: hospitalFilterStrategies
+    description: Hospital names.
+
+  - name: IBAN_CODE
+    phileas_field: ibanCode
+    phileas_strategies_field: ibanCodeFilterStrategies
+    description: International Bank Account Numbers (IBAN).
+
+  - name: IP_ADDRESS
+    phileas_field: ipAddress
+    phileas_strategies_field: ipAddressFilterStrategies
+    description: IP addresses (IPv4 and IPv6).
+
+  - name: MAC_ADDRESS
+    phileas_field: macAddress
+    phileas_strategies_field: macAddressFilterStrategies
+    description: MAC addresses.
+
+  - name: MEDICAL_CONDITION
+    phileas_field: medicalCondition
+    phileas_strategies_field: medicalConditionFilterStrategies
+    description: Medical conditions and diagnoses.
+
+  - name: PASSPORT_NUMBER
+    phileas_field: passportNumber
+    phileas_strategies_field: passportNumberFilterStrategies
+    description: Passport numbers.
+
+  - name: PHONE_NUMBER
+    phileas_field: phoneNumber
+    phileas_strategies_field: phoneNumberFilterStrategies
+    description: Telephone numbers.
+
+  - name: PHONE_NUMBER_EXTENSION
+    phileas_field: phoneNumberExtension
+    phileas_strategies_field: phoneNumberExtensionFilterStrategies
+    description: Telephone number extensions.
+
+  - name: PHYSICIAN_NAME
+    phileas_field: physicianName
+    phileas_strategies_field: physicianNameFilterStrategies
+    description: Physician names.
+
+  - name: SSN
+    phileas_field: ssn
+    phileas_strategies_field: ssnFilterStrategies
+    description: U.S. Social Security Numbers.
+
+  - name: STATE
+    phileas_field: state
+    phileas_strategies_field: stateFilterStrategies
+    description: U.S. state names.
+
+  - name: STATE_ABBREVIATION
+    phileas_field: stateAbbreviation
+    phileas_strategies_field: stateAbbreviationFilterStrategies
+    description: U.S. state abbreviations.
+
+  - name: STREET_ADDRESS
+    phileas_field: streetAddress
+    phileas_strategies_field: streetAddressFilterStrategies
+    description: Street addresses.
+
+  - name: SURNAME
+    phileas_field: surname
+    phileas_strategies_field: surnameFilterStrategies
+    description: Person surnames (dictionary + fuzzy).
+
+  - name: TRACKING_NUMBER
+    phileas_field: trackingNumber
+    phileas_strategies_field: trackingNumberFilterStrategies
+    description: Package tracking numbers (UPS, FedEx, USPS, DHL).
+
+  - name: URL
+    phileas_field: url
+    phileas_strategies_field: urlFilterStrategies
+    description: URLs.
+
+  - name: VIN
+    phileas_field: vin
+    phileas_strategies_field: vinFilterStrategies
+    description: Vehicle Identification Numbers.
+
+  - name: ZIP_CODE
+    phileas_field: zipCode
+    # Note: this field is singular for Phileas backward compatibility but
+    # accepts an array of strategies. Implementations must emit the
+    # singular field name regardless.
+    phileas_strategies_field: zipCodeFilterStrategy
+    description: U.S. ZIP codes.
+
+# Custom identifier reference syntax: IDENTIFIER('<classification>').
+# Custom identifiers compile to an entry in identifiers.identifiers[] with
+# classification set to the quoted string and a corresponding entry in
+# identifierFilterStrategies. The pattern, caseSensitive, and groupNumber
+# fields are not exposed in PhiSQL v0.1; they must be configured separately
+# in the policy library or set via JSON post-processing.
+
+custom_identifier:
+  phileas_path: identifiers.identifiers[]
+  phileas_strategies_field: identifierFilterStrategies
+  classification_field: classification
+
+# Entity types deferred to a later spec version, with rationale.
+deferred:
+  - name: PERSON
+    rationale: |
+      The Phileas schema has deprecated the `person` field in favor of the
+      `pheyes` array with PhEye labels. PhEye-backed PERSON requires a
+      PhEye configuration block whose surface is not yet settled.
+      Use FIRST_NAME, SURNAME, and PHYSICIAN_NAME in PhiSQL v0.1.

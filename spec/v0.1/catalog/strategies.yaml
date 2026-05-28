@@ -1,0 +1,92 @@
+# PhiSQL v0.1 filter strategy catalog.
+#
+# Each entry maps a PhiSQL strategy keyword to a Phileas
+# baseFilterStrategy.strategy enum value and declares the allowed named
+# arguments. This catalog is the source of truth for strategies.
+#
+# Status: DRAFT. Subject to change before v1.0.
+#
+# Schema:
+#   version       : PhiSQL spec version this catalog targets.
+#   phileas_schema_ref : URL to the Phileas schema the mappings target.
+#   strategies    : list of strategy entries.
+#     name        : the PhiSQL strategy keyword (case-insensitive).
+#     phileas_enum : the value of baseFilterStrategy.strategy in Phileas JSON.
+#     args        : list of allowed named arguments.
+#       name       : PhiSQL argument name (case-insensitive).
+#       phileas_field : the property name on the strategy object.
+#       type       : "string" | "integer" | "boolean" | "enum"
+#       enum_values : optional, for type=enum.
+#     description : human-readable description (informative).
+
+version: v0.1
+phileas_schema_ref: https://github.com/philterd/phileas/blob/main/policy-schema/redaction-policy-schema.json
+
+strategies:
+  - name: REDACT
+    phileas_enum: REDACT
+    description: Replace the detected value with a redaction marker.
+    args:
+      - name: format
+        phileas_field: redactionFormat
+        type: string
+
+  - name: MASK
+    phileas_enum: MASK
+    description: Replace the detected value with a repeating mask character.
+    args:
+      - name: format
+        phileas_field: redactionFormat
+        type: string
+      - name: mask_char
+        phileas_field: maskCharacter
+        type: string
+      - name: mask_length
+        phileas_field: maskLength
+        type: integer
+
+  - name: RANDOM_REPLACE
+    phileas_enum: RANDOM_REPLACE
+    description: Replace with a randomly chosen synthetic value of the same type.
+    args:
+      - name: scope
+        phileas_field: replacementScope
+        type: enum
+        enum_values: [DOCUMENT, CONTEXT]
+
+  - name: STATIC_REPLACE
+    phileas_enum: STATIC_REPLACE
+    description: Replace every match with a fixed value.
+    args:
+      - name: value
+        phileas_field: staticReplacement
+        type: string
+        required: true
+      - name: scope
+        phileas_field: replacementScope
+        type: enum
+        enum_values: [DOCUMENT, CONTEXT]
+
+  - name: ENCRYPT
+    phileas_enum: CRYPTO_REPLACE
+    description: Encrypt the detected value with the policy's crypto configuration.
+
+  - name: FPE_ENCRYPT
+    phileas_enum: FPE_ENCRYPT_REPLACE
+    description: Format-preserving encryption (e.g., SSNs encrypted but still look like SSNs).
+
+  - name: HASH_SHA256
+    phileas_enum: HASH_SHA256_REPLACE
+    description: Replace with the SHA-256 hash of the detected value.
+
+  - name: LAST_4
+    phileas_enum: LAST_4
+    description: Replace all but the last four characters of the detected value.
+
+  - name: TRUNCATE
+    phileas_enum: TRUNCATE
+    description: Truncate the detected value (e.g., dates to year only).
+
+  - name: ABBREVIATE
+    phileas_enum: ABBREVIATE
+    description: Reduce the detected value to its initials.

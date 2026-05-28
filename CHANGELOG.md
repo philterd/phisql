@@ -2,10 +2,20 @@
 
 All notable changes to the PhiSQL specification are documented here.
 
-This project does not yet follow [Semantic Versioning](https://semver.org/) because it is pre-1.0.
-Major version semantics will be defined when v1.0 is published.
+This project does not yet follow [Semantic Versioning](https://semver.org/) because it is pre-1.0. Major version semantics will be defined when v1.0 is published.
 
-## [v0.1] - 2026-05-28 (Draft)
+## [Unreleased]
+
+### Changed
+
+- Restructured the v0.1 spec into machine-readable artifacts: ANTLR4 grammar (`PhiSQL.g4`), EBNF grammar (`PhiSQL.ebnf`), and YAML catalog files for entity types, strategies, keywords, and predicates. The previous prose `SPEC.md` has been removed; the artifacts are now the spec.
+- The validator (`scripts/validate_spec.py`) now runs three checks on every push and PR: catalog well-formedness, catalog references resolving against the canonical Phileas schema, and example JSON validating against the same schema.
+
+### Fixed
+
+- `BITCOIN_ADDRESS` strategies field name corrected to `bitcoinFilterStrategies` (the catalog validator caught the discrepancy with the Phileas schema).
+
+## [v0.1-draft] - 2026-05-28
 
 ### Added
 
@@ -16,15 +26,7 @@ Major version semantics will be defined when v1.0 is published.
 - Filter strategy mapping aligned 1:1 with `baseFilterStrategy.strategy` enum.
 - Predicate support for `CONFIDENCE` comparisons in `WHERE` clauses.
 - Custom identifier references via `IDENTIFIER('name')`.
-- Dictionary references via `DICTIONARY('name')`.
-- Five worked examples with side-by-side PhiSQL source and compiled Phileas JSON:
-  1. Minimal SSN redaction.
-  2. HIPAA Safe Harbor de-identification.
-  3. PCI DSS scope reduction.
-  4. FRBP 9037 bankruptcy filings.
-  5. Support tickets with allowlist.
-- Appendix A: complete PhiSQL → Phileas JSON mapping reference.
-- Appendix B: reserved keyword list.
+- Five worked examples with side-by-side PhiSQL source and compiled Phileas JSON.
 - Relationship to Phileas policy schema documented: Phileas JSON is canonical; PhiSQL compiles to it; no proprietary extensions.
 
 ### Status

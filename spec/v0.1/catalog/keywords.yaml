@@ -1,0 +1,42 @@
+# PhiSQL v0.1 reserved keyword catalog.
+#
+# These keywords are reserved by the language. Implementations must reject
+# them as user-defined identifier names (policy names, dictionary names,
+# named argument names, custom-identifier classifications). Matching is
+# case-insensitive: "POLICY", "policy", and "Policy" all collide.
+#
+# Status: DRAFT. Subject to change before v1.0.
+#
+# Entity type identifiers from entity-types.yaml and strategy names from
+# strategies.yaml are also reserved when appearing in their respective
+# syntactic positions; they are not duplicated here.
+
+version: v0.1
+
+keywords:
+  - ABBREVIATE
+  - AND
+  - AS
+  - CONFIDENCE
+  - DEIDENTIFY
+  - DESCRIPTION
+  - ENCRYPT
+  - FALSE
+  - FOR
+  - FPE_ENCRYPT
+  - HASH_SHA256
+  - IDENTIFIER
+  - IGNORE
+  - LAST_4
+  - MASK
+  - OR
+  - PATTERN
+  - POLICY
+  - RANDOM_REPLACE
+  - REDACT
+  - STATIC_REPLACE
+  - TERMS
+  - TRUE
+  - TRUNCATE
+  - WHERE
+  - WITH

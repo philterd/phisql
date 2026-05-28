@@ -1,0 +1,98 @@
+(*
+ * PhiSQL v0.1 grammar in ISO 14977 EBNF.
+ *
+ * Cross-validated against the ANTLR4 grammar in PhiSQL.g4.
+ * The ANTLR4 grammar is the executable normative reference; this file is
+ * a tool-independent presentation for human readers and for implementations
+ * that prefer to consume EBNF.
+ *
+ * Status: DRAFT. Grammar may change before v1.0.
+ *
+ * Keywords and entity-type identifiers are case-insensitive. User-defined
+ * names (policy names, dictionary names, custom-identifier classifications)
+ * are case-sensitive.
+ *)
+
+document         = { statement , ";" } ;
+
+statement        = policy decl
+                 | redact stmt
+                 | deidentify stmt
+                 | ignore stmt ;
+
+policy decl      = "POLICY" , id , [ "DESCRIPTION" , string literal ] ;
+
+redact stmt      = "REDACT" , entity list
+                 , [ "WITH" , strategy expr ]
+                 , [ "WHERE" , predicate ] ;
+
+deidentify stmt  = "DEIDENTIFY" , entity assignment
+                 , { "," , entity assignment } ;
+
+entity assignment = entity type , "AS" , strategy expr ;
+
+ignore stmt      = "IGNORE"
+                 , ( "TERMS" , string list
+                   | "PATTERN" , string literal )
+                 , [ "FOR" , entity list ] ;
+
+entity list      = entity type , { "," , entity type } ;
+
+entity type      = id
+                 | "IDENTIFIER" , "(" , string literal , ")" ;
+
+strategy expr    = strategy name , [ "(" , strategy args , ")" ] ;
+
+strategy name    = "MASK"
+                 | "REDACT"
+                 | "ENCRYPT"
+                 | "FPE_ENCRYPT"
+                 | "HASH_SHA256"
+                 | "RANDOM_REPLACE"
+                 | "STATIC_REPLACE"
+                 | "LAST_4"
+                 | "TRUNCATE"
+                 | "ABBREVIATE" ;
+
+strategy args    = named arg , { "," , named arg } ;
+
+named arg        = id , "=" , literal ;
+
+predicate        = confidence predicate
+                 | "(" , predicate , ")"
+                 | predicate , ( "AND" | "OR" ) , predicate ;
+
+confidence predicate = "CONFIDENCE" , compare op , numeric literal ;
+
+compare op       = ">" | ">=" | "<" | "<=" | "=" ;
+
+string list      = "(" , string literal , { "," , string literal } , ")" ;
+
+literal          = string literal | numeric literal | boolean literal ;
+
+(* Lexical *)
+id               = letter , { letter | digit | "_" } ;
+
+string literal   = "'" , { string char | string escape } , "'" ;
+string char      = ? any character except "'" or "\" or newline ? ;
+string escape    = "\" , ? any character ? ;
+
+numeric literal  = [ "-" ] , digit , { digit }
+                 , [ "." , digit , { digit } ] ;
+
+boolean literal  = "TRUE" | "FALSE" ;
+
+letter           = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J"
+                 | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T"
+                 | "U" | "V" | "W" | "X" | "Y" | "Z"
+                 | "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j"
+                 | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t"
+                 | "u" | "v" | "w" | "x" | "y" | "z"
+                 | "_" ;
+
+digit            = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+
+(* Comments and whitespace are skipped by the lexer *)
+line comment     = "--" , { ? any character except newline ? } ;
+block comment    = "/*" , { ? any character ? } , "*/" ;
+whitespace       = ? space, tab, carriage return, or newline ? ;

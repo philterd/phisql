@@ -1,4 +1,4 @@
-name: Validate examples against Phileas schema
+name: Validate spec artifacts
 
 on:
   push:
@@ -18,5 +18,5 @@ jobs:
       - name: Install dependencies
         run: pip install -r scripts/requirements.txt
 
-      - name: Validate example JSON files against the canonical Phileas schema
-        run: python scripts/validate_examples.py
+      - name: Validate catalog YAML, schema references, and example JSON
+        run: python scripts/validate_spec.py

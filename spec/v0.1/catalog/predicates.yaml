@@ -1,0 +1,44 @@
+# PhiSQL v0.1 predicate catalog.
+#
+# Defines the predicate functions available in WHERE clauses and how each
+# compiles to the Phileas `conditions` string on a strategy object.
+#
+# Status: DRAFT. Subject to change before v1.0.
+#
+# Schema:
+#   version       : PhiSQL spec version this catalog targets.
+#   compose       : how multiple predicates combine.
+#     operators   : logical operators recognized between predicates.
+#     phileas_template : how composed predicates serialize into
+#                        a single conditions string.
+#   predicates    : list of predicate function entries.
+#     name        : PhiSQL predicate keyword (case-insensitive).
+#     compare_ops : comparison operators supported by this predicate.
+#     value_type  : type of the right-hand side.
+#     phileas_template : how this predicate serializes into Phileas
+#                        conditions syntax.
+#     phileas_field : the field on the strategy object that receives the
+#                     compiled conditions string.
+
+version: v0.1
+
+# Composition of multiple predicates inside a WHERE clause.
+compose:
+  operators:
+    - logical: AND
+      phileas_token: and
+    - logical: OR
+      phileas_token: or
+  phileas_template: "{lhs} {op} {rhs}"
+  parens: "( {expr} )"
+
+predicates:
+  - name: CONFIDENCE
+    compare_ops: [">", ">=", "<", "<=", "="]
+    value_type: number
+    phileas_template: "confidence {op} {value}"
+    phileas_field: conditions
+    description: |
+      Limits the strategy to detections whose model confidence meets the
+      threshold. Compiles to the `conditions` field of the strategy object
+      in Phileas JSON.
