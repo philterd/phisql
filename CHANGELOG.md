@@ -16,6 +16,8 @@ This project does not yet follow [Semantic Versioning](https://semver.org/) beca
 - Spec example `11-policy-wide-ignore-terms` covering scope-less `IGNORE TERMS`.
 - Full Apache 2.0 license headers on every Java file.
 - `.github/workflows/reference.yml` to build and test the reference implementation.
+- RFC process and contribution guidelines: `CONTRIBUTING.md` at the repo root, `.github/RFC_TEMPLATE.md` for new proposals, and `rfcs/` directory for the historical record. Closes philterd/philterd-website#144.
+- RFC 0001 (`rfcs/0001-scope-less-ignore-terms.md`) — worked example RFC documenting the scope-less `IGNORE TERMS` change end to end, for use as a reference by future authors.
 
 ### Changed
 

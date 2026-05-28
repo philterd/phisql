@@ -29,6 +29,7 @@ philterd/phisql/
 ├── reference/                  Java reference implementation
 │   ├── pom.xml
 │   └── src/                    Wrapper around the ANTLR-generated parser
+├── rfcs/                       Accepted/rejected RFCs (historical record)
 └── scripts/                    Spec validators (Python)
 ```
 
@@ -98,7 +99,9 @@ The Phase 5 SDKs (Go, Python, etc.) and the conformance test suite already plan 
 
 ## Contributing
 
-The RFC process and contribution guidelines are forthcoming. For now, feedback on the v0.1 draft is welcome via GitHub issues.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the RFC process, lifecycle, review criteria, and versioning policy. The RFC template is at [`.github/RFC_TEMPLATE.md`](.github/RFC_TEMPLATE.md); accepted, rejected, and withdrawn RFCs live under [`rfcs/`](rfcs/).
+
+Bug fixes, documentation tweaks, and new examples exercising already-specified grammar do not need an RFC — open a normal pull request. Feedback on the v0.1 draft is welcome via GitHub issues.
 
 ## License
 
