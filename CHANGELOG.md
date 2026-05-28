@@ -11,6 +11,10 @@ This project does not yet follow [Semantic Versioning](https://semver.org/) beca
 - Reference parser implementation under `reference/` (Java, ANTLR4). The parser is generated from `spec/v0.1/grammar/PhiSQL.g4` at build time. The `ExamplesParseTest` parses every `.phisql` example file as part of the test suite; any grammar/example drift fails the build.
 - Reference compiler that translates parsed PhiSQL into Phileas JSON. The compiler is driven by the catalog YAML files (`spec/v0.1/catalog/*.yaml`), which are bundled inside the JAR as resources. `CompilerTest` compiles every example `.phisql` file and asserts byte-equivalent JSON output against the corresponding `.json` file. `CompileErrorTest` covers compile-time error cases (unknown entity, unknown strategy argument, invalid enum value).
 - Five additional spec examples (06-10) exercising multi-strategy entities, format-preserving encryption, multiple confidence bands, policy-wide ignore patterns, and named strategy arguments. The compiler test suite now covers 10 representative policies, matching the round-trip-coverage criterion from issue #127.
+- `spec/v0.1/catalog/policy.yaml` defining the relationship between PhiSQL `POLICY` declarations and Phileas filenames: the filename basename is canonical, `POLICY` is optional, and when present the declared name must match the basename after hyphen/underscore normalization.
+- Compiler overloads accepting a filename or an explicit expected name: `Compiler.compile(Path)`, `Compiler.compile(String, String expectedName)`, and `Compiler.compile(DocumentContext, String expectedName)`. `PolicyNamingTest` covers all paths through the new rule.
+- Spec example `11-policy-wide-ignore-terms` covering scope-less `IGNORE TERMS`.
+- Full Apache 2.0 license headers on every Java file.
 - `.github/workflows/reference.yml` to build and test the reference implementation.
 
 ### Changed
@@ -22,6 +26,7 @@ This project does not yet follow [Semantic Versioning](https://semver.org/) beca
 
 ### Fixed
 
+- Scope-less `IGNORE TERMS (...)` (without a `FOR <entity>` clause) now compiles to the top-level `ignored` array in the Phileas schema instead of throwing a `CompileException`. The top-level `ignored` array uses the `{terms: [...]}` object shape per `$defs.ignored` in the Phileas schema.
 - `BITCOIN_ADDRESS` strategies field name corrected to `bitcoinFilterStrategies` (the catalog validator caught the discrepancy with the Phileas schema).
 
 ## [v0.1-draft] - 2026-05-28

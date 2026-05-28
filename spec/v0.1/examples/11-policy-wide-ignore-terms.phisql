@@ -1,0 +1,9 @@
+-- Policy-wide ignore terms. Without a FOR <entity> clause, IGNORE TERMS
+-- compiles to the top-level `ignored` array in the Phileas schema and
+-- applies across all filters in the policy.
+
+POLICY suppress_known_test_data;
+
+REDACT SSN, EMAIL_ADDRESS WITH MASK;
+
+IGNORE TERMS ('TEST', 'EXAMPLE', 'SAMPLE');

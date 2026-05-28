@@ -1,0 +1,58 @@
+# PhiSQL v0.1 policy-naming semantics.
+#
+# Defines how a PhiSQL document's POLICY declaration relates to the Phileas
+# JSON policy filename. The Phileas JSON policy schema has no top-level name
+# or description field; policy identity comes from the filename. This file
+# documents the rule that bridges that convention with PhiSQL's POLICY
+# declaration.
+#
+# Status: DRAFT. Subject to change before v1.0.
+
+version: v0.1
+
+policy_name:
+  source: filename_basename
+  description: |
+    The policy name is the file basename (with the .phisql or .json
+    extension stripped). This matches the existing convention in
+    philterd/pii-redaction-policies and how Phileas resolves policies
+    by name today.
+
+policy_declaration:
+  required: false
+  description: |
+    The POLICY <name> declaration inside a PhiSQL document is optional.
+    A PhiSQL file containing only REDACT / DEIDENTIFY / IGNORE statements
+    is well-formed and compiles successfully.
+
+consistency_rule:
+  applies_when: filename_known_and_policy_declared
+  rule: declared_name_must_match_basename_after_normalization
+  normalization:
+    description: |
+      Hyphens in the filename basename and underscores in the PhiSQL
+      identifier are treated as equivalent for comparison purposes.
+      Phileas filenames conventionally use hyphens (hipaa-safe-harbor.json);
+      PhiSQL identifiers cannot contain hyphens. The normalization
+      bridges the two without forcing users to rename files.
+    rule: replace_hyphens_with_underscores_in_both_sides
+  on_mismatch: compile_error
+  rationale: |
+    Catches the common bug where someone copies a .phisql file to a new
+    name and forgets to update the POLICY declaration inside.
+
+string_only_compilation:
+  description: |
+    When PhiSQL is compiled from a string with no associated filename
+    (e.g., embedded in a tool's UI, included in another configuration
+    format), the POLICY declaration is the only source of the name.
+    If absent, the policy name is null and the caller must provide one.
+
+description_clause:
+  destination: sibling_markdown
+  description: |
+    The DESCRIPTION '<text>' clause, when present on a POLICY declaration,
+    compiles to the policy's human-readable description. The Phileas JSON
+    schema has no description field, so the destination is a sibling
+    Markdown file named <basename>.md. The compiler returns the description
+    text on CompileResult; writing the file is the caller's choice.

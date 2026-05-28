@@ -1,6 +1,19 @@
 /*
+ * Copyright 2026 Philterd, LLC.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
 package ai.philterd.phisql;
 
 import ai.philterd.phisql.grammar.PhiSQLParser;
@@ -9,6 +22,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 
@@ -33,21 +49,48 @@ public final class Compiler {
         this.catalog = catalog;
     }
 
+    /**
+     * Compiles PhiSQL from a string with no filename context. The policy name
+     * comes from the {@code POLICY} declaration if present; otherwise null.
+     */
     public CompileResult compile(String source) {
-        return compile(PhiSQL.parse(source));
+        return compile(PhiSQL.parse(source), null);
     }
 
-    public CompileResult compile(PhiSQLParser.DocumentContext document) {
+    /**
+     * Compiles PhiSQL from a file. The policy name is the file's basename
+     * (with {@code .phisql} stripped). If the file contains a {@code POLICY}
+     * declaration, its name must match the basename after normalization
+     * (hyphens and underscores are treated as equivalent).
+     *
+     * @throws CompileException on a POLICY/filename mismatch.
+     */
+    public CompileResult compile(Path file) throws IOException {
+        String source = Files.readString(file);
+        return compile(PhiSQL.parse(source), basenameWithoutExtension(file));
+    }
+
+    /**
+     * Compiles PhiSQL from a string with an explicit expected name. This is
+     * the form used when the source did not come from a file but the caller
+     * still knows what the policy should be named (e.g., an HTTP upload
+     * carrying a {@code name} parameter).
+     */
+    public CompileResult compile(String source, String expectedName) {
+        return compile(PhiSQL.parse(source), expectedName);
+    }
+
+    public CompileResult compile(PhiSQLParser.DocumentContext document, String expectedName) {
         ObjectNode policyJson = MAPPER.createObjectNode();
         ObjectNode identifiers = policyJson.putObject("identifiers");
 
-        String policyName = null;
+        String declaredName = null;
         String description = null;
 
         for (PhiSQLParser.StatementContext stmt : document.statement()) {
             if (stmt.policyDecl() != null) {
                 PhiSQLParser.PolicyDeclContext p = stmt.policyDecl();
-                policyName = p.policyName.getText();
+                declaredName = p.policyName.getText();
                 if (p.description != null) {
                     description = unquoteString(p.description.getText());
                 }
@@ -60,7 +103,42 @@ public final class Compiler {
             }
         }
 
+        String policyName = resolvePolicyName(expectedName, declaredName);
         return new CompileResult(policyName, description, policyJson);
+    }
+
+    /** Backwards-compatible single-arg form (no expected name). */
+    public CompileResult compile(PhiSQLParser.DocumentContext document) {
+        return compile(document, null);
+    }
+
+    /**
+     * Resolves the policy name from the expected name (typically a filename
+     * basename) and the declared name (from the POLICY statement). Implements
+     * the v0.1 policy-naming rule defined in spec/v0.1/catalog/policy.yaml.
+     */
+    private static String resolvePolicyName(String expected, String declared) {
+        if (expected != null && declared != null) {
+            if (!normalizePolicyName(expected).equals(normalizePolicyName(declared))) {
+                throw new CompileException(
+                        "POLICY declaration name '" + declared
+                                + "' does not match the expected name '" + expected
+                                + "'. Either omit the POLICY statement or change it to match.");
+            }
+            return expected;
+        }
+        if (expected != null) return expected;
+        return declared;
+    }
+
+    private static String normalizePolicyName(String name) {
+        return name.replace('-', '_');
+    }
+
+    private static String basenameWithoutExtension(Path file) {
+        String name = file.getFileName().toString();
+        int dot = name.lastIndexOf('.');
+        return dot > 0 ? name.substring(0, dot) : name;
     }
 
     // ------------------------------------------------------------------
@@ -103,18 +181,26 @@ public final class Compiler {
                     .map(TerminalNode::getText)
                     .map(Compiler::unquoteString)
                     .toList();
-            if (!scoped) {
-                throw new CompileException(
-                        "IGNORE TERMS requires a FOR <entity> clause; "
-                                + "scope-less IGNORE TERMS has no Phileas JSON equivalent.");
-            }
-            for (PhiSQLParser.EntityTypeContext entityCtx : ctx.entityList().entityType()) {
-                ObjectNode entityNode = getOrCreateEntityNode(identifiers, entityCtx);
-                ArrayNode ignored = entityNode.has("ignored")
-                        ? (ArrayNode) entityNode.get("ignored")
-                        : entityNode.putArray("ignored");
+            if (scoped) {
+                for (PhiSQLParser.EntityTypeContext entityCtx : ctx.entityList().entityType()) {
+                    ObjectNode entityNode = getOrCreateEntityNode(identifiers, entityCtx);
+                    ArrayNode ignored = entityNode.has("ignored")
+                            ? (ArrayNode) entityNode.get("ignored")
+                            : entityNode.putArray("ignored");
+                    for (String term : terms) {
+                        ignored.add(term);
+                    }
+                }
+            } else {
+                // Scope-less IGNORE TERMS compiles to the top-level `ignored` array,
+                // which is a list of named term-list objects per the Phileas schema.
+                ArrayNode topLevel = policyJson.has("ignored")
+                        ? (ArrayNode) policyJson.get("ignored")
+                        : policyJson.putArray("ignored");
+                ObjectNode termsObject = topLevel.addObject();
+                ArrayNode termsArray = termsObject.putArray("terms");
                 for (String term : terms) {
-                    ignored.add(term);
+                    termsArray.add(term);
                 }
             }
             return;

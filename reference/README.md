@@ -63,6 +63,20 @@ System.out.println(result.toJsonString()); // Phileas JSON policy
 
 The compiler is driven by the catalog YAML files under `spec/v0.1/catalog/`. They are bundled inside the JAR as resources, so the compiler does not depend on the spec being checked out at runtime.
 
+### Compile from a file
+
+```java
+Path file = Path.of("policies/hipaa-safe-harbor.phisql");
+CompileResult result = compiler.compile(file);
+
+// Policy name comes from the file basename.
+result.policyName();  // "hipaa-safe-harbor"
+```
+
+The policy name comes from the filename basename. A `POLICY` declaration inside the file is optional; when present, its name must match the basename after hyphen/underscore normalization (so a file named `hipaa-safe-harbor.phisql` may declare `POLICY hipaa_safe_harbor`). The compiler raises a `CompileException` on mismatch.
+
+This rule is defined in [`spec/v0.1/catalog/policy.yaml`](../spec/v0.1/catalog/policy.yaml).
+
 ## License
 
 Apache License, Version 2.0. See [LICENSE](../LICENSE).

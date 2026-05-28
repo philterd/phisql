@@ -57,6 +57,7 @@ def check_catalog_well_formed() -> list[str]:
         "strategies.yaml": ["version", "strategies"],
         "keywords.yaml": ["version", "keywords"],
         "predicates.yaml": ["version", "predicates"],
+        "policy.yaml": ["version", "policy_name", "policy_declaration", "consistency_rule"],
     }
     for name, keys in required.items():
         path = SPEC_DIR / "catalog" / name

@@ -9,7 +9,7 @@ This repository contains both the **specification** and the **reference parser i
 > [!IMPORTANT]
 > **PhiSQL v0.1 is a DRAFT.** The grammar and semantics are subject to change before v1.0. Implementations may track the draft but must not claim conformance until v1.0 is published.
 
-The current draft covers the **redaction subset**: `REDACT`, `DEIDENTIFY`, `IGNORE`, and supporting clauses that compile to the Phileas JSON policy schema. Discovery, monitoring, benchmarking, and cross-tool join verbs are scoped for later drafts.
+PhiSQL today is the policy DSL; PhiSQL tomorrow is the unified query language for PII operations across the Philterd toolkit. The v0.1 draft covers the **redaction subset**: `REDACT`, `DEIDENTIFY`, `IGNORE`, and supporting clauses that compile to the Phileas JSON policy schema. Discovery (`FIND PII`), monitoring (`SELECT FROM phield.trends`), benchmarking (`COMPARE POLICY`), and cross-tool join verbs are scoped for later drafts and will earn the "SQL" suffix as they land.
 
 ## Repository layout
 
@@ -23,7 +23,8 @@ philterd/phisql/
 │   │   ├── entity-types.yaml   Entity name -> Phileas field + strategies array
 │   │   ├── strategies.yaml     Strategy name -> Phileas enum + allowed arguments
 │   │   ├── keywords.yaml       Reserved keyword list
-│   │   └── predicates.yaml     Predicate forms and how they compile to conditions
+│   │   ├── predicates.yaml     Predicate forms and how they compile to conditions
+│   │   └── policy.yaml         POLICY declaration / filename relationship
 │   └── examples/               Worked examples (.phisql source + compiled .json)
 ├── reference/                  Java reference implementation
 │   ├── pom.xml
@@ -57,7 +58,7 @@ The v0.1 governance posture:
 - **No proprietary extensions.** PhiSQL must not introduce constructs that have no Phileas JSON equivalent.
 - **Backward compatible forever.** Existing JSON policies remain canonical. There is no migration; PhiSQL is additive.
 
-The Phileas JSON schema has no top-level `name` or `description` fields; policy identity comes from the JSON filename, and human-readable description lives in a sibling Markdown file. PhiSQL `POLICY <name>` compiles to the output filename, and `DESCRIPTION '<text>'` compiles to a sibling `<name>.md` file.
+The Phileas JSON schema has no top-level `name` or `description` fields; policy identity comes from the JSON filename, and human-readable description lives in a sibling Markdown file. PhiSQL `POLICY <name>` is optional; when present, its name must match the file basename after hyphen/underscore normalization (the filename can be `hipaa-safe-harbor.phisql` while the PhiSQL identifier is `hipaa_safe_harbor`). The full rule is documented in [`spec/v0.1/catalog/policy.yaml`](spec/v0.1/catalog/policy.yaml). `DESCRIPTION '<text>'` compiles to a sibling `<basename>.md` file.
 
 `PERSON` is deferred to a later spec version. The Phileas schema replaced `person` with a `pheyes` block whose configuration surface is not yet settled; PhiSQL v0.1 exposes `FIRST_NAME`, `SURNAME`, and `PHYSICIAN_NAME` instead.
 
