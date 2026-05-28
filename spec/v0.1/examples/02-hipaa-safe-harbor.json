@@ -1,0 +1,37 @@
+{
+  "identifiers": {
+    "physicianName": {
+      "physicianNameFilterStrategies": [{ "strategy": "RANDOM_REPLACE" }]
+    },
+    "hospital": {
+      "hospitalFilterStrategies": [{ "strategy": "RANDOM_REPLACE" }]
+    },
+    "date": {
+      "dateFilterStrategies": [{ "strategy": "TRUNCATE" }]
+    },
+    "age": {
+      "ageFilterStrategies": [{ "strategy": "REDACT" }]
+    },
+    "ssn": {
+      "ssnFilterStrategies": [{ "strategy": "REDACT" }]
+    },
+    "phoneNumber": {
+      "phoneNumberFilterStrategies": [{ "strategy": "REDACT" }]
+    },
+    "emailAddress": {
+      "emailAddressFilterStrategies": [{ "strategy": "REDACT" }]
+    },
+    "streetAddress": {
+      "streetAddressFilterStrategies": [{ "strategy": "REDACT" }]
+    },
+    "city": {
+      "cityFilterStrategies": [{ "strategy": "REDACT" }]
+    },
+    "state": {
+      "stateFilterStrategies": [{ "strategy": "REDACT" }]
+    },
+    "zipCode": {
+      "zipCodeFilterStrategy": [{ "strategy": "REDACT" }]
+    }
+  }
+}

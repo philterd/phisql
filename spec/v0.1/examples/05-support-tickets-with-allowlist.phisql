@@ -1,0 +1,13 @@
+-- Customer support ticket redaction with an allowlist for company names.
+-- Demonstrates STATIC_REPLACE with named strategy arguments and IGNORE TERMS.
+-- Compiles to 05-support-tickets-with-allowlist.json.
+
+POLICY support_tickets
+  DESCRIPTION 'Customer support ticket redaction with allowlist.';
+
+REDACT FIRST_NAME, SURNAME WITH STATIC_REPLACE(value='Customer', scope=document);
+REDACT EMAIL_ADDRESS WITH MASK;
+REDACT PHONE_NUMBER WITH MASK;
+
+IGNORE TERMS ('Acme', 'AcmeCorp') FOR FIRST_NAME;
+IGNORE TERMS ('Corp', 'Support', 'Engineering') FOR SURNAME;

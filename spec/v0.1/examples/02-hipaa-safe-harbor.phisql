@@ -1,0 +1,19 @@
+-- HIPAA Safe Harbor de-identification (45 CFR 164.514(b)(2)).
+-- Demonstrates the DEIDENTIFY convenience form with mixed strategies.
+-- Compiles to 02-hipaa-safe-harbor.json.
+
+POLICY hipaa_safe_harbor
+  DESCRIPTION 'HIPAA Safe Harbor de-identification (45 CFR 164.514(b)(2)).';
+
+DEIDENTIFY
+  PHYSICIAN_NAME  AS RANDOM_REPLACE,
+  HOSPITAL        AS RANDOM_REPLACE,
+  DATE            AS TRUNCATE,
+  AGE             AS REDACT,
+  SSN             AS REDACT,
+  PHONE_NUMBER    AS REDACT,
+  EMAIL_ADDRESS   AS REDACT,
+  STREET_ADDRESS  AS REDACT,
+  CITY            AS REDACT,
+  STATE           AS REDACT,
+  ZIP_CODE        AS REDACT;

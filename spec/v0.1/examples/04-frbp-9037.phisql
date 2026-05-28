@@ -1,0 +1,14 @@
+-- FRBP 9037: redaction requirements for federal bankruptcy filings.
+-- SSN to last 4, dates to year only, surnames to initials, accounts to last 4.
+-- Demonstrates custom IDENTIFIER references.
+-- Compiles to 04-frbp-9037.json.
+
+POLICY frbp_9037
+  DESCRIPTION 'FRBP 9037: SSN to last 4, dates to year only, accounts to last 4.';
+
+DEIDENTIFY
+  SSN     AS LAST_4,
+  DATE    AS TRUNCATE,
+  SURNAME AS ABBREVIATE;
+
+REDACT IDENTIFIER('account_number') WITH LAST_4;

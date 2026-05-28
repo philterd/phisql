@@ -1,0 +1,30 @@
+{
+  "identifiers": {
+    "firstName": {
+      "ignored": ["Acme", "AcmeCorp"],
+      "firstNameFilterStrategies": [
+        {
+          "strategy": "STATIC_REPLACE",
+          "staticReplacement": "Customer",
+          "replacementScope": "DOCUMENT"
+        }
+      ]
+    },
+    "surname": {
+      "ignored": ["Corp", "Support", "Engineering"],
+      "surnameFilterStrategies": [
+        {
+          "strategy": "STATIC_REPLACE",
+          "staticReplacement": "Customer",
+          "replacementScope": "DOCUMENT"
+        }
+      ]
+    },
+    "emailAddress": {
+      "emailAddressFilterStrategies": [{ "strategy": "MASK" }]
+    },
+    "phoneNumber": {
+      "phoneNumberFilterStrategies": [{ "strategy": "MASK" }]
+    }
+  }
+}

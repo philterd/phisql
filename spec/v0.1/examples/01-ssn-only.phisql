@@ -1,0 +1,6 @@
+-- Minimal PhiSQL example: redact U.S. Social Security Numbers.
+-- Compiles to the JSON in 01-ssn-only.json.
+
+POLICY ssn_only;
+
+REDACT SSN WITH MASK;

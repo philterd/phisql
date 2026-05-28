@@ -1,0 +1,19 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [{ "strategy": "LAST_4" }]
+    },
+    "date": {
+      "dateFilterStrategies": [{ "strategy": "TRUNCATE" }]
+    },
+    "surname": {
+      "surnameFilterStrategies": [{ "strategy": "ABBREVIATE" }]
+    },
+    "identifiers": [
+      {
+        "classification": "account_number",
+        "identifierFilterStrategies": [{ "strategy": "LAST_4" }]
+      }
+    ]
+  }
+}

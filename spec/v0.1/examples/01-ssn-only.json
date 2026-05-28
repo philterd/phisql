@@ -1,0 +1,9 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [
+        { "strategy": "MASK" }
+      ]
+    }
+  }
+}

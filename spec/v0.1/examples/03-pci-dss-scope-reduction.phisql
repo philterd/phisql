@@ -1,0 +1,8 @@
+-- PCI DSS v4.0 Req 3.2-3.4: PAN to last 4 only, full CVV redaction.
+-- Demonstrates a WHERE predicate using CONFIDENCE.
+-- Compiles to 03-pci-dss-scope-reduction.json.
+
+POLICY pci_dss_scope_reduction
+  DESCRIPTION 'PCI DSS v4.0 Req 3.2-3.4: PAN to last 4, full CVV redaction.';
+
+REDACT CREDIT_CARD WITH LAST_4 WHERE CONFIDENCE > 0.85;
