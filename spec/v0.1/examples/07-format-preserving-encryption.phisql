@@ -1,0 +1,7 @@
+-- Format-preserving encryption preserves the surface format of an identifier
+-- while making the value cryptographically opaque. Useful when downstream
+-- systems validate identifier formats.
+
+POLICY fpe_ssn;
+
+REDACT SSN WITH FPE_ENCRYPT;

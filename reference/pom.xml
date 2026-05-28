@@ -30,6 +30,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <antlr.version>4.13.2</antlr.version>
+        <jackson.version>2.17.2</jackson.version>
         <junit.version>5.10.2</junit.version>
     </properties>
 
@@ -38,6 +39,18 @@
             <groupId>org.antlr</groupId>
             <artifactId>antlr4-runtime</artifactId>
             <version>${antlr.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
 
         <dependency>
@@ -84,6 +97,39 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
+            </plugin>
+
+            <plugin>
+                <!--
+                    Bundle the spec catalog YAML files as JAR resources so the
+                    compiler can load them via the classloader at runtime. This
+                    keeps the catalog as the single source of truth: there is
+                    no copy of the catalog inside reference/, and the JAR carries
+                    the same files the spec validator and conformance suite use.
+                -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-spec-catalog</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}/spec/v0.1/catalog</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/../spec/v0.1/catalog</directory>
+                                    <includes>
+                                        <include>*.yaml</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

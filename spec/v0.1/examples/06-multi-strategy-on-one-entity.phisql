@@ -1,0 +1,7 @@
+-- Two strategies on the same entity. Demonstrates that strategies arrays
+-- are append-only across multiple REDACT statements for the same entity.
+
+POLICY two_strategies_one_entity;
+
+REDACT EMAIL_ADDRESS WITH HASH_SHA256;
+REDACT EMAIL_ADDRESS WITH MASK;

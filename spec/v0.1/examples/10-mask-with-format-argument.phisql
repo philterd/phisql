@@ -1,0 +1,7 @@
+-- Custom redaction format. The %t placeholder is replaced by the entity
+-- type at runtime, so the same format string works across entity types.
+
+POLICY custom_format;
+
+REDACT SSN, PHONE_NUMBER, EMAIL_ADDRESS
+  WITH MASK(format='{{{REDACTED-%t}}}');

@@ -1,0 +1,8 @@
+-- The same entity with different strategies at different confidence bands.
+-- High-confidence detections get LAST_4 (preserves utility for analytics);
+-- lower-confidence ones get fully redacted (safer default).
+
+POLICY confidence_bands;
+
+REDACT CREDIT_CARD WITH LAST_4 WHERE CONFIDENCE >= 0.9;
+REDACT CREDIT_CARD WITH REDACT WHERE CONFIDENCE < 0.9;

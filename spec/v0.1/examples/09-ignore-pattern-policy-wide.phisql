@@ -1,0 +1,9 @@
+-- Policy-wide regex ignore. Useful for suppressing detections in known
+-- false-positive patterns (e.g., test SSNs, sample emails) across all
+-- entity types.
+
+POLICY ignore_test_data;
+
+REDACT SSN, EMAIL_ADDRESS WITH MASK;
+
+IGNORE PATTERN '\\btest@example\\.com\\b';

@@ -1,0 +1,19 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [
+        { "strategy": "MASK" }
+      ]
+    },
+    "emailAddress": {
+      "emailAddressFilterStrategies": [
+        { "strategy": "MASK" }
+      ]
+    }
+  },
+  "ignoredPatterns": [
+    {
+      "pattern": "\\btest@example\\.com\\b"
+    }
+  ]
+}

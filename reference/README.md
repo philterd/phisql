@@ -33,6 +33,8 @@ The example-parsing test is the load-bearing assertion that the reference implem
 
 ## Usage
 
+### Parse
+
 ```java
 import ai.philterd.phisql.PhiSQL;
 import ai.philterd.phisql.grammar.PhiSQLParser;
@@ -42,6 +44,24 @@ PhiSQLParser.DocumentContext tree = PhiSQL.parse(
 );
 // tree is the ANTLR4 parse tree. Use a Visitor or Listener to walk it.
 ```
+
+### Compile to Phileas JSON
+
+```java
+import ai.philterd.phisql.Compiler;
+import ai.philterd.phisql.CompileResult;
+
+Compiler compiler = new Compiler();
+CompileResult result = compiler.compile(
+    "POLICY hipaa_safe_harbor;\n" +
+    "DEIDENTIFY SSN AS REDACT, DATE AS TRUNCATE, EMAIL_ADDRESS AS MASK;"
+);
+
+System.out.println(result.policyName());   // "hipaa_safe_harbor"
+System.out.println(result.toJsonString()); // Phileas JSON policy
+```
+
+The compiler is driven by the catalog YAML files under `spec/v0.1/catalog/`. They are bundled inside the JAR as resources, so the compiler does not depend on the spec being checked out at runtime.
 
 ## License
 
