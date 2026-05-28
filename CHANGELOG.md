@@ -6,10 +6,17 @@ This project does not yet follow [Semantic Versioning](https://semver.org/) beca
 
 ## [Unreleased]
 
+### Added
+
+- Reference parser implementation under `reference/` (Java, ANTLR4). The parser is generated from `spec/v0.1/grammar/PhiSQL.g4` at build time. The `ExamplesParseTest` parses every `.phisql` example file as part of the test suite; any grammar/example drift fails the build.
+- `.github/workflows/reference.yml` to build and test the reference implementation.
+
 ### Changed
 
+- Repository renamed from `philterd/phisql-spec` to `philterd/phisql` to reflect that it now contains both the specification and the reference implementation.
 - Restructured the v0.1 spec into machine-readable artifacts: ANTLR4 grammar (`PhiSQL.g4`), EBNF grammar (`PhiSQL.ebnf`), and YAML catalog files for entity types, strategies, keywords, and predicates. The previous prose `SPEC.md` has been removed; the artifacts are now the spec.
 - The validator (`scripts/validate_spec.py`) now runs three checks on every push and PR: catalog well-formedness, catalog references resolving against the canonical Phileas schema, and example JSON validating against the same schema.
+- Grammar: the `literal` production now accepts a bare identifier (`ID`) in addition to string, numeric, and boolean literals. This is required for enum-typed strategy arguments such as `scope=document`. The compiler is expected to validate that bare identifiers correspond to enum values declared in `strategies.yaml` for the relevant argument. Surfaced by `ExamplesParseTest` failing on the support-tickets example.
 
 ### Fixed
 

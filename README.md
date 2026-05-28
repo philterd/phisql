@@ -1,8 +1,8 @@
-# PhiSQL Specification
+# PhiSQL
 
 PhiSQL is the declarative query language for PII privacy operations across the Philterd toolkit.
 
-This repository is the **specification**. The reference parser and AST library live in [`philterd/phisql`](https://github.com/philterd/phisql).
+This repository contains both the **specification** and the **reference parser implementation**. They live together because they evolve together: the parser is generated from the grammar in the spec, and every example file in the spec is parsed by the implementation as part of CI.
 
 ## Status
 
@@ -13,28 +13,33 @@ The current draft covers the **redaction subset**: `REDACT`, `DEIDENTIFY`, `IGNO
 
 ## Repository layout
 
-The spec is a set of machine-readable artifacts. There is no prose specification document; the artifacts are the spec.
-
 ```
-spec/v0.1/
-├── grammar/
-│   ├── PhiSQL.g4           ANTLR4 grammar (executable normative reference)
-│   └── PhiSQL.ebnf         ISO 14977 EBNF (tool-independent presentation)
-├── catalog/
-│   ├── entity-types.yaml   Entity name -> Phileas field + strategies array
-│   ├── strategies.yaml     Strategy name -> Phileas enum + allowed arguments
-│   ├── keywords.yaml       Reserved keyword list
-│   └── predicates.yaml     Predicate forms and how they compile to conditions
-└── examples/               Worked examples (.phisql source + compiled .json)
+philterd/phisql/
+├── spec/v0.1/
+│   ├── grammar/
+│   │   ├── PhiSQL.g4           ANTLR4 grammar (executable normative reference)
+│   │   └── PhiSQL.ebnf         ISO 14977 EBNF (tool-independent presentation)
+│   ├── catalog/
+│   │   ├── entity-types.yaml   Entity name -> Phileas field + strategies array
+│   │   ├── strategies.yaml     Strategy name -> Phileas enum + allowed arguments
+│   │   ├── keywords.yaml       Reserved keyword list
+│   │   └── predicates.yaml     Predicate forms and how they compile to conditions
+│   └── examples/               Worked examples (.phisql source + compiled .json)
+├── reference/                  Java reference implementation
+│   ├── pom.xml
+│   └── src/                    Wrapper around the ANTLR-generated parser
+└── scripts/                    Spec validators (Python)
 ```
 
-The reference implementation and SDKs consume these files directly. The compiler's behavior is defined by the catalog files; the parser is generated from the grammar.
+The spec is the set of machine-readable artifacts under `spec/`. There is no prose specification document; the artifacts are the spec.
+
+The reference implementation generates a Java parser from `spec/v0.1/grammar/PhiSQL.g4` at build time. It is published as `ai.philterd:phisql` and consumed by other Philterd projects (Phileas, Phinder, the future PhiSQL CLI).
 
 ## Versions
 
 | Version | Status | Tag |
 |---|---|---|
-| v0.1 | Draft | [`v0.1-draft`](https://github.com/philterd/phisql-spec/releases/tag/v0.1-draft) |
+| v0.1 | Draft | [`v0.1-draft`](https://github.com/philterd/phisql/releases/tag/v0.1-draft) |
 
 ## Relationship to the Phileas policy schema
 
@@ -58,28 +63,42 @@ The Phileas JSON schema has no top-level `name` or `description` fields; policy 
 
 ## Validation
 
-Every artifact is cross-checked by the CI workflow in [`.github/workflows/validate.yml`](.github/workflows/validate.yml) on every push and pull request. The validator runs three checks:
+Two CI workflows enforce that the spec and the reference implementation cannot drift:
 
-1. **Catalog YAML files are well-formed** and contain the expected top-level keys.
-2. **Every Phileas field referenced by the catalogs exists in the canonical Phileas schema.** If the Phileas schema renames or removes a field, this check fails and the catalog must be updated (or the change rolled back) before the PR can merge.
-3. **Every example JSON file validates against the canonical Phileas schema.**
+- **`.github/workflows/validate.yml`** runs `scripts/validate_spec.py` to verify (a) the catalog YAML files are well-formed, (b) every Phileas field referenced by the catalogs exists in the canonical Phileas schema, and (c) every example JSON file validates against the same Phileas schema.
 
-Run the validator locally:
+- **`.github/workflows/reference.yml`** builds the Java reference implementation, which generates a parser from `spec/v0.1/grammar/PhiSQL.g4` and parses every `.phisql` example file as part of its test suite. Any grammar change that breaks an example, or any new example the grammar can't parse, fails this job.
+
+Run them locally:
 
 ```sh
+# Spec checks
 python3 -m venv .venv
 .venv/bin/pip install -r scripts/requirements.txt
 .venv/bin/python scripts/validate_spec.py
+
+# Reference implementation
+cd reference && mvn verify
 ```
+
+## When this repo will split
+
+This single-repo arrangement is the right shape while PhiSQL is pre-1.0 with one implementation. It will split into separate repos when at least one of these is true:
+
+- A second implementation ships (third-party or first-party in another language).
+- The conformance program goes public and starts certifying external implementations.
+- The spec governance moves to a foundation.
+
+The Phase 5 SDKs (Go, Python, etc.) and the conformance test suite already plan to be separate repos.
 
 ## Trademark
 
 "PhiSQL" is a registered trademark of Philterd, LLC. The specification is freely readable and implementable, but the **name** is reserved for implementations that pass the conformance test suite (forthcoming at [`philterd/phisql-conformance`](https://github.com/philterd/phisql-conformance)).
 
-## License
-
-The specification is licensed under the [Apache License, Version 2.0](LICENSE).
-
 ## Contributing
 
 The RFC process and contribution guidelines are forthcoming. For now, feedback on the v0.1 draft is welcome via GitHub issues.
+
+## License
+
+The specification, reference implementation, and all artifacts in this repository are licensed under the [Apache License, Version 2.0](LICENSE).

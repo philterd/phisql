@@ -1,0 +1,27 @@
+name: Build reference implementation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build and test reference implementation
+        working-directory: reference
+        run: mvn -B verify
+
+      # The parser is generated from spec/v0.1/grammar/PhiSQL.g4 at build time
+      # and every example .phisql file is parsed by the generated parser as
+      # part of the test suite. If the grammar drifts from the examples, this
+      # job fails.

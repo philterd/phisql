@@ -108,10 +108,16 @@ stringList
     : '(' STRING_LITERAL (',' STRING_LITERAL)* ')'
     ;
 
+// A literal value on the right-hand side of a named strategy argument.
+// Bare identifiers are accepted for enum-typed arguments (e.g., scope=document
+// where DOCUMENT and CONTEXT are valid enum values from strategies.yaml).
+// The compiler validates that bare identifiers correspond to enum values
+// declared in the strategy catalog for the relevant argument.
 literal
     : STRING_LITERAL
     | NUMERIC_LITERAL
     | BOOLEAN_LITERAL
+    | ID
     ;
 
 // ============================================================================

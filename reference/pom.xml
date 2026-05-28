@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>ai.philterd</groupId>
+    <artifactId>phisql</artifactId>
+    <version>0.1-draft-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>PhiSQL Reference Implementation</name>
+    <description>
+        Reference parser and AST library for the PhiSQL specification.
+        The parser is generated from spec/v0.1/grammar/PhiSQL.g4 at build time.
+        The grammar file is the source of truth; any drift causes the build to fail.
+    </description>
+    <url>https://github.com/philterd/phisql</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <antlr.version>4.13.2</antlr.version>
+        <junit.version>5.10.2</junit.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+            <version>${antlr.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-maven-plugin</artifactId>
+                <version>${antlr.version}</version>
+                <executions>
+                    <execution>
+                        <id>antlr</id>
+                        <goals>
+                            <goal>antlr4</goal>
+                        </goals>
+                        <configuration>
+                            <!--
+                                Read the grammar directly from the spec. This is the
+                                load-bearing assertion that the reference parser
+                                cannot drift from the spec: there is only one
+                                grammar file in the repo, and it lives in spec/.
+                            -->
+                            <sourceDirectory>${project.basedir}/../spec/v0.1/grammar</sourceDirectory>
+                            <outputDirectory>${project.build.directory}/generated-sources/antlr4/ai/philterd/phisql/grammar</outputDirectory>
+                            <visitor>true</visitor>
+                            <listener>true</listener>
+                            <arguments>
+                                <argument>-package</argument>
+                                <argument>ai.philterd.phisql.grammar</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+            </plugin>
+        </plugins>
+    </build>
+</project>
