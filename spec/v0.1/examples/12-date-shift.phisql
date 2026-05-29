@@ -1,0 +1,8 @@
+-- Date shifting: move every detected date by a fixed offset.
+-- SHIFT is a date-only strategy. Use random=TRUE for a random offset instead
+-- of a fixed one (the day/month/year arguments are then ignored at runtime).
+-- Compiles to 12-date-shift.json.
+
+POLICY date_shift;
+
+REDACT DATE WITH SHIFT(days=30);

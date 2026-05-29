@@ -30,6 +30,8 @@ statement
     | redactStmt
     | deidentifyStmt
     | ignoreStmt
+    | defineIdentifierStmt
+    | detectStmt
     ;
 
 policyDecl
@@ -56,6 +58,25 @@ ignoreStmt
       (FOR entityList)?
     ;
 
+// Defines a custom identifier from a regex pattern and applies a strategy to it.
+defineIdentifierStmt
+    : DEFINE IDENTIFIER_KW classification=STRING_LITERAL
+      MATCHING pattern=STRING_LITERAL
+      (GROUP groupNumber=NUMERIC_LITERAL)?
+      (CASE sensitivity=(SENSITIVE | INSENSITIVE))?
+      WITH strategyExpr
+      (WHERE predicate)?
+    ;
+
+// Detects entities with the PhEye AI/NER model and applies a strategy to them.
+detectStmt
+    : DETECT PHEYE
+      (LABELS stringList)?
+      (ENDPOINT endpoint=STRING_LITERAL)?
+      WITH strategyExpr
+      (WHERE predicate)?
+    ;
+
 entityList
     : entityType (',' entityType)*
     ;
@@ -79,6 +100,8 @@ strategyName
     | STATIC_REPLACE
     | LAST_4
     | TRUNCATE
+    | TRUNCATE_TO_YEAR
+    | SHIFT
     | ABBREVIATE
     ;
 
@@ -140,11 +163,27 @@ AND             : 'AND' ;
 OR              : 'OR' ;
 CONFIDENCE      : 'CONFIDENCE' ;
 
+// Custom-identifier definition keywords.
+DEFINE          : 'DEFINE' ;
+MATCHING        : 'MATCHING' ;
+GROUP           : 'GROUP' ;
+CASE            : 'CASE' ;
+SENSITIVE       : 'SENSITIVE' ;
+INSENSITIVE     : 'INSENSITIVE' ;
+
+// PhEye (AI/NER) detection keywords.
+DETECT          : 'DETECT' ;
+PHEYE           : 'PHEYE' ;
+LABELS          : 'LABELS' ;
+ENDPOINT        : 'ENDPOINT' ;
+
 // Custom-identifier reference keyword.
 // "IDENTIFIER" is a PhiSQL keyword, not a generic identifier token name.
 IDENTIFIER_KW   : 'IDENTIFIER' ;
 
-// Strategy keywords (must precede ID for first-match disambiguation)
+// Strategy keywords (must precede ID for first-match disambiguation).
+// TRUNCATE_TO_YEAR is declared before TRUNCATE; ANTLR's longest-match rule
+// selects it for the full keyword, but explicit ordering keeps intent clear.
 MASK            : 'MASK' ;
 ENCRYPT         : 'ENCRYPT' ;
 FPE_ENCRYPT     : 'FPE_ENCRYPT' ;
@@ -152,7 +191,9 @@ HASH_SHA256     : 'HASH_SHA256' ;
 RANDOM_REPLACE  : 'RANDOM_REPLACE' ;
 STATIC_REPLACE  : 'STATIC_REPLACE' ;
 LAST_4          : 'LAST_4' ;
+TRUNCATE_TO_YEAR: 'TRUNCATE_TO_YEAR' ;
 TRUNCATE        : 'TRUNCATE' ;
+SHIFT           : 'SHIFT' ;
 ABBREVIATE      : 'ABBREVIATE' ;
 
 // Boolean literals (must precede ID)

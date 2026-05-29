@@ -9,7 +9,7 @@ This repository contains both the **specification** and the **reference parser i
 > [!IMPORTANT]
 > **PhiSQL v0.1 is a DRAFT.** The grammar and semantics are subject to change before v1.0. Implementations may track the draft but must not claim conformance until v1.0 is published.
 
-PhiSQL today is the policy DSL; PhiSQL tomorrow is the unified query language for PII operations across the Philterd toolkit. The v0.1 draft covers the **redaction subset**: `REDACT`, `DEIDENTIFY`, `IGNORE`, and supporting clauses that compile to the Phileas JSON policy schema. Discovery (`FIND PII`), monitoring (`SELECT FROM phield.trends`), benchmarking (`COMPARE POLICY`), and cross-tool join verbs are scoped for later drafts and will earn the "SQL" suffix as they land.
+PhiSQL today is the policy DSL; PhiSQL tomorrow is the unified query language for PII operations across the Philterd toolkit. The v0.1 draft covers policy authoring: `REDACT`, `DEIDENTIFY`, `IGNORE`, custom regex identifiers (`DEFINE IDENTIFIER ... MATCHING`), AI/NER detection (`DETECT PHEYE`), date shifting (`SHIFT`, `TRUNCATE_TO_YEAR`), and supporting clauses, all compiling to the Phileas JSON policy schema. Discovery (`FIND PII`), monitoring (`SELECT FROM phield.trends`), benchmarking (`COMPARE POLICY`), and cross-tool join verbs are scoped for later drafts and will earn the "SQL" suffix as they land.
 
 ## Repository layout
 

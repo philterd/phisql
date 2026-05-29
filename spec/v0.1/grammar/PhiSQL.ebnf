@@ -18,7 +18,9 @@ document         = { statement , ";" } ;
 statement        = policy decl
                  | redact stmt
                  | deidentify stmt
-                 | ignore stmt ;
+                 | ignore stmt
+                 | define identifier stmt
+                 | detect stmt ;
 
 policy decl      = "POLICY" , id , [ "DESCRIPTION" , string literal ] ;
 
@@ -36,6 +38,20 @@ ignore stmt      = "IGNORE"
                    | "PATTERN" , string literal )
                  , [ "FOR" , entity list ] ;
 
+define identifier stmt
+                 = "DEFINE" , "IDENTIFIER" , string literal
+                 , "MATCHING" , string literal
+                 , [ "GROUP" , numeric literal ]
+                 , [ "CASE" , ( "SENSITIVE" | "INSENSITIVE" ) ]
+                 , "WITH" , strategy expr
+                 , [ "WHERE" , predicate ] ;
+
+detect stmt      = "DETECT" , "PHEYE"
+                 , [ "LABELS" , string list ]
+                 , [ "ENDPOINT" , string literal ]
+                 , "WITH" , strategy expr
+                 , [ "WHERE" , predicate ] ;
+
 entity list      = entity type , { "," , entity type } ;
 
 entity type      = id
@@ -52,6 +68,8 @@ strategy name    = "MASK"
                  | "STATIC_REPLACE"
                  | "LAST_4"
                  | "TRUNCATE"
+                 | "TRUNCATE_TO_YEAR"
+                 | "SHIFT"
                  | "ABBREVIATE" ;
 
 strategy args    = named arg , { "," , named arg } ;

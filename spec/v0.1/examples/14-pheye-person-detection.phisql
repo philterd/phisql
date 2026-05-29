@@ -1,0 +1,8 @@
+-- PhEye (AI/NER) detection: detect person names with the PhEye model and
+-- redact them. LABELS restricts detection to the given entity labels; add
+-- ENDPOINT '<url>' to point at a specific PhEye service. Compiles to
+-- 14-pheye-person-detection.json.
+
+POLICY pheye_person_detection;
+
+DETECT PHEYE LABELS ('PERSON') WITH REDACT;

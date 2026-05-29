@@ -103,23 +103,32 @@ def check_catalog_references_phileas_schema(schema: dict) -> list[str]:
                 f"{filter_def_name}"
             )
 
-    # Strategies
-    base_strategy = defs.get("baseFilterStrategy", {}).get("properties", {})
-    strategy_enum = base_strategy.get("strategy", {}).get("enum", [])
+    # Strategies. Each strategy is validated against its declared Phileas
+    # strategy $def (baseFilterStrategy by default; date-only strategies such as
+    # SHIFT declare dateFilterStrategy, which extends the base strategy).
     strategies = load_yaml(SPEC_DIR / "catalog" / "strategies.yaml")["strategies"]
     for entry in strategies:
+        def_name = entry.get("phileas_strategy_def", "baseFilterStrategy")
+        strategy_def = defs.get(def_name, {}).get("properties", {})
+        if not strategy_def:
+            errors.append(
+                f"strategies.yaml: phileas_strategy_def '{def_name}' "
+                f"(for strategy {entry['name']}) not found in Phileas schema"
+            )
+            continue
+        strategy_enum = strategy_def.get("strategy", {}).get("enum", [])
         if entry["phileas_enum"] not in strategy_enum:
             errors.append(
                 f"strategies.yaml: phileas_enum '{entry['phileas_enum']}' "
-                f"(for strategy {entry['name']}) not in baseFilterStrategy.strategy enum"
+                f"(for strategy {entry['name']}) not in {def_name}.strategy enum"
             )
         for arg in entry.get("args") or []:
             field = arg["phileas_field"]
-            if field not in base_strategy:
+            if field not in strategy_def:
                 errors.append(
                     f"strategies.yaml: arg phileas_field '{field}' "
                     f"(for strategy {entry['name']}, arg {arg['name']}) "
-                    f"not on baseFilterStrategy"
+                    f"not on {def_name}"
                 )
 
     return errors

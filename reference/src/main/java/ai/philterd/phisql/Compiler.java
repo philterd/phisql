@@ -100,6 +100,10 @@ public final class Compiler {
                 compileDeidentify(stmt.deidentifyStmt(), identifiers);
             } else if (stmt.ignoreStmt() != null) {
                 compileIgnore(stmt.ignoreStmt(), identifiers, policyJson);
+            } else if (stmt.defineIdentifierStmt() != null) {
+                compileDefineIdentifier(stmt.defineIdentifierStmt(), identifiers);
+            } else if (stmt.detectStmt() != null) {
+                compileDetect(stmt.detectStmt(), identifiers);
             }
         }
 
@@ -221,6 +225,83 @@ public final class Compiler {
                     ? (ArrayNode) policyJson.get("ignoredPatterns")
                     : policyJson.putArray("ignoredPatterns");
             topLevel.addObject().put("pattern", pattern);
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // DEFINE IDENTIFIER (custom regex identifiers)
+    // ------------------------------------------------------------------
+
+    private void compileDefineIdentifier(PhiSQLParser.DefineIdentifierStmtContext ctx,
+                                         ObjectNode identifiers) {
+        String classification = unquoteString(ctx.classification.getText());
+        String pattern = unquoteString(ctx.pattern.getText());
+
+        ObjectNode strategyJson = buildStrategyObject(ctx.strategyExpr());
+        if (ctx.predicate() != null) {
+            strategyJson.put("conditions", compilePredicate(ctx.predicate()));
+        }
+
+        ArrayNode identifierList = identifiers.has("identifiers")
+                ? (ArrayNode) identifiers.get("identifiers")
+                : identifiers.putArray("identifiers");
+
+        // Reuse an existing entry with this classification if present.
+        ObjectNode entry = null;
+        for (int i = 0; i < identifierList.size(); i++) {
+            ObjectNode candidate = (ObjectNode) identifierList.get(i);
+            if (classification.equals(candidate.path("classification").asText())) {
+                entry = candidate;
+                break;
+            }
+        }
+        if (entry == null) {
+            entry = identifierList.addObject();
+            entry.put("classification", classification);
+        }
+        entry.put("pattern", pattern);
+        if (ctx.groupNumber != null) {
+            entry.put("groupNumber", Integer.parseInt(ctx.groupNumber.getText()));
+        }
+        if (ctx.sensitivity != null) {
+            entry.put("caseSensitive", ctx.sensitivity.getType() == PhiSQLParser.SENSITIVE);
+        }
+
+        ArrayNode strategies = entry.has("identifierFilterStrategies")
+                ? (ArrayNode) entry.get("identifierFilterStrategies")
+                : entry.putArray("identifierFilterStrategies");
+        strategies.add(strategyJson);
+    }
+
+    // ------------------------------------------------------------------
+    // DETECT PHEYE (AI / NER detection)
+    // ------------------------------------------------------------------
+
+    private void compileDetect(PhiSQLParser.DetectStmtContext ctx, ObjectNode identifiers) {
+        ObjectNode strategyJson = buildStrategyObject(ctx.strategyExpr());
+        if (ctx.predicate() != null) {
+            strategyJson.put("conditions", compilePredicate(ctx.predicate()));
+        }
+
+        ArrayNode pheyes = identifiers.has("pheyes")
+                ? (ArrayNode) identifiers.get("pheyes")
+                : identifiers.putArray("pheyes");
+        ObjectNode pheye = pheyes.addObject();
+        pheye.putArray("phEyeFilterStrategies").add(strategyJson);
+
+        boolean hasLabels = ctx.stringList() != null;
+        boolean hasEndpoint = ctx.endpoint != null;
+        if (hasLabels || hasEndpoint) {
+            ObjectNode config = pheye.putObject("phEyeConfiguration");
+            if (hasEndpoint) {
+                config.put("endpoint", unquoteString(ctx.endpoint.getText()));
+            }
+            if (hasLabels) {
+                ArrayNode labels = config.putArray("labels");
+                for (TerminalNode t : ctx.stringList().STRING_LITERAL()) {
+                    labels.add(unquoteString(t.getText()));
+                }
+            }
         }
     }
 

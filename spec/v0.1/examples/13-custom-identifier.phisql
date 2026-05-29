@@ -1,0 +1,8 @@
+-- Custom identifier: define a regex pattern and redact what it matches.
+-- Here, a medical record number (MRN) like "MRN: 12345". Matching is
+-- case-insensitive. Compiles to 13-custom-identifier.json.
+
+POLICY custom_identifier;
+
+DEFINE IDENTIFIER 'MRN' MATCHING '\bMRN[\s:#]*\d{5,}\b' CASE INSENSITIVE
+  WITH REDACT(format='{{{REDACTED-MRN}}}');

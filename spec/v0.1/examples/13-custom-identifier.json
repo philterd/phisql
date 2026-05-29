@@ -1,0 +1,13 @@
+{
+  "identifiers" : {
+    "identifiers" : [ {
+      "classification" : "MRN",
+      "pattern" : "\\bMRN[\\s:#]*\\d{5,}\\b",
+      "caseSensitive" : false,
+      "identifierFilterStrategies" : [ {
+        "strategy" : "REDACT",
+        "redactionFormat" : "{{{REDACTED-MRN}}}"
+      } ]
+    } ]
+  }
+}

@@ -12,6 +12,10 @@
 #   strategies    : list of strategy entries.
 #     name        : the PhiSQL strategy keyword (case-insensitive).
 #     phileas_enum : the value of baseFilterStrategy.strategy in Phileas JSON.
+#     phileas_strategy_def : optional. The Phileas schema $def this strategy and
+#                   its args are validated against. Defaults to baseFilterStrategy.
+#                   Date-only strategies (SHIFT, TRUNCATE_TO_YEAR) set this to
+#                   dateFilterStrategy, which extends the base strategy.
 #     args        : list of allowed named arguments.
 #       name       : PhiSQL argument name (case-insensitive).
 #       phileas_field : the property name on the strategy object.
@@ -86,6 +90,31 @@ strategies:
   - name: TRUNCATE
     phileas_enum: TRUNCATE
     description: Truncate the detected value (e.g., dates to year only).
+
+  - name: TRUNCATE_TO_YEAR
+    phileas_enum: TRUNCATE_TO_YEAR
+    phileas_strategy_def: dateFilterStrategy
+    description: Truncate a detected date to its year. DATE entities only.
+
+  - name: SHIFT
+    phileas_enum: SHIFT
+    phileas_strategy_def: dateFilterStrategy
+    description: >
+      Shift a detected date by a fixed offset, or by a random offset when
+      random=TRUE. DATE entities only.
+    args:
+      - name: days
+        phileas_field: shiftDays
+        type: integer
+      - name: months
+        phileas_field: shiftMonths
+        type: integer
+      - name: years
+        phileas_field: shiftYears
+        type: integer
+      - name: random
+        phileas_field: shiftRandom
+        type: boolean
 
   - name: ABBREVIATE
     phileas_enum: ABBREVIATE
