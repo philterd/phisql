@@ -8,6 +8,33 @@ This project does not yet follow [Semantic Versioning](https://semver.org/) beca
 
 ### Added
 
+- **Discovery query verbs.** Three scan verbs and one query verb were added to the grammar:
+  - `FIND PII IN '<uri>' [WHERE <predicate>]`
+  - `DISCOVER ENTITIES IN '<uri>' [WHERE <predicate>]`
+  - `SCAN IN '<uri>' [WHERE <predicate>]`
+  - `SELECT <projection> FROM <findings-ref> [WHERE ...] [GROUP BY ...] [LIMIT n]`
+  These compile to a separate discovery-query JSON shape (not Phileas JSON). Conforming discovery engines such as Phinder consume the discovery-query JSON.
+- **`IN '<uri>'` clause** in discovery statements, accepting URIs from the schemes declared in `spec/v0.1/catalog/sources.yaml` (S3, GCS, Azure Blob, local filesystem, PostgreSQL, MySQL, Snowflake, BigQuery).
+- **Discovery WHERE predicates** over finding-row columns. Supported forms: `<column> IN ('a', 'b')`, `<column> <op> <literal>`, and `AND`/`OR`/parenthesization.
+- **SELECT projection surface**: column references, `*`, and aggregates (`COUNT`, `AVG`, `SUM`, `MIN`, `MAX`).
+- **`spec/v0.1/catalog/findings.yaml`** documenting the canonical findings table schema (columns, types, filterable subset, groupable subset). Sets `phinder` as the default namespace for the unqualified `findings` reference.
+- **`spec/v0.1/catalog/sources.yaml`** listing the URI schemes recognized in the `IN` clause. Engines that do not support a scheme must reject statements with a clear error rather than silently no-op.
+- **Reserved keywords** added: `FIND`, `PII`, `DISCOVER`, `ENTITIES`, `SCAN`, `IN`, `SELECT`, `FROM`, `BY`, `LIMIT`, `COUNT`, `AVG`, `SUM`, `MIN`, `MAX`. Pre-1.0, breaking changes may land within a minor version (per `CONTRIBUTING.md`'s versioning policy), so these reservations were folded into v0.1 rather than triggering a v0.2 cut.
+- **Five discovery examples** under `spec/v0.1/examples/` covering S3, GCS, Azure Blob, local filesystem, and a `SELECT ... GROUP BY` over the findings store (`15-find-pii-s3`, `16-discover-entities-gcs`, `17-scan-azure-blob`, `18-find-pii-local-filesystem`, `19-select-findings-groupby`).
+- **`columnRef` accepts `CONFIDENCE`** in addition to `ID`, because `CONFIDENCE` is reserved by the redaction predicate but is a valid findings-table column.
+- **Validator check** added: `scripts/validate_spec.py` now walks discovery example JSONs and verifies every column referenced resolves against `findings.yaml`. Catalog well-formedness covers `findings.yaml` and `sources.yaml`.
+
+### Changed
+
+- `CompilerTest` parses every `.phisql` under `spec/v0.1/examples/` but compiles only the redaction subset. The five discovery examples are listed in `DISCOVERY_EXAMPLES_NOT_YET_COMPILED` and skipped explicitly. A discovery compiler will land in a follow-up; the set shrinks as it ships.
+- `ExamplesParseTest` parses all 19 examples (14 redaction + 5 discovery).
+
+### Notes
+
+- The RFC process described in `CONTRIBUTING.md` was intentionally skipped for the discovery additions while the project is still finding its shape. Substantial future grammar changes are expected to go through an RFC. Closes philterd/philterd-website#122.
+
+### Added (v0.1 work, pre-v0.2 cut)
+
 - Date-shifting strategies `SHIFT` and `TRUNCATE_TO_YEAR` (DATE entities only). `SHIFT` accepts `days`, `months`, `years`, and `random` arguments, mapping to `shiftDays`/`shiftMonths`/`shiftYears`/`shiftRandom` on the Phileas `dateFilterStrategy`. Example `12-date-shift`.
 - `DEFINE IDENTIFIER '<classification>' MATCHING '<regex>' [GROUP n] [CASE SENSITIVE | CASE INSENSITIVE] WITH <strategy>` statement for declaring custom regex identifiers inline (previously only referenceable via `IDENTIFIER('name')`, with no way to supply a pattern). Compiles to an entry in the Phileas `identifiers.identifiers` array. Example `13-custom-identifier`.
 - `DETECT PHEYE [LABELS (...)] [ENDPOINT '<url>'] WITH <strategy>` statement for AI/NER detection via PhEye. Compiles to an entry in the Phileas `identifiers.pheyes` array with `phEyeFilterStrategies` and an optional `phEyeConfiguration` (`labels`, `endpoint`). This is the supported way to redact `PERSON` (which the catalog defers as a bare entity because it requires a PhEye block). Example `14-pheye-person-detection`.

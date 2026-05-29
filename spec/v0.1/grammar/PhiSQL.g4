@@ -4,7 +4,14 @@
  * Normative reference. Implementations may generate a parser directly from this file.
  * Reference parser: https://github.com/philterd/phisql.
  *
- * Status: DRAFT. Grammar may change before v1.0.
+ * Status: DRAFT. Grammar may change before v1.0. Pre-1.0, breaking changes
+ * may land within a minor version.
+ *
+ * Discovery query verbs (FIND PII, DISCOVER ENTITIES, SCAN) and a SELECT
+ * projection over a findings store are supported alongside the redaction
+ * statements. See spec/v0.1/catalog/findings.yaml for the findings table
+ * schema and spec/v0.1/catalog/sources.yaml for the supported URI schemes
+ * on the IN clause.
  *
  * Keywords and entity-type identifiers are case-insensitive. User-defined
  * names (policy names, dictionary names, custom-identifier classifications)
@@ -32,6 +39,7 @@ statement
     | ignoreStmt
     | defineIdentifierStmt
     | detectStmt
+    | discoveryStmt
     ;
 
 policyDecl
@@ -75,6 +83,74 @@ detectStmt
       (ENDPOINT endpoint=STRING_LITERAL)?
       WITH strategyExpr
       (WHERE predicate)?
+    ;
+
+// Discovery query verbs. Unlike the redaction statements above, discovery
+// statements do not compile to Phileas JSON. They compile to a discovery-query
+// JSON shape that a discovery engine (such as Phinder) executes against a
+// storage source or a findings store. The findings schema lives in
+// spec/v0.1/catalog/findings.yaml; the column names referenced here must
+// resolve against that catalog when the compiler runs.
+discoveryStmt
+    : FIND PII inClause whereDiscovery?                                       # findPiiStmt
+    | DISCOVER ENTITIES inClause whereDiscovery?                              # discoverEntitiesStmt
+    | SCAN inClause whereDiscovery?                                           # scanStmt
+    | SELECT projectionList FROM findingsRef whereDiscovery? groupByClause? limitClause?  # selectFindingsStmt
+    ;
+
+inClause
+    : IN uri=STRING_LITERAL
+    ;
+
+whereDiscovery
+    : WHERE discoveryPredicate
+    ;
+
+// Predicates over finding-row columns.
+discoveryPredicate
+    : columnRef IN stringList                                                 # inDiscoveryPredicate
+    | columnRef compareOp (STRING_LITERAL | NUMERIC_LITERAL | BOOLEAN_LITERAL) # compareDiscoveryPredicate
+    | '(' discoveryPredicate ')'                                              # parenDiscoveryPredicate
+    | discoveryPredicate (AND | OR) discoveryPredicate                        # logicalDiscoveryPredicate
+    ;
+
+projectionList
+    : projection (',' projection)*
+    ;
+
+projection
+    : '*'                                       # starProjection
+    | aggregate                                 # aggregateProjection
+    | columnRef                                 # columnProjection
+    ;
+
+aggregate
+    : aggFn=(COUNT | AVG | SUM | MIN | MAX) '(' aggArg ')'
+    ;
+
+aggArg
+    : '*'                                       # starAggArg
+    | columnRef                                 # columnAggArg
+    ;
+
+// CONFIDENCE is also accepted because it is a reserved keyword (it appears in
+// the redaction WHERE predicate) but is a valid findings-table column name.
+// Other reserved-word/column overlaps follow the same pattern as they arise.
+columnRef
+    : ID
+    | CONFIDENCE
+    ;
+
+findingsRef
+    : (namespace=ID '.')? table=ID
+    ;
+
+groupByClause
+    : GROUP BY columnRef (',' columnRef)*
+    ;
+
+limitClause
+    : LIMIT NUMERIC_LITERAL
     ;
 
 entityList
@@ -147,7 +223,7 @@ literal
 // Lexer rules
 // ============================================================================
 
-// Statement keywords
+// Statement keywords (redaction)
 POLICY          : 'POLICY' ;
 DESCRIPTION     : 'DESCRIPTION' ;
 REDACT          : 'REDACT' ;
@@ -176,6 +252,23 @@ DETECT          : 'DETECT' ;
 PHEYE           : 'PHEYE' ;
 LABELS          : 'LABELS' ;
 ENDPOINT        : 'ENDPOINT' ;
+
+// Discovery keywords.
+FIND            : 'FIND' ;
+PII             : 'PII' ;
+DISCOVER        : 'DISCOVER' ;
+ENTITIES        : 'ENTITIES' ;
+SCAN            : 'SCAN' ;
+IN              : 'IN' ;
+SELECT          : 'SELECT' ;
+FROM            : 'FROM' ;
+BY              : 'BY' ;
+LIMIT           : 'LIMIT' ;
+COUNT           : 'COUNT' ;
+AVG             : 'AVG' ;
+SUM             : 'SUM' ;
+MIN             : 'MIN' ;
+MAX             : 'MAX' ;
 
 // Custom-identifier reference keyword.
 // "IDENTIFIER" is a PhiSQL keyword, not a generic identifier token name.

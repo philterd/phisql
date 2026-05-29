@@ -1,0 +1,107 @@
+# PhiSQL v0.1 findings table schema.
+#
+# Defines the columns and types of a finding row produced by a discovery
+# scan. The `SELECT ... FROM findings` form in PhiSQL projects, filters,
+# and aggregates over these columns; the `WHERE` clause on `FIND PII`,
+# `DISCOVER ENTITIES`, and `SCAN` filters discovered entities using the
+# same column names before they reach the findings store.
+#
+# Conforming discovery engines (e.g., Phinder) must surface at least the
+# columns marked `required: true`. Engines may surface additional columns
+# beyond what this catalog declares; PhiSQL parsers should treat unknown
+# columns as opaque (parse-only, no semantic validation).
+#
+# Status: DRAFT. Subject to change before v1.0.
+
+version: v0.1
+
+table:
+  name: findings
+  default_namespace: phinder
+
+columns:
+  - name: finding_id
+    type: string
+    required: true
+    description: >-
+      Stable identifier for this finding within the findings store. Engines
+      should make this unique per (scan_id, source_uri, offset) tuple so a
+      finding can be re-fetched later for review.
+  - name: scan_id
+    type: string
+    required: true
+    description: >-
+      Identifier of the discovery scan that produced this finding.
+  - name: scan_date
+    type: timestamp
+    required: true
+    description: >-
+      ISO 8601 UTC timestamp at which the scan that produced this finding
+      began. Used in time-range filters such as `WHERE scan_date > '...'`.
+  - name: source_uri
+    type: string
+    required: true
+    description: >-
+      Fully qualified source URI the finding was discovered in (the value of
+      the IN clause that initiated the scan, or a more specific child path).
+  - name: path
+    type: string
+    required: true
+    description: >-
+      Path within the source URI where the finding lives. For object stores
+      this is the object key; for filesystems, the absolute path; for
+      databases, a `schema.table.column` triple.
+  - name: entity_type
+    type: string
+    required: true
+    description: >-
+      Catalog entity type detected (e.g., SSN, CREDIT_CARD, EMAIL_ADDRESS).
+      Must be a name from entity-types.yaml or a user-defined identifier
+      classification.
+  - name: confidence
+    type: number
+    required: true
+    description: >-
+      Detector confidence in the range [0.0, 1.0].
+  - name: risk_score
+    type: number
+    required: false
+    description: >-
+      Engine-assigned risk score in the range [0, 10]. Optional; engines
+      that do not assign a risk score should omit the column or set it to
+      null rather than zero.
+  - name: snippet
+    type: string
+    required: false
+    description: >-
+      Short surrounding text or value preview at the discovery site, suitable
+      for human review. Engines that operate on opaque binary sources may
+      omit this column.
+  - name: offset
+    type: integer
+    required: false
+    description: >-
+      Byte offset of the finding within the source object. For non-text
+      sources (databases, structured records) this column should be omitted
+      and locating information should appear in `path`.
+
+filterable_columns:
+  # Columns that may appear on the left-hand side of a `WHERE` predicate.
+  # This is a subset of `columns` because some columns (snippet, finding_id)
+  # are not meaningful filter targets.
+  - scan_id
+  - scan_date
+  - source_uri
+  - path
+  - entity_type
+  - confidence
+  - risk_score
+  - offset
+
+groupable_columns:
+  # Columns that may appear in a `GROUP BY` clause.
+  - scan_id
+  - scan_date
+  - source_uri
+  - path
+  - entity_type

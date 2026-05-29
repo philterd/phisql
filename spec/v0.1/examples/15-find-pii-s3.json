@@ -1,0 +1,21 @@
+{
+  "operation": "FIND_PII",
+  "source": {
+    "uri": "s3://prod-data/customers/",
+    "scheme": "s3"
+  },
+  "where": {
+    "type": "and",
+    "left": {
+      "type": "in",
+      "column": "entity_type",
+      "values": ["SSN", "CREDIT_CARD"]
+    },
+    "right": {
+      "type": "compare",
+      "column": "risk_score",
+      "op": ">",
+      "value": 7
+    }
+  }
+}

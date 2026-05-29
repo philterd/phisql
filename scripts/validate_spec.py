@@ -3,17 +3,20 @@
 Validate the PhiSQL v0.1 spec artifacts against each other and against the
 canonical Phileas policy schema.
 
-Three checks run, in order:
+Four checks run, in order:
 
 1. Catalog YAML files are well-formed and internally consistent.
 2. Every Phileas field referenced by the catalogs exists in the canonical
    Phileas JSON schema. This is the load-bearing assertion that PhiSQL
-   compiles to valid Phileas JSON.
-3. Every example JSON file under spec/v0.1/examples/ validates against the
-   canonical Phileas schema.
+   compiles to valid Phileas JSON for the redaction subset.
+3. Every redaction-example JSON file under spec/v0.1/examples/ validates
+   against the canonical Phileas schema. Discovery examples (15+) target a
+   separate discovery-query JSON shape and are skipped here.
+4. Discovery example JSON files are well-formed and reference column names
+   that resolve against the findings catalog.
 
 CI runs this script on every push and pull request. PRs that break the
-relationship with the Phileas schema fail here.
+relationship with the Phileas schema or the findings catalog fail here.
 """
 
 from __future__ import annotations
@@ -34,6 +37,10 @@ SCHEMA_URL = (
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SPEC_DIR = REPO_ROOT / "spec" / "v0.1"
+
+# Discovery examples target a separate JSON shape and are validated by
+# check_discovery_examples() rather than check_examples_validate().
+DISCOVERY_EXAMPLE_PREFIXES = ("15-", "16-", "17-", "18-", "19-")
 
 
 def fetch_schema() -> dict:
@@ -58,6 +65,8 @@ def check_catalog_well_formed() -> list[str]:
         "keywords.yaml": ["version", "keywords"],
         "predicates.yaml": ["version", "predicates"],
         "policy.yaml": ["version", "policy_name", "policy_declaration", "consistency_rule"],
+        "findings.yaml": ["version", "table", "columns", "filterable_columns", "groupable_columns"],
+        "sources.yaml": ["version", "schemes"],
     }
     for name, keys in required.items():
         path = SPEC_DIR / "catalog" / name
@@ -135,17 +144,77 @@ def check_catalog_references_phileas_schema(schema: dict) -> list[str]:
 
 
 def check_examples_validate(schema: dict) -> list[str]:
-    """Every example JSON file must validate against the Phileas schema."""
+    """Redaction example JSONs must validate against the Phileas schema."""
     errors = []
     validator = Draft202012Validator(schema)
     examples_dir = SPEC_DIR / "examples"
     for path in sorted(examples_dir.glob("*.json")):
+        if path.name.startswith(DISCOVERY_EXAMPLE_PREFIXES):
+            continue
         data = json.loads(path.read_text())
         problems = sorted(validator.iter_errors(data), key=lambda e: e.path)
         for problem in problems[:5]:
             location = "/".join(str(p) for p in problem.absolute_path) or "(root)"
             errors.append(f"examples/{path.name}: {location}  {problem.message}")
     return errors
+
+
+def check_discovery_examples() -> list[str]:
+    """Discovery example JSONs must be well-formed and reference real columns.
+
+    The findings catalog declares the canonical column set. Every column name
+    that appears in a projection, predicate, or group_by must resolve against
+    that set; an unknown column is a discovery-compiler bug.
+    """
+    errors = []
+    findings = load_yaml(SPEC_DIR / "catalog" / "findings.yaml")
+    known_columns = {col["name"] for col in findings["columns"]}
+    known_operations = {"FIND_PII", "DISCOVER_ENTITIES", "SCAN", "SELECT_FINDINGS"}
+
+    examples_dir = SPEC_DIR / "examples"
+    for path in sorted(examples_dir.glob("*.json")):
+        if not path.name.startswith(DISCOVERY_EXAMPLE_PREFIXES):
+            continue
+        data = json.loads(path.read_text())
+        op = data.get("operation")
+        if op not in known_operations:
+            errors.append(
+                f"examples/{path.name}: unknown operation '{op}' "
+                f"(expected one of {sorted(known_operations)})"
+            )
+            continue
+
+        for col in _columns_referenced(data):
+            if col not in known_columns and col != "*":
+                errors.append(
+                    f"examples/{path.name}: column '{col}' not defined in findings.yaml"
+                )
+    return errors
+
+
+def _columns_referenced(node: Any) -> list[str]:
+    """Walk a discovery-query JSON node and return every column name it touches."""
+    out: list[str] = []
+    if isinstance(node, dict):
+        if node.get("type") == "column" and "name" in node:
+            out.append(node["name"])
+        if node.get("type") == "aggregate" and "argument" in node:
+            out.append(node["argument"])
+        if "column" in node and isinstance(node["column"], str):
+            out.append(node["column"])
+        for key in ("projection", "group_by"):
+            if key in node:
+                out.extend(_columns_referenced(node[key]))
+        for key in ("where", "left", "right"):
+            if key in node:
+                out.extend(_columns_referenced(node[key]))
+    elif isinstance(node, list):
+        for item in node:
+            if isinstance(item, str):
+                out.append(item)
+            else:
+                out.extend(_columns_referenced(item))
+    return out
 
 
 def section(title: str) -> None:
@@ -170,10 +239,16 @@ def main() -> int:
         all_errors.append(("references", errors))
         print()
 
-    section("3. Examples validate against Phileas schema")
+    section("3. Redaction examples validate against Phileas schema")
     errors = check_examples_validate(schema)
     print("PASS" if not errors else f"FAIL ({len(errors)})")
     all_errors.append(("examples", errors))
+    print()
+
+    section("4. Discovery examples reference known findings columns")
+    errors = check_discovery_examples()
+    print("PASS" if not errors else f"FAIL ({len(errors)})")
+    all_errors.append(("discovery", errors))
     print()
 
     has_errors = any(errors for _, errors in all_errors)

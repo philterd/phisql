@@ -1,0 +1,7 @@
+{
+  "operation": "SCAN",
+  "source": {
+    "uri": "azure://acmestorage.uploads/customer-files/",
+    "scheme": "azure"
+  }
+}

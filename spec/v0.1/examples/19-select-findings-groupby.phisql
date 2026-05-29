@@ -1,0 +1,16 @@
+-- Discovery: query historical findings from the Phinder findings store,
+-- counting occurrences of each entity type per path. Demonstrates SELECT
+-- projection over findings, the COUNT(*) aggregate, a string-comparison
+-- WHERE filter, and GROUP BY.
+--
+-- The findings table schema is normative; columns referenced here must
+-- match spec/v0.1/catalog/findings.yaml. NOW() and INTERVAL arithmetic are
+-- intentionally not part of v0.1; the example uses an absolute date so the
+-- compiled JSON is deterministic.
+--
+-- Compiles to the JSON in 19-select-findings-groupby.json.
+
+SELECT path, entity_type, COUNT(*)
+  FROM phinder.findings
+  WHERE scan_date > '2026-04-01'
+  GROUP BY path, entity_type;

@@ -1,0 +1,6 @@
+-- Discovery: scan an Azure Blob Storage container for all PII. No WHERE
+-- clause is the broadest possible scan; the engine surfaces every entity
+-- it can detect with the configured detectors.
+-- Compiles to the JSON in 17-scan-azure-blob.json.
+
+SCAN IN 'azure://acmestorage.uploads/customer-files/';
