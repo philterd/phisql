@@ -1,0 +1,12 @@
+{
+  "identifiers": {
+    "creditCard": {
+      "creditCardFilterStrategies": [
+        { "strategy": "CRYPTO_REPLACE" }
+      ]
+    }
+  },
+  "crypto": {
+    "key": "env:CRYPTO_KEY"
+  }
+}

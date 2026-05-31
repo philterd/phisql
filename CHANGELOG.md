@@ -8,6 +8,8 @@ This project does not yet follow [Semantic Versioning](https://semver.org/) beca
 
 ### Added
 
+- `CONFIGURE CRYPTO KEY FROM ENV '<name>'` and `CONFIGURE FPE KEY FROM ENV '<name>' TWEAK FROM ENV '<name>'` statements for supplying the policy-level secrets required by the `ENCRYPT` (`CRYPTO_REPLACE`) and `FPE_ENCRYPT` (`FPE_ENCRYPT_REPLACE`) strategies, which previously had no way to be configured in PhiSQL. Secrets are referenced by environment-variable name only — never inlined — and compile to the Phileas `crypto`/`fpe` blocks using the `env:` prefix (e.g. `"crypto": { "key": "env:CRYPTO_KEY" }`). Example `15-crypto-encryption`.
+
 - Date-shifting strategies `SHIFT` and `TRUNCATE_TO_YEAR` (DATE entities only). `SHIFT` accepts `days`, `months`, `years`, and `random` arguments, mapping to `shiftDays`/`shiftMonths`/`shiftYears`/`shiftRandom` on the Phileas `dateFilterStrategy`. Example `12-date-shift`.
 - `DEFINE IDENTIFIER '<classification>' MATCHING '<regex>' [GROUP n] [CASE SENSITIVE | CASE INSENSITIVE] WITH <strategy>` statement for declaring custom regex identifiers inline (previously only referenceable via `IDENTIFIER('name')`, with no way to supply a pattern). Compiles to an entry in the Phileas `identifiers.identifiers` array. Example `13-custom-identifier`.
 - `DETECT PHEYE [LABELS (...)] [ENDPOINT '<url>'] WITH <strategy>` statement for AI/NER detection via PhEye. Compiles to an entry in the Phileas `identifiers.pheyes` array with `phEyeFilterStrategies` and an optional `phEyeConfiguration` (`labels`, `endpoint`). This is the supported way to redact `PERSON` (which the catalog defers as a bare entity because it requires a PhEye block). Example `14-pheye-person-detection`.

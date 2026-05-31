@@ -16,6 +16,7 @@
 document         = { statement , ";" } ;
 
 statement        = policy decl
+                 | configure stmt
                  | redact stmt
                  | deidentify stmt
                  | ignore stmt
@@ -23,6 +24,11 @@ statement        = policy decl
                  | detect stmt ;
 
 policy decl      = "POLICY" , id , [ "DESCRIPTION" , string literal ] ;
+
+configure stmt   = "CONFIGURE"
+                 , ( "CRYPTO" , "KEY" , "FROM" , "ENV" , string literal
+                   | "FPE" , "KEY" , "FROM" , "ENV" , string literal
+                         , "TWEAK" , "FROM" , "ENV" , string literal ) ;
 
 redact stmt      = "REDACT" , entity list
                  , [ "WITH" , strategy expr ]

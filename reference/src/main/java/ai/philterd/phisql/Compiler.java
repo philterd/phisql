@@ -104,6 +104,8 @@ public final class Compiler {
                 compileDefineIdentifier(stmt.defineIdentifierStmt(), identifiers);
             } else if (stmt.detectStmt() != null) {
                 compileDetect(stmt.detectStmt(), identifiers);
+            } else if (stmt.configureStmt() != null) {
+                compileConfigure(stmt.configureStmt(), policyJson);
             }
         }
 
@@ -114,6 +116,22 @@ public final class Compiler {
     /** Backwards-compatible single-arg form (no expected name). */
     public CompileResult compile(PhiSQLParser.DocumentContext document) {
         return compile(document, null);
+    }
+
+    /**
+     * Compiles a CONFIGURE statement into the policy's top-level {@code crypto} or {@code fpe} block.
+     * The supplied environment-variable name is written with the {@code env:} prefix that Phileas
+     * resolves at runtime, so the actual secret is never stored in the policy.
+     */
+    private void compileConfigure(PhiSQLParser.ConfigureStmtContext ctx, ObjectNode policyJson) {
+        if (ctx.cryptoKeyEnv != null) {
+            policyJson.putObject("crypto")
+                    .put("key", "env:" + unquoteString(ctx.cryptoKeyEnv.getText()));
+        } else {
+            ObjectNode fpe = policyJson.putObject("fpe");
+            fpe.put("key", "env:" + unquoteString(ctx.fpeKeyEnv.getText()));
+            fpe.put("tweak", "env:" + unquoteString(ctx.fpeTweakEnv.getText()));
+        }
     }
 
     /**

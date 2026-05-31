@@ -19,20 +19,26 @@ keywords:
   - AS
   - CASE
   - CONFIDENCE
+  - CONFIGURE
+  - CRYPTO
   - DEFINE
   - DEIDENTIFY
   - DESCRIPTION
   - DETECT
   - ENCRYPT
   - ENDPOINT
+  - ENV
   - FALSE
   - FOR
+  - FPE
   - FPE_ENCRYPT
+  - FROM
   - GROUP
   - HASH_SHA256
   - IDENTIFIER
   - IGNORE
   - INSENSITIVE
+  - KEY
   - LABELS
   - LAST_4
   - MASK
@@ -50,5 +56,6 @@ keywords:
   - TRUE
   - TRUNCATE
   - TRUNCATE_TO_YEAR
+  - TWEAK
   - WHERE
   - WITH

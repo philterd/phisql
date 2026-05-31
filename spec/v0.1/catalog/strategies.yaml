@@ -73,11 +73,16 @@ strategies:
 
   - name: ENCRYPT
     phileas_enum: CRYPTO_REPLACE
-    description: Encrypt the detected value with the policy's crypto configuration.
+    description: >-
+      Encrypt the detected value with AES-GCM. Configure the key with
+      "CONFIGURE CRYPTO KEY FROM ENV '<name>'".
 
   - name: FPE_ENCRYPT
     phileas_enum: FPE_ENCRYPT_REPLACE
-    description: Format-preserving encryption (e.g., SSNs encrypted but still look like SSNs).
+    description: >-
+      Format-preserving encryption (e.g., SSNs encrypted but still look like SSNs).
+      Configure the key and tweak with
+      "CONFIGURE FPE KEY FROM ENV '<name>' TWEAK FROM ENV '<name>'".
 
   - name: HASH_SHA256
     phileas_enum: HASH_SHA256_REPLACE

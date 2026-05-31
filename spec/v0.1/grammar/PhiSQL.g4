@@ -27,6 +27,7 @@ document
 
 statement
     : policyDecl
+    | configureStmt
     | redactStmt
     | deidentifyStmt
     | ignoreStmt
@@ -36,6 +37,15 @@ statement
 
 policyDecl
     : POLICY policyName=ID (DESCRIPTION description=STRING_LITERAL)?
+    ;
+
+// Configures the policy-level secrets used by the encryption strategies. Secrets are always read
+// from an environment variable at runtime (never stored inline in the policy).
+configureStmt
+    : CONFIGURE
+      ( CRYPTO KEY FROM ENV cryptoKeyEnv=STRING_LITERAL
+      | FPE KEY FROM ENV fpeKeyEnv=STRING_LITERAL TWEAK FROM ENV fpeTweakEnv=STRING_LITERAL
+      )
     ;
 
 redactStmt
@@ -150,6 +160,13 @@ literal
 // Statement keywords
 POLICY          : 'POLICY' ;
 DESCRIPTION     : 'DESCRIPTION' ;
+CONFIGURE       : 'CONFIGURE' ;
+CRYPTO          : 'CRYPTO' ;
+FPE             : 'FPE' ;
+KEY             : 'KEY' ;
+TWEAK           : 'TWEAK' ;
+FROM            : 'FROM' ;
+ENV             : 'ENV' ;
 REDACT          : 'REDACT' ;
 DEIDENTIFY      : 'DEIDENTIFY' ;
 IGNORE          : 'IGNORE' ;
