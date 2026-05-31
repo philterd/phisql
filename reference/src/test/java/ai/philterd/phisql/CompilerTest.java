@@ -26,16 +26,24 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
- * Compiles every example {@code .phisql} file under {@code spec/v0.1/examples/}
- * and verifies the output matches the corresponding {@code .json} file. This
- * is the load-bearing assertion that the compiler stays in sync with the spec
- * examples: any divergence fails the build.
+ * Compiles every redaction example {@code .phisql} file under
+ * {@code spec/v0.1/examples/} and verifies the output matches the
+ * corresponding {@code .json} file. This is the load-bearing assertion that
+ * the compiler stays in sync with the spec examples: any divergence fails
+ * the build.
+ *
+ * <p>Discovery examples do not compile to Phileas JSON and are not yet
+ * handled by this compiler. They are listed in
+ * {@link #DISCOVERY_EXAMPLES_NOT_YET_COMPILED} so the test skips them
+ * explicitly rather than implicitly. When the discovery compiler lands, the
+ * set shrinks; new redaction examples are automatically picked up.
  */
 class CompilerTest {
 
@@ -44,6 +52,14 @@ class CompilerTest {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
+    private static final Set<String> DISCOVERY_EXAMPLES_NOT_YET_COMPILED = Set.of(
+            "15-find-pii-s3.phisql",
+            "16-discover-entities-gcs.phisql",
+            "17-scan-azure-blob.phisql",
+            "18-find-pii-local-filesystem.phisql",
+            "19-select-findings-groupby.phisql"
+    );
+
     @TestFactory
     Stream<DynamicTest> everyExampleCompilesToExpectedJson() throws IOException {
         Compiler compiler = new Compiler();
@@ -51,6 +67,7 @@ class CompilerTest {
         try (Stream<Path> entries = Files.list(EXAMPLES_DIR)) {
             sources = entries
                     .filter(p -> p.getFileName().toString().endsWith(".phisql"))
+                    .filter(p -> !DISCOVERY_EXAMPLES_NOT_YET_COMPILED.contains(p.getFileName().toString()))
                     .sorted()
                     .toList();
         }

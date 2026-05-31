@@ -17,18 +17,24 @@ keywords:
   - ABBREVIATE
   - AND
   - AS
+  - AVG
+  - BY
   - CASE
   - CONFIDENCE
   - CONFIGURE
+  - COUNT
   - CRYPTO
   - DEFINE
   - DEIDENTIFY
   - DESCRIPTION
   - DETECT
+  - DISCOVER
   - ENCRYPT
   - ENDPOINT
+  - ENTITIES
   - ENV
   - FALSE
+  - FIND
   - FOR
   - FPE
   - FPE_ENCRYPT
@@ -37,21 +43,29 @@ keywords:
   - HASH_SHA256
   - IDENTIFIER
   - IGNORE
+  - IN
   - INSENSITIVE
   - KEY
   - LABELS
   - LAST_4
+  - LIMIT
   - MASK
   - MATCHING
+  - MAX
+  - MIN
   - OR
   - PATTERN
   - PHEYE
+  - PII
   - POLICY
   - RANDOM_REPLACE
   - REDACT
+  - SCAN
+  - SELECT
   - SENSITIVE
   - SHIFT
   - STATIC_REPLACE
+  - SUM
   - TERMS
   - TRUE
   - TRUNCATE

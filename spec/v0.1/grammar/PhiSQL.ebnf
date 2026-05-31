@@ -6,7 +6,11 @@
  * a tool-independent presentation for human readers and for implementations
  * that prefer to consume EBNF.
  *
- * Status: DRAFT. Grammar may change before v1.0.
+ * Status: DRAFT. Grammar may change before v1.0. Pre-1.0, breaking changes
+ * may land within a minor version.
+ *
+ * Covers redaction statements and discovery query verbs (FIND PII,
+ * DISCOVER ENTITIES, SCAN) plus a SELECT projection over a findings store.
  *
  * Keywords and entity-type identifiers are case-insensitive. User-defined
  * names (policy names, dictionary names, custom-identifier classifications)
@@ -21,7 +25,8 @@ statement        = policy decl
                  | deidentify stmt
                  | ignore stmt
                  | define identifier stmt
-                 | detect stmt ;
+                 | detect stmt
+                 | discovery stmt ;
 
 policy decl      = "POLICY" , id , [ "DESCRIPTION" , string literal ] ;
 
@@ -57,6 +62,43 @@ detect stmt      = "DETECT" , "PHEYE"
                  , [ "ENDPOINT" , string literal ]
                  , "WITH" , strategy expr
                  , [ "WHERE" , predicate ] ;
+
+discovery stmt   = ( "FIND" , "PII" , in clause , [ where discovery ] )
+                 | ( "DISCOVER" , "ENTITIES" , in clause , [ where discovery ] )
+                 | ( "SCAN" , in clause , [ where discovery ] )
+                 | ( "SELECT" , projection list , "FROM" , findings ref
+                   , [ where discovery ]
+                   , [ group by clause ]
+                   , [ limit clause ] ) ;
+
+in clause        = "IN" , string literal ;
+
+where discovery  = "WHERE" , discovery predicate ;
+
+discovery predicate
+                 = ( column ref , "IN" , string list )
+                 | ( column ref , compare op , ( string literal | numeric literal | boolean literal ) )
+                 | ( "(" , discovery predicate , ")" )
+                 | ( discovery predicate , ( "AND" | "OR" ) , discovery predicate ) ;
+
+projection list  = projection , { "," , projection } ;
+
+projection       = "*"
+                 | aggregate
+                 | column ref ;
+
+aggregate        = ( "COUNT" | "AVG" | "SUM" | "MIN" | "MAX" )
+                 , "(" , ( "*" | column ref ) , ")" ;
+
+(* CONFIDENCE is reserved by the redaction predicate but is a valid column
+   name in the findings table, so column ref accepts both forms. *)
+column ref       = id | "CONFIDENCE" ;
+
+findings ref     = [ id , "." ] , id ;
+
+group by clause  = "GROUP" , "BY" , column ref , { "," , column ref } ;
+
+limit clause     = "LIMIT" , numeric literal ;
 
 entity list      = entity type , { "," , entity type } ;
 

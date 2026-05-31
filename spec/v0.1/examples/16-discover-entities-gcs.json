@@ -1,0 +1,13 @@
+{
+  "operation": "DISCOVER_ENTITIES",
+  "source": {
+    "uri": "gs://analytics-exports/2026/",
+    "scheme": "gs"
+  },
+  "where": {
+    "type": "compare",
+    "column": "confidence",
+    "op": ">",
+    "value": 0.9
+  }
+}

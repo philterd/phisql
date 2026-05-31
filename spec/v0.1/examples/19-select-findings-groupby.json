@@ -1,0 +1,19 @@
+{
+  "operation": "SELECT_FINDINGS",
+  "findings_ref": {
+    "namespace": "phinder",
+    "table": "findings"
+  },
+  "projection": [
+    {"type": "column", "name": "path"},
+    {"type": "column", "name": "entity_type"},
+    {"type": "aggregate", "function": "COUNT", "argument": "*"}
+  ],
+  "where": {
+    "type": "compare",
+    "column": "scan_date",
+    "op": ">",
+    "value": "2026-04-01"
+  },
+  "group_by": ["path", "entity_type"]
+}

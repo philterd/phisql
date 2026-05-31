@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Verifies the v0.1 policy-naming rule defined in spec/v0.1/catalog/policy.yaml:
+ * Verifies the policy-naming rule defined in spec/v0.1/catalog/policy.yaml:
  *
  * <ul>
  *   <li>POLICY declaration is optional.</li>

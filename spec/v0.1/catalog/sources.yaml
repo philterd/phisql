@@ -1,0 +1,75 @@
+# PhiSQL v0.1 discovery source catalog.
+#
+# Lists the URI schemes recognized in the IN clause of discovery statements
+# (FIND PII IN '<uri>', DISCOVER ENTITIES IN '<uri>', SCAN IN '<uri>').
+#
+# Conforming discovery engines are not required to support every scheme; an
+# engine that does not recognize a scheme must reject the statement with a
+# clear error rather than silently treat it as a no-op. PhiSQL parsers are
+# expected to syntactically accept any scheme present in this catalog and
+# defer execution-time validation to the engine.
+#
+# Status: DRAFT. Subject to change before v1.0.
+
+version: v0.1
+
+schemes:
+  - scheme: s3
+    label: Amazon S3
+    uri_template: "s3://<bucket>/<prefix>"
+    description: >-
+      Amazon S3 objects. The bucket is the URI host; the prefix is the URI
+      path. A trailing slash on the prefix scans the entire prefix.
+    example: "s3://prod-data/customers/"
+
+  - scheme: gs
+    label: Google Cloud Storage
+    uri_template: "gs://<bucket>/<prefix>"
+    description: >-
+      Google Cloud Storage objects. Mirrors the S3 layout.
+    example: "gs://analytics-exports/2026/"
+
+  - scheme: azure
+    label: Azure Blob Storage
+    uri_template: "azure://<account>.<container>/<prefix>"
+    description: >-
+      Azure Blob Storage objects. The host carries the storage account and
+      container; the path is the blob prefix.
+    example: "azure://acmestorage.uploads/customer-files/"
+
+  - scheme: file
+    label: Local filesystem
+    uri_template: "file://<absolute-path>"
+    description: >-
+      Local filesystem. Absolute paths only; relative paths are rejected by
+      conforming engines.
+    example: "file:///mnt/exports/intake/"
+
+  - scheme: postgres
+    label: PostgreSQL
+    uri_template: "postgres://<host>[:<port>]/<database>[?schema=<schema>&table=<table>]"
+    description: >-
+      A PostgreSQL database. The path component selects the database; query
+      parameters narrow the scan to a schema or a specific table.
+    example: "postgres://warehouse.internal/customer_db?schema=public&table=orders"
+
+  - scheme: mysql
+    label: MySQL
+    uri_template: "mysql://<host>[:<port>]/<database>[?table=<table>]"
+    description: >-
+      A MySQL database. Same pattern as postgres but without a schema layer.
+    example: "mysql://reporting.internal/analytics?table=events"
+
+  - scheme: snowflake
+    label: Snowflake
+    uri_template: "snowflake://<account>/<database>.<schema>[.<table>]"
+    description: >-
+      A Snowflake table or schema. The account is the URI host.
+    example: "snowflake://xy12345/PROD.RAW.CUSTOMERS"
+
+  - scheme: bigquery
+    label: Google BigQuery
+    uri_template: "bigquery://<project>/<dataset>[.<table>]"
+    description: >-
+      A BigQuery dataset or table.
+    example: "bigquery://acme-prod/analytics.events"

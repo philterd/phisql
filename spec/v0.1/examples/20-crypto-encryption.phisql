@@ -1,6 +1,6 @@
 -- AES-GCM encryption (CRYPTO_REPLACE). The encryption key is read from an
 -- environment variable at runtime via CONFIGURE ... FROM ENV, so the secret is
--- never stored in the policy. Compiles to 15-crypto-encryption.json.
+-- never stored in the policy. Compiles to 20-crypto-encryption.json.
 
 POLICY crypto_encryption;
 

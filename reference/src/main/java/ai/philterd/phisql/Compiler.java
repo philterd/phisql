@@ -34,6 +34,13 @@ import java.util.Locale;
  * <p>The compiler is driven by {@link Catalog}, which loads the
  * spec/v0.1/catalog/*.yaml files. Translation rules are defined by those
  * files; this class implements the traversal.
+ *
+ * <p><b>Scope.</b> This compiler targets the redaction subset of PhiSQL
+ * (REDACT, DEIDENTIFY, IGNORE, DEFINE IDENTIFIER, DETECT PHEYE) and emits
+ * Phileas JSON. Discovery statements (FIND PII, DISCOVER ENTITIES, SCAN,
+ * SELECT FROM findings) parse successfully but are silently ignored by this
+ * compiler; they target a separate discovery-query JSON schema documented in
+ * the spec examples, and a discovery compiler will land in a follow-up.
  */
 public final class Compiler {
 
@@ -61,7 +68,8 @@ public final class Compiler {
      * Compiles PhiSQL from a file. The policy name is the file's basename
      * (with {@code .phisql} stripped). If the file contains a {@code POLICY}
      * declaration, its name must match the basename after normalization
-     * (hyphens and underscores are treated as equivalent).
+     * (hyphens and underscores are treated as equivalent). Defined in
+     * spec/v0.1/catalog/policy.yaml.
      *
      * @throws CompileException on a POLICY/filename mismatch.
      */
@@ -137,7 +145,7 @@ public final class Compiler {
     /**
      * Resolves the policy name from the expected name (typically a filename
      * basename) and the declared name (from the POLICY statement). Implements
-     * the v0.1 policy-naming rule defined in spec/v0.1/catalog/policy.yaml.
+     * the policy-naming rule defined in spec/v0.1/catalog/policy.yaml.
      */
     private static String resolvePolicyName(String expected, String declared) {
         if (expected != null && declared != null) {

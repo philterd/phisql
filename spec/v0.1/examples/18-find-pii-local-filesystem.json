@@ -1,0 +1,12 @@
+{
+  "operation": "FIND_PII",
+  "source": {
+    "uri": "file:///mnt/exports/intake/",
+    "scheme": "file"
+  },
+  "where": {
+    "type": "in",
+    "column": "entity_type",
+    "values": ["PATIENT_ID", "EMAIL_ADDRESS", "PHONE_NUMBER"]
+  }
+}
