@@ -17,18 +17,20 @@ The schema is versioned. The version appears both in the schema's `$id` URL and 
 
 There is a one-to-one relationship between a Phileas release and the schema version it understands: a given build of Phileas supports exactly one schema version, the version of the schema bundled with that build. Any backward-incompatible change to the schema is a new version.
 
-This repository is the canonical home of the schema: each version is authored under `schema/<version>/schema.json` (for example, [`1.0.0/schema.json`](1.0.0/schema.json)). It is published to `https://philterd.ai/schemas/redaction-policy/<version>/schema.json`, which serves the same file for editor and runtime consumption. Phileas consumes the published copy at build time (the version is the `redaction.policy.schema.version` Maven property in its `pom.xml`) and embeds it in the jar, so the Phileas runtime reads the same schema it was built against.
+This repository is the canonical home of the schema: each version is authored under `schema/<version>/schema.json` (for example, [`1.0.0/schema.json`](1.0.0/schema.json)). It is published to `https://philterd.ai/schemas/redaction-policy/<version>/schema.json`, which serves the same file for editor consumption. At runtime the schema travels in the `ai.philterd:phisql` jar, which bundles it as a resource; Phileas and other consumers read it from there (see [Reading the schema from Java](#reading-the-schema-from-java)).
 
-## Reading the supported version from Phileas
+## Reading the schema from Java
 
-The version is exposed at runtime through the `ai.philterd.phileas.policy.PolicySchema` API, which reads the schema embedded in the jar:
+The `ai.philterd:phisql` reference jar bundles this schema as a resource and exposes it through the `ai.philterd.phisql.PolicySchema` API, so any project that depends on the jar can read the schema without checking out this repository or fetching it over the network:
 
 ```java
-import ai.philterd.phileas.policy.PolicySchema;
+import ai.philterd.phisql.PolicySchema;
 
 String version = PolicySchema.getSupportedSchemaVersion(); // e.g. "1.0.0"
 String schema  = PolicySchema.getSchema();                 // the full schema JSON
 ```
+
+The bundled version is selected by the `redaction.policy.schema.version` Maven property in [`reference/pom.xml`](../reference/pom.xml).
 
 ## Editor Support
 
