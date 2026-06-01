@@ -4,7 +4,7 @@
 # baseFilterStrategy.strategy enum value and declares the allowed named
 # arguments. This catalog is the source of truth for strategies.
 #
-# Status: DRAFT. Subject to change before v1.0.
+# Status: Stable (v1.0).
 #
 # Schema:
 #   version       : PhiSQL spec version this catalog targets.
@@ -120,6 +120,13 @@ strategies:
       - name: random
         phileas_field: shiftRandom
         type: boolean
+
+  - name: RELATIVE
+    phileas_enum: RELATIVE
+    phileas_strategy_def: dateFilterStrategy
+    description: >-
+      Replace a detected date with a date expressed relative to the current
+      date. DATE entities only.
 
   - name: ABBREVIATE
     phileas_enum: ABBREVIATE

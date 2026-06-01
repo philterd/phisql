@@ -1,0 +1,10 @@
+-- Section redaction: redact everything between a start and end regex pattern.
+-- Useful for stripping bounded blocks (signatures, key material, headers).
+-- Compiles to 23-section-redaction.json.
+
+POLICY section_redaction;
+
+DEFINE SECTION
+  START '-----BEGIN PRIVATE-----'
+  END '-----END PRIVATE-----'
+  WITH REDACT;

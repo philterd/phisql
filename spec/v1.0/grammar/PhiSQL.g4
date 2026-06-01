@@ -4,8 +4,9 @@
  * Normative reference. Implementations may generate a parser directly from this file.
  * Reference parser: https://github.com/philterd/phisql.
  *
- * Status: DRAFT. Grammar may change before v1.0. Pre-1.0, breaking changes
- * may land within a minor version.
+ * Status: Stable (v1.0). The v1.0 grammar is frozen; changes follow the
+ * versioning policy in CONTRIBUTING.md (additive features in a minor version,
+ * breaking changes in a major version).
  *
  * Discovery query verbs (FIND PII, DISCOVER ENTITIES, SCAN) and a SELECT
  * projection over a findings store are supported alongside the redaction
@@ -39,6 +40,8 @@ statement
     | deidentifyStmt
     | ignoreStmt
     | defineIdentifierStmt
+    | defineDictionaryStmt
+    | defineSectionStmt
     | detectStmt
     | discoveryStmt
     ;
@@ -53,11 +56,57 @@ configureStmt
     : CONFIGURE
       ( CRYPTO KEY FROM ENV cryptoKeyEnv=STRING_LITERAL
       | FPE KEY FROM ENV fpeKeyEnv=STRING_LITERAL TWEAK FROM ENV fpeTweakEnv=STRING_LITERAL
+      | configBlock=(SPLITTING | PDF | POSTFILTERS | ANALYSIS) '(' settingList ')'
+      | GRAPHICAL BOX '(' settingList ')'
       )
     ;
 
+// A comma-separated list of key = value settings. Keys are the Phileas schema
+// property names (e.g. threshold, redactionColor, priority); the JSON type is
+// inferred from the value (TRUE -> boolean, 300 -> integer, 0.25 -> number,
+// 'x' -> string, ('a','b') -> array of strings). Used by the CONFIGURE
+// config/graphical forms and by the OPTIONS clause on filter statements.
+settingList
+    : setting (',' setting)*
+    ;
+
+setting
+    : settingKey '=' settingValue
+    ;
+
+// Setting keys are Phileas schema property names. A key may be quoted when it
+// collides with a reserved keyword (e.g. 'pattern') or is an arbitrary map key.
+settingKey
+    : ID
+    | STRING_LITERAL
+    ;
+
+// A setting value is a scalar, a nested object ( k = v, ... ), or an array
+// [ v, ... ]. The recursion lets OPTIONS/CONFIGURE express any schema structure,
+// including arrays of objects (e.g. ignoredPatterns) and nested config objects.
+settingValue
+    : literal
+    | objectValue
+    | arrayValue
+    ;
+
+objectValue
+    : '(' settingList ')'
+    ;
+
+arrayValue
+    : '[' (settingValue (',' settingValue)*)? ']'
+    ;
+
+// Optional trailing clause that sets arbitrary leaf properties on the filter
+// object a statement produces (priority, windowSize, enabled, entity-specific
+// validation flags, etc.). Keys are Phileas schema property names.
+optionsClause
+    : OPTIONS '(' settingList ')'
+    ;
+
 redactStmt
-    : REDACT entityList (WITH strategyExpr)? (WHERE predicate)?
+    : REDACT entityList (WITH strategyExpr)? (WHERE predicate)? optionsClause?
     ;
 
 deidentifyStmt
@@ -65,7 +114,7 @@ deidentifyStmt
     ;
 
 entityAssignment
-    : entityType AS strategyExpr
+    : entityType AS strategyExpr optionsClause?
     ;
 
 ignoreStmt
@@ -74,6 +123,7 @@ ignoreStmt
       | PATTERN STRING_LITERAL
       )
       (FOR entityList)?
+      optionsClause?
     ;
 
 // Defines a custom identifier from a regex pattern and applies a strategy to it.
@@ -84,6 +134,26 @@ defineIdentifierStmt
       (CASE sensitivity=(SENSITIVE | INSENSITIVE))?
       WITH strategyExpr
       (WHERE predicate)?
+      optionsClause?
+    ;
+
+// Defines a custom dictionary of terms and applies a strategy to matches.
+defineDictionaryStmt
+    : DEFINE DICTIONARY classification=STRING_LITERAL
+      TERMS stringList
+      (FUZZY (SENSITIVITY sensitivity=ID)?)?
+      capitalized=CAPITALIZED?
+      WITH strategyExpr
+      optionsClause?
+    ;
+
+// Defines a section bounded by start/end regex patterns and redacts it.
+defineSectionStmt
+    : DEFINE SECTION
+      START startPattern=STRING_LITERAL
+      END endPattern=STRING_LITERAL
+      WITH strategyExpr
+      optionsClause?
     ;
 
 // Detects entities with the PhEye AI/NER model and applies a strategy to them.
@@ -93,6 +163,7 @@ detectStmt
       (ENDPOINT endpoint=STRING_LITERAL)?
       WITH strategyExpr
       (WHERE predicate)?
+      optionsClause?
     ;
 
 // Discovery query verbs. Unlike the redaction statements above, discovery
@@ -188,6 +259,7 @@ strategyName
     | TRUNCATE
     | TRUNCATE_TO_YEAR
     | SHIFT
+    | RELATIVE
     | ABBREVIATE
     ;
 
@@ -196,7 +268,7 @@ strategyArgs
     ;
 
 namedArg
-    : argName=ID '=' literal
+    : argName=ID '=' settingValue
     ;
 
 predicate
@@ -243,6 +315,13 @@ KEY             : 'KEY' ;
 TWEAK           : 'TWEAK' ;
 FROM            : 'FROM' ;
 ENV             : 'ENV' ;
+// CONFIGURE config-block and graphical keywords.
+SPLITTING       : 'SPLITTING' ;
+PDF             : 'PDF' ;
+POSTFILTERS     : 'POSTFILTERS' ;
+ANALYSIS        : 'ANALYSIS' ;
+GRAPHICAL       : 'GRAPHICAL' ;
+BOX             : 'BOX' ;
 REDACT          : 'REDACT' ;
 DEIDENTIFY      : 'DEIDENTIFY' ;
 IGNORE          : 'IGNORE' ;
@@ -263,6 +342,18 @@ GROUP           : 'GROUP' ;
 CASE            : 'CASE' ;
 SENSITIVE       : 'SENSITIVE' ;
 INSENSITIVE     : 'INSENSITIVE' ;
+
+// Custom-dictionary and section definition keywords.
+DICTIONARY      : 'DICTIONARY' ;
+SECTION         : 'SECTION' ;
+START           : 'START' ;
+END             : 'END' ;
+FUZZY           : 'FUZZY' ;
+SENSITIVITY     : 'SENSITIVITY' ;
+CAPITALIZED     : 'CAPITALIZED' ;
+
+// Generic per-filter options clause.
+OPTIONS         : 'OPTIONS' ;
 
 // PhEye (AI/NER) detection keywords.
 DETECT          : 'DETECT' ;
@@ -304,6 +395,7 @@ LAST_4          : 'LAST_4' ;
 TRUNCATE_TO_YEAR: 'TRUNCATE_TO_YEAR' ;
 TRUNCATE        : 'TRUNCATE' ;
 SHIFT           : 'SHIFT' ;
+RELATIVE        : 'RELATIVE' ;
 ABBREVIATE      : 'ABBREVIATE' ;
 
 // Boolean literals (must precede ID)

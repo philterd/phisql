@@ -1,0 +1,8 @@
+-- Relative date redaction: replace each detected date with a date expressed
+-- relative to the current date. RELATIVE is a date-only strategy (like SHIFT
+-- and TRUNCATE_TO_YEAR) and takes no arguments.
+-- Compiles to 21-date-relative.json.
+
+POLICY date_relative;
+
+REDACT DATE WITH RELATIVE;

@@ -1,0 +1,12 @@
+-- Global configuration blocks. Each CONFIGURE <block> ( ... ) form sets the
+-- matching `config` sub-object; keys are the Phileas schema property names and
+-- the value type is inferred from the literal. Compiles to 24-config-settings.json.
+
+POLICY config_settings;
+
+REDACT SSN WITH MASK;
+
+CONFIGURE SPLITTING (enabled = TRUE, threshold = 5000, method = 'newline');
+CONFIGURE PDF (redactionColor = 'red', dpi = 300, showReplacement = TRUE);
+CONFIGURE POSTFILTERS (removeTrailingPeriods = FALSE);
+CONFIGURE ANALYSIS (identification = FALSE);

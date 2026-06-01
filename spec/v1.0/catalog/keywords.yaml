@@ -5,7 +5,7 @@
 # named argument names, custom-identifier classifications). Matching is
 # case-insensitive: "POLICY", "policy", and "Policy" all collide.
 #
-# Status: DRAFT. Subject to change before v1.0.
+# Status: Stable (v1.0).
 #
 # Entity type identifiers from entity-types.yaml and strategy names from
 # strategies.yaml are also reserved when appearing in their respective
@@ -15,10 +15,13 @@ version: v1.0
 
 keywords:
   - ABBREVIATE
+  - ANALYSIS
   - AND
   - AS
   - AVG
+  - BOX
   - BY
+  - CAPITALIZED
   - CASE
   - CONFIDENCE
   - CONFIGURE
@@ -28,8 +31,10 @@ keywords:
   - DEIDENTIFY
   - DESCRIPTION
   - DETECT
+  - DICTIONARY
   - DISCOVER
   - ENCRYPT
+  - END
   - ENDPOINT
   - ENTITIES
   - ENV
@@ -39,6 +44,8 @@ keywords:
   - FPE
   - FPE_ENCRYPT
   - FROM
+  - FUZZY
+  - GRAPHICAL
   - GROUP
   - HASH_SHA256
   - IDENTIFIER
@@ -53,17 +60,25 @@ keywords:
   - MATCHING
   - MAX
   - MIN
+  - OPTIONS
   - OR
   - PATTERN
+  - PDF
   - PHEYE
   - PII
   - POLICY
+  - POSTFILTERS
   - RANDOM_REPLACE
   - REDACT
+  - RELATIVE
   - SCAN
+  - SECTION
   - SELECT
   - SENSITIVE
+  - SENSITIVITY
   - SHIFT
+  - SPLITTING
+  - START
   - STATIC_REPLACE
   - SUM
   - TERMS

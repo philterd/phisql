@@ -16,6 +16,7 @@
 
 package ai.philterd.phisql;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -39,14 +40,16 @@ class CompileErrorTest {
     }
 
     @Test
-    void rejectsUnknownStrategyArgument() {
+    void passesThroughUncataloguedStrategyArgument() {
+        // An argument the strategy catalog does not list is no longer an error:
+        // it passes through to the Phileas JSON by its schema property name, so
+        // any strategy field (salt, condition, truncateDirection, ...) is settable.
         Compiler compiler = new Compiler();
-        Compiler.CompileException ex = assertThrows(
-                Compiler.CompileException.class,
-                () -> compiler.compile("REDACT SSN WITH MASK(unknown_arg='x');")
-        );
-        assertTrue(ex.getMessage().contains("unknown_arg"),
-                "Expected error to name the bad arg: " + ex.getMessage());
+        JsonNode strategy = compiler.compile("REDACT SSN WITH MASK(salt=TRUE);")
+                .policyJson().path("identifiers").path("ssn")
+                .path("ssnFilterStrategies").path(0);
+        assertTrue(strategy.path("salt").asBoolean(),
+                "Uncatalogued strategy arg should pass through to JSON: " + strategy);
     }
 
     @Test

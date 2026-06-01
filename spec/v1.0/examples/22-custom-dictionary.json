@@ -1,0 +1,15 @@
+{
+  "identifiers": {
+    "dictionaries": [
+      {
+        "classification": "medications",
+        "terms": [ "aspirin", "ibuprofen", "metformin" ],
+        "fuzzy": true,
+        "sensitivity": "medium",
+        "customFilterStrategies": [
+          { "strategy": "REDACT" }
+        ]
+      }
+    ]
+  }
+}

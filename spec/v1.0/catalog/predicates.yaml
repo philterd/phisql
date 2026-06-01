@@ -3,7 +3,7 @@
 # Defines the predicate functions available in WHERE clauses and how each
 # compiles to the Phileas `conditions` string on a strategy object.
 #
-# Status: DRAFT. Subject to change before v1.0.
+# Status: Stable (v1.0).
 #
 # Schema:
 #   version       : PhiSQL spec version this catalog targets.

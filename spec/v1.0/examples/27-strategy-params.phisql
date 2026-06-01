@@ -1,0 +1,12 @@
+-- Strategy passthrough: any strategy property can be set by its Phileas schema
+-- name. Catalogued args (e.g. days -> shiftDays) are still validated and aliased;
+-- everything else (salt, futureDates, anonymizationCandidates, ...) passes
+-- through with its type inferred. Compiles to 27-strategy-params.json.
+
+POLICY strategy_params;
+
+REDACT SSN WITH MASK(maskCharacter = '#', salt = TRUE);
+
+REDACT DATE WITH SHIFT(days = 30, futureDates = FALSE);
+
+DEIDENTIFY EMAIL_ADDRESS AS RANDOM_REPLACE(anonymizationCandidates = ['a@example.com', 'b@example.com']);

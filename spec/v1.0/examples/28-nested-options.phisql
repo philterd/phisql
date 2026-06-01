@@ -1,0 +1,21 @@
+-- Nested OPTIONS values: objects ( k = v, ... ) and arrays [ ... ] let PhiSQL
+-- express the deepest schema structures — arrays of objects (ignoredPatterns),
+-- map objects (thresholds), and nested config (phEyeConfiguration). A key that
+-- collides with a reserved word (e.g. 'pattern') is quoted. Compiles to
+-- 28-nested-options.json.
+
+POLICY nested_options;
+
+-- Per-dictionary named ignore patterns: an array of {name, pattern} objects.
+DEFINE DICTIONARY 'meds' TERMS ('aspirin')
+  WITH REDACT
+  OPTIONS (ignoredPatterns = [ (name = 'skip-codes', 'pattern' = '[A-Z]{3}[0-9]+') ]);
+
+-- PhEye per-label thresholds (a label -> confidence map) and the full PhEye
+-- connection config merged with the LABELS clause above.
+DETECT PHEYE LABELS ('PER')
+  WITH REDACT
+  OPTIONS (
+    thresholds = (PER = 0.8),
+    phEyeConfiguration = (timeout = 30, maxIdleConnections = 5)
+  );

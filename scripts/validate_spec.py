@@ -3,7 +3,7 @@
 Validate the PhiSQL v1.0 spec artifacts against each other and against the
 canonical Phileas policy schema.
 
-Four checks run, in order:
+Five checks run, in order:
 
 1. Catalog YAML files are well-formed and internally consistent.
 2. Every Phileas field referenced by the catalogs exists in the canonical
@@ -15,6 +15,13 @@ Four checks run, in order:
    everything else validates as a Phileas redaction policy.
 4. Discovery example JSON files are well-formed and reference column names
    that resolve against the findings catalog.
+5. PhiSQL covers the schema: every identifier type, strategy, and top-level
+   policy block in the schema is either exposed by PhiSQL or recorded as a
+   deliberate deferral below. This is the reverse of check 2 — it stops the
+   language from silently falling behind the schema when the schema grows.
+6. PhiSQL covers every schema leaf field: descends into every policy-bearing
+   object and asserts each individual property is expressible (via passthrough,
+   a dedicated clause, or an explicit mechanism) or recorded as a deferral.
 
 CI runs this script on every push and pull request. PRs that break the
 relationship with the Phileas schema or the findings catalog fail here.
@@ -45,6 +52,80 @@ SCHEMA_PATH = REPO_ROOT / "schema" / SCHEMA_VERSION / "schema.json"
 # rather than check_examples_validate(). The presence of an operation in this
 # set is the routing signal; example filenames are not load-bearing.
 DISCOVERY_OPERATIONS = {"FIND_PII", "DISCOVER_ENTITIES", "SCAN", "SELECT_FINDINGS"}
+
+# --- Reverse-coverage accounting (check 5) -------------------------------------
+#
+# Check 2 proves PhiSQL never references a schema field that does not exist.
+# Check 5 proves the opposite direction: every schema feature is either exposed
+# by PhiSQL or listed here as a deliberate deferral. When the schema gains a new
+# identifier, strategy, or top-level block, check 5 fails until PhiSQL either
+# exposes it (catalog/grammar) or someone records the deferral below — so a gap
+# is always a conscious choice, never a silent omission. The reasons are part of
+# the contract; keep them accurate.
+
+# Schema identifier properties PhiSQL exposes through a dedicated statement
+# rather than an entity-types.yaml row.
+IDENTIFIERS_EXPOSED_VIA_GRAMMAR = {
+    "identifiers": "custom regex identifiers via `DEFINE IDENTIFIER ... MATCHING`",
+    "dictionaries": "custom dictionary filters via `DEFINE DICTIONARY ... TERMS`",
+    "sections": "section start/end filters via `DEFINE SECTION START ... END`",
+    "pheyes": "AI/NER detection via `DETECT PHEYE`",
+}
+
+# Schema identifier properties intentionally not yet exposed by PhiSQL.
+IDENTIFIERS_DEFERRED = {
+    "person": "the schema marks `person` deprecated ('use pheyes instead'); it is a "
+              "$ref to filterPhEye, the exact shape PhiSQL already exposes fully via "
+              "DETECT PHEYE, so the capability is not lost — only the legacy JSON key",
+}
+
+# Strategy enum values intentionally not exposed. Empty: PhiSQL exposes them all.
+STRATEGIES_DEFERRED: dict[str, str] = {}
+
+# Top-level policy blocks PhiSQL exposes, and those it does not yet author.
+TOPLEVEL_EXPOSED = {
+    "crypto": "CONFIGURE CRYPTO KEY FROM ENV",
+    "fpe": "CONFIGURE FPE KEY FROM ENV ... TWEAK FROM ENV",
+    "identifiers": "entity statements, DEFINE IDENTIFIER/DICTIONARY/SECTION, DETECT PHEYE",
+    "ignored": "IGNORE TERMS",
+    "ignoredPatterns": "IGNORE PATTERN",
+    "config": "CONFIGURE SPLITTING | PDF | POSTFILTERS | ANALYSIS ( ... )",
+    "graphical": "CONFIGURE GRAPHICAL BOX ( ... )",
+}
+TOPLEVEL_DEFERRED: dict[str, str] = {}
+
+# ---------------------------------------------------------------------------
+# Field-level coverage (check 6). Check 5 works at the granularity of types,
+# strategies, and top-level blocks; this one descends to every individual leaf
+# property of every policy-bearing object and asserts PhiSQL can set it.
+#
+# Filters, strategies, and config objects are reachable by a passthrough
+# mechanism — OPTIONS (...), CONFIGURE <block> (...), or strategy args — and the
+# setting value is recursive (scalars, nested objects, and arrays), so *every*
+# property on them, however deeply nested, is expressible by name. Only objects
+# with no passthrough entry point (crypto/fpe, set by dedicated CONFIGURE forms)
+# need a field-by-field map.
+# ---------------------------------------------------------------------------
+
+# Objects whose every leaf — scalar, array, or nested object — is reachable by
+# passthrough. (Entity filter $defs are added dynamically.) phEyeConfiguration is
+# reachable as a nested value inside a PhEye/medical-condition filter's OPTIONS.
+FIELD_PASSTHROUGH_CONTAINERS = {
+    "filterCustomDictionary", "filterSection", "filterIdentifier", "filterPhEye",
+    "baseFilterStrategy", "dateFilterStrategy",
+    "splitting", "pdf", "postFilters", "analysis", "boundingBox",
+    "ignored", "ignoredPattern", "phEyeConfiguration",
+}
+
+# Objects with no passthrough: every leaf must be listed here with its mechanism.
+FIELD_EXPLICIT_CONTAINERS = {
+    "crypto": {"key": "CONFIGURE CRYPTO KEY FROM ENV"},
+    "fpe": {"key": "CONFIGURE FPE KEY FROM ENV", "tweak": "CONFIGURE FPE ... TWEAK FROM ENV"},
+}
+
+# Nested properties that cannot be expressed and are deliberately deferred.
+# Empty: recursive OPTIONS/CONFIGURE settings reach every schema structure.
+FIELD_DEFERRED: dict[tuple[str, str], str] = {}
 
 
 def is_discovery_example(data: Any) -> bool:
@@ -152,6 +233,155 @@ def check_catalog_references_phileas_schema(schema: dict) -> list[str]:
     return errors
 
 
+def _schema_strategy_enums(schema: dict) -> set[str]:
+    """Union of the `strategy` enum across every *FilterStrategy $def."""
+    values: set[str] = set()
+    for definition in schema.get("$defs", {}).values():
+        enum = definition.get("properties", {}).get("strategy", {}).get("enum")
+        if enum:
+            values.update(enum)
+    return values
+
+
+def _coverage_errors(kind: str, in_schema: set[str], accounted: set[str]) -> list[str]:
+    """Bidirectional diff between what the schema has and what PhiSQL accounts
+    for. Missing = schema has it, PhiSQL neither exposes nor defers it. Stale =
+    PhiSQL accounts for something the schema no longer has."""
+    errors = []
+    for name in sorted(in_schema - accounted):
+        errors.append(
+            f"{kind} '{name}': present in the schema but neither exposed by "
+            f"PhiSQL nor listed as deferred in validate_spec.py"
+        )
+    for name in sorted(accounted - in_schema):
+        errors.append(
+            f"{kind} '{name}': accounted for in validate_spec.py but no longer "
+            f"present in the schema — remove the stale entry"
+        )
+    return errors
+
+
+def check_phisql_covers_schema(schema: dict) -> list[str]:
+    """Every schema identifier, strategy, and top-level block must be exposed by
+    PhiSQL or recorded as a deliberate deferral. The reverse of check 2."""
+    defs = schema.get("$defs", {})
+
+    # Identifiers: catalog entity rows + statement-exposed + deferred.
+    schema_idents = set(defs.get("identifiers", {}).get("properties", {}).keys())
+    catalog_fields = {
+        e["phileas_field"]
+        for e in load_yaml(SPEC_DIR / "catalog" / "entity-types.yaml")["entities"]
+    }
+    accounted_idents = (
+        catalog_fields
+        | set(IDENTIFIERS_EXPOSED_VIA_GRAMMAR)
+        | set(IDENTIFIERS_DEFERRED)
+    )
+
+    # Strategies: catalog enum values + deferred. The catalog cannot reference a
+    # strategy the schema lacks (check 2), so only the missing direction matters
+    # here, but _coverage_errors flags stale deferrals too.
+    schema_strats = _schema_strategy_enums(schema)
+    catalog_strats = {
+        s["phileas_enum"]
+        for s in load_yaml(SPEC_DIR / "catalog" / "strategies.yaml")["strategies"]
+    }
+    accounted_strats = catalog_strats | set(STRATEGIES_DEFERRED)
+
+    # Top-level policy blocks: exposed + deferred.
+    schema_top = set(schema.get("properties", {}).keys())
+    accounted_top = set(TOPLEVEL_EXPOSED) | set(TOPLEVEL_DEFERRED)
+
+    return (
+        _coverage_errors("identifier", schema_idents, accounted_idents)
+        + _coverage_errors("strategy", schema_strats, accounted_strats)
+        + _coverage_errors("top-level block", schema_top, accounted_top)
+    )
+
+
+def _resolve(schema: dict, node: dict) -> dict:
+    """Resolve a one-level $ref against $defs; otherwise return the node."""
+    if "$ref" in node:
+        return schema.get("$defs", {}).get(node["$ref"].split("/")[-1], {})
+    return node
+
+
+def _leaf_fields(schema: dict, defname: str) -> dict[str, dict]:
+    """All properties of a $def, merging any allOf base (abstractFilterProperties)."""
+    node = schema.get("$defs", {}).get(defname, {})
+    props = dict(node.get("properties", {}))
+    for sub in node.get("allOf", []):
+        if "$ref" in sub:
+            props.update(_resolve(schema, sub).get("properties", {}))
+    return props
+
+
+def check_phisql_covers_schema_fields(schema: dict) -> tuple[list[str], dict[str, str]]:
+    """Every leaf property of every policy-bearing object must be expressible by
+    PhiSQL (via passthrough, a dedicated clause, or an explicit mechanism) or
+    listed as a deliberate deferral. Returns (errors, deferred-report)."""
+    defs = schema.get("$defs", {})
+    idents = defs.get("identifiers", {}).get("properties", {})
+    special = {"identifiers", "dictionaries", "sections", "pheyes", "person"}
+
+    # Entity filter $defs (e.g. filterSsn) and the set of "strategies array"
+    # fields, both derived from the catalog so they cannot drift.
+    entity_defs = {
+        idents[name]["$ref"].split("/")[-1]
+        for name, node in idents.items()
+        if name not in special and "$ref" in node
+    }
+    passthrough = FIELD_PASSTHROUGH_CONTAINERS | entity_defs
+    containers = sorted(
+        passthrough | set(FIELD_EXPLICIT_CONTAINERS) | {c for c, _ in FIELD_DEFERRED}
+    )
+
+    errors: list[str] = []
+    deferred_report: dict[str, str] = {}
+    seen_deferred: set[tuple[str, str]] = set()
+
+    for container in containers:
+        fields = _leaf_fields(schema, container)
+        if not fields and container not in defs:
+            errors.append(f"container '{container}': not found in schema $defs (stale registry entry)")
+            continue
+        for field in fields:
+            key = (container, field)
+            if key in FIELD_DEFERRED:
+                deferred_report[f"{container}.{field}"] = FIELD_DEFERRED[key]
+                seen_deferred.add(key)
+            elif container in FIELD_EXPLICIT_CONTAINERS:
+                # No passthrough entry point: every leaf must be mapped.
+                if field not in FIELD_EXPLICIT_CONTAINERS[container]:
+                    errors.append(
+                        f"{container}.{field}: object exposed field-by-field but this "
+                        f"leaf is neither mapped nor deferred in validate_spec.py"
+                    )
+            # else: passthrough container — recursive OPTIONS/CONFIGURE settings
+            # (or WITH <strategy> for the strategy arrays) reach every leaf.
+
+    # Flag stale explicit-field mappings the schema no longer has.
+    for container, fmap in FIELD_EXPLICIT_CONTAINERS.items():
+        schema_fields = set(_leaf_fields(schema, container))
+        for field in fmap:
+            if field not in schema_fields:
+                errors.append(
+                    f"{container}.{field}: mapped in validate_spec.py but not present in "
+                    f"the schema — remove the stale entry"
+                )
+
+    # Flag stale deferrals (registry entries the schema no longer has).
+    for key in FIELD_DEFERRED:
+        if key not in seen_deferred:
+            container, field = key
+            errors.append(
+                f"{container}.{field}: deferred in validate_spec.py but not present in "
+                f"the schema — remove the stale entry"
+            )
+
+    return errors, deferred_report
+
+
 def check_examples_validate(schema: dict) -> list[str]:
     """Redaction example JSONs must validate against the Phileas schema."""
     errors = []
@@ -249,6 +479,32 @@ def main() -> int:
     errors = check_discovery_examples()
     print("PASS" if not errors else f"FAIL ({len(errors)})")
     all_errors.append(("discovery", errors))
+    print()
+
+    section("5. PhiSQL covers the schema (no silent drift)")
+    errors = check_phisql_covers_schema(schema)
+    print("PASS" if not errors else f"FAIL ({len(errors)})")
+    all_errors.append(("coverage", errors))
+    if not errors:
+        deferred = {
+            **IDENTIFIERS_DEFERRED,
+            **STRATEGIES_DEFERRED,
+            **TOPLEVEL_DEFERRED,
+        }
+        if deferred:
+            print(f"  ({len(deferred)} schema features intentionally deferred:)")
+            for name, reason in sorted(deferred.items()):
+                print(f"    - {name}: {reason}")
+    print()
+
+    section("6. PhiSQL covers every schema leaf field")
+    errors, field_deferred = check_phisql_covers_schema_fields(schema)
+    print("PASS" if not errors else f"FAIL ({len(errors)})")
+    all_errors.append(("field-coverage", errors))
+    if not errors and field_deferred:
+        print(f"  ({len(field_deferred)} nested-object fields intentionally deferred:)")
+        for name, reason in sorted(field_deferred.items()):
+            print(f"    - {name}: {reason}")
     print()
 
     has_errors = any(errors for _, errors in all_errors)

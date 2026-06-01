@@ -11,7 +11,7 @@
 # beyond what this catalog declares; PhiSQL parsers should treat unknown
 # columns as opaque (parse-only, no semantic validation).
 #
-# Status: DRAFT. Subject to change before v1.0.
+# Status: Stable (v1.0).
 
 version: v1.0
 

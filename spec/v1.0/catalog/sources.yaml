@@ -9,7 +9,7 @@
 # expected to syntactically accept any scheme present in this catalog and
 # defer execution-time validation to the engine.
 #
-# Status: DRAFT. Subject to change before v1.0.
+# Status: Stable (v1.0).
 
 version: v1.0
 

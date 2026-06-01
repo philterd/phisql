@@ -4,7 +4,7 @@
 # JSON policy schema. This catalog is the source of truth for entity types.
 # Implementations load this file directly; do not duplicate the mapping.
 #
-# Status: DRAFT. Subject to change before v1.0.
+# Status: Stable (v1.0).
 #
 # Schema:
 #   version          : PhiSQL spec version this catalog targets.
@@ -188,7 +188,8 @@ custom_identifier:
 deferred:
   - name: PERSON
     rationale: |
-      The Phileas schema has deprecated the `person` field in favor of the
-      `pheyes` array with PhEye labels. PhEye-backed PERSON requires a
-      PhEye configuration block whose surface is not yet settled.
-      Use FIRST_NAME, SURNAME, and PHYSICIAN_NAME in PhiSQL v1.0.
+      The Phileas schema marks the `person` field deprecated ("use pheyes
+      instead"); it is a $ref to the same filterPhEye shape as the `pheyes`
+      array. PhiSQL exposes that shape fully through DETECT PHEYE, so person
+      detection is not lost — only the legacy `person` JSON key is unexposed.
+      Use DETECT PHEYE (or FIRST_NAME / SURNAME / PHYSICIAN_NAME) in PhiSQL v1.0.

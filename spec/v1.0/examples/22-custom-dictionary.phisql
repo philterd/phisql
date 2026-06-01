@@ -1,0 +1,10 @@
+-- Custom dictionary: detect a user-defined list of terms and redact them.
+-- FUZZY enables approximate matching; SENSITIVITY tunes how strict it is
+-- (one of auto, off, low, medium, high). Compiles to 22-custom-dictionary.json.
+
+POLICY custom_dictionary;
+
+DEFINE DICTIONARY 'medications'
+  TERMS ('aspirin', 'ibuprofen', 'metformin')
+  FUZZY SENSITIVITY medium
+  WITH REDACT;

@@ -1,0 +1,17 @@
+-- Per-filter OPTIONS: set arbitrary leaf properties on the filter a statement
+-- produces — abstract knobs (priority, windowSize, enabled, ignoredFiles) and
+-- entity-specific validation flags. Keys are Phileas schema property names; a
+-- ('a', 'b') value compiles to an array. Compiles to 26-filter-options.json.
+
+POLICY filter_options;
+
+REDACT CREDIT_CARD WITH MASK
+  OPTIONS (onlyValidCreditCardNumbers = TRUE, priority = 10, windowSize = 5, ignoredFiles = ['allowlist.txt']);
+
+DEFINE DICTIONARY 'meds' TERMS ('aspirin')
+  WITH REDACT
+  OPTIONS (files = ['meds.txt'], enabled = TRUE, priority = 3);
+
+IGNORE TERMS ('Acme Corp') OPTIONS (name = 'org-allowlist', caseSensitive = TRUE);
+
+IGNORE PATTERN '[0-9]{4}' OPTIONS (name = 'four-digits');

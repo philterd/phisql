@@ -17,6 +17,7 @@
 package ai.philterd.phisql;
 
 import ai.philterd.phisql.grammar.PhiSQLParser;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -27,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * Compiles a parsed PhiSQL document into a Phileas JSON policy.
@@ -36,15 +38,19 @@ import java.util.Locale;
  * files; this class implements the traversal.
  *
  * <p><b>Scope.</b> This compiler targets the redaction subset of PhiSQL
- * (REDACT, DEIDENTIFY, IGNORE, DEFINE IDENTIFIER, DETECT PHEYE) and emits
- * Phileas JSON. Discovery statements (FIND PII, DISCOVER ENTITIES, SCAN,
- * SELECT FROM findings) parse successfully but are silently ignored by this
- * compiler; they target a separate discovery-query JSON schema documented in
- * the spec examples, and a discovery compiler will land in a follow-up.
+ * (REDACT, DEIDENTIFY, IGNORE, DEFINE IDENTIFIER, DEFINE DICTIONARY,
+ * DEFINE SECTION, DETECT PHEYE, and the CONFIGURE forms) and emits Phileas
+ * JSON. Discovery statements (FIND PII, DISCOVER ENTITIES, SCAN, SELECT FROM
+ * findings) parse successfully but are silently ignored by this compiler; they
+ * target a separate discovery-query JSON schema documented in the spec
+ * examples, and a discovery compiler will land in a follow-up.
  */
 public final class Compiler {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
+
+    /** Allowed values for the dictionary FUZZY SENSITIVITY clause (schema sensitivityLevel enum). */
+    private static final Set<String> SENSITIVITY_LEVELS = Set.of("auto", "off", "low", "medium", "high");
 
     private final Catalog catalog;
 
@@ -110,6 +116,10 @@ public final class Compiler {
                 compileIgnore(stmt.ignoreStmt(), identifiers, policyJson);
             } else if (stmt.defineIdentifierStmt() != null) {
                 compileDefineIdentifier(stmt.defineIdentifierStmt(), identifiers);
+            } else if (stmt.defineDictionaryStmt() != null) {
+                compileDefineDictionary(stmt.defineDictionaryStmt(), identifiers);
+            } else if (stmt.defineSectionStmt() != null) {
+                compileDefineSection(stmt.defineSectionStmt(), identifiers);
             } else if (stmt.detectStmt() != null) {
                 compileDetect(stmt.detectStmt(), identifiers);
             } else if (stmt.configureStmt() != null) {
@@ -127,19 +137,150 @@ public final class Compiler {
     }
 
     /**
-     * Compiles a CONFIGURE statement into the policy's top-level {@code crypto} or {@code fpe} block.
-     * The supplied environment-variable name is written with the {@code env:} prefix that Phileas
-     * resolves at runtime, so the actual secret is never stored in the policy.
+     * Compiles a CONFIGURE statement. The CRYPTO and FPE forms write the
+     * policy's top-level {@code crypto}/{@code fpe} blocks, with secrets stored
+     * as {@code env:} references Phileas resolves at runtime (never inline). The
+     * SPLITTING/PDF/POSTFILTERS/ANALYSIS forms write the corresponding
+     * {@code config} sub-block, and GRAPHICAL BOX appends a fixed bounding box
+     * to {@code graphical.boundingBoxes}.
      */
     private void compileConfigure(PhiSQLParser.ConfigureStmtContext ctx, ObjectNode policyJson) {
         if (ctx.cryptoKeyEnv != null) {
             policyJson.putObject("crypto")
                     .put("key", "env:" + unquoteString(ctx.cryptoKeyEnv.getText()));
-        } else {
+        } else if (ctx.fpeKeyEnv != null) {
             ObjectNode fpe = policyJson.putObject("fpe");
             fpe.put("key", "env:" + unquoteString(ctx.fpeKeyEnv.getText()));
             fpe.put("tweak", "env:" + unquoteString(ctx.fpeTweakEnv.getText()));
+        } else if (ctx.configBlock != null) {
+            String block = switch (ctx.configBlock.getType()) {
+                case PhiSQLParser.SPLITTING -> "splitting";
+                case PhiSQLParser.PDF -> "pdf";
+                case PhiSQLParser.POSTFILTERS -> "postFilters";
+                case PhiSQLParser.ANALYSIS -> "analysis";
+                default -> throw new CompileException(
+                        "Unknown config block: " + ctx.configBlock.getText());
+            };
+            ObjectNode config = getOrCreateObject(policyJson, "config");
+            applySettings(getOrCreateObject(config, block), ctx.settingList());
+        } else {
+            // GRAPHICAL BOX ( ... ) — append a fixed bounding box.
+            ObjectNode graphical = getOrCreateObject(policyJson, "graphical");
+            ArrayNode boxes = graphical.has("boundingBoxes")
+                    ? (ArrayNode) graphical.get("boundingBoxes")
+                    : graphical.putArray("boundingBoxes");
+            applySettings(boxes.addObject(), ctx.settingList());
         }
+    }
+
+    /**
+     * Applies an optional {@code OPTIONS ( ... )} clause to the filter object a
+     * statement produces. No-op when the clause is absent.
+     */
+    private void applyOptions(ObjectNode target, PhiSQLParser.OptionsClauseContext options) {
+        if (options != null) {
+            applySettings(target, options.settingList());
+        }
+    }
+
+    /**
+     * Writes each {@code key = value} setting onto {@code target}. Keys are the
+     * Phileas schema property names (quoted when they collide with a keyword);
+     * values may be scalars, nested objects {@code ( ... )}, or arrays
+     * {@code [ ... ]}, so any schema structure is expressible. The schema (which
+     * forbids additional properties) rejects an unknown key at validation time.
+     */
+    private void applySettings(ObjectNode target, PhiSQLParser.SettingListContext settings) {
+        for (PhiSQLParser.SettingContext s : settings.setting()) {
+            setOrMerge(target, settingKeyText(s.settingKey()), buildValue(s.settingValue()));
+        }
+    }
+
+    /** Builds the JSON value for a setting: scalar, nested object, or array. */
+    private JsonNode buildValue(PhiSQLParser.SettingValueContext value) {
+        if (value.objectValue() != null) {
+            ObjectNode obj = MAPPER.createObjectNode();
+            applySettings(obj, value.objectValue().settingList());
+            return obj;
+        }
+        if (value.arrayValue() != null) {
+            ArrayNode arr = MAPPER.createArrayNode();
+            for (PhiSQLParser.SettingValueContext element : value.arrayValue().settingValue()) {
+                arr.add(buildValue(element));
+            }
+            return arr;
+        }
+        PhiSQLParser.LiteralContext literal = value.literal();
+        if (literal.BOOLEAN_LITERAL() != null) {
+            return MAPPER.getNodeFactory().booleanNode(Boolean.parseBoolean(literal.getText()));
+        }
+        if (literal.NUMERIC_LITERAL() != null) {
+            String text = literal.getText();
+            return text.contains(".")
+                    ? MAPPER.getNodeFactory().numberNode(Double.parseDouble(text))
+                    : MAPPER.getNodeFactory().numberNode(Integer.parseInt(text));
+        }
+        if (literal.STRING_LITERAL() != null) {
+            return MAPPER.getNodeFactory().textNode(unquoteString(literal.getText()));
+        }
+        // Bare identifier — treated as a string value.
+        return MAPPER.getNodeFactory().textNode(literal.getText());
+    }
+
+    /** Sets key=value, merging into an existing object (so DETECT's
+     * phEyeConfiguration and an OPTIONS phEyeConfiguration combine, for example). */
+    private void setOrMerge(ObjectNode target, String key, JsonNode value) {
+        JsonNode existing = target.get(key);
+        if (value.isObject() && existing != null && existing.isObject()) {
+            ((ObjectNode) existing).setAll((ObjectNode) value);
+        } else {
+            target.set(key, value);
+        }
+    }
+
+    private String settingKeyText(PhiSQLParser.SettingKeyContext key) {
+        return key.ID() != null ? key.ID().getText() : unquoteString(key.STRING_LITERAL().getText());
+    }
+
+    private static ObjectNode getOrCreateObject(ObjectNode parent, String field) {
+        return parent.has(field) ? (ObjectNode) parent.get(field) : parent.putObject(field);
+    }
+
+    /**
+     * Resolves the filter object an entity reference maps to, so an OPTIONS
+     * clause can set its leaf properties. A simple entity maps to its
+     * {@code identifiers.<field>} object; a custom-identifier reference maps to
+     * its entry in {@code identifiers.identifiers[]}.
+     */
+    private ObjectNode resolveFilterNode(ObjectNode identifiers,
+                                         PhiSQLParser.EntityTypeContext entityCtx) {
+        if (entityCtx instanceof PhiSQLParser.SimpleEntityTypeContext simple) {
+            Catalog.EntityType entity = catalog.getEntity(simple.getText());
+            if (entity == null) {
+                throw new CompileException("Unknown entity type: " + simple.getText());
+            }
+            return getOrCreateObject(identifiers, entity.phileasField());
+        }
+        if (entityCtx instanceof PhiSQLParser.CustomIdentifierContext custom) {
+            return getOrCreateIdentifierEntry(
+                    identifiers, unquoteString(custom.STRING_LITERAL().getText()));
+        }
+        throw new CompileException("Unsupported entity type form: " + entityCtx.getText());
+    }
+
+    private ObjectNode getOrCreateIdentifierEntry(ObjectNode identifiers, String classification) {
+        ArrayNode list = identifiers.has("identifiers")
+                ? (ArrayNode) identifiers.get("identifiers")
+                : identifiers.putArray("identifiers");
+        for (int i = 0; i < list.size(); i++) {
+            ObjectNode candidate = (ObjectNode) list.get(i);
+            if (classification.equals(candidate.path("classification").asText())) {
+                return candidate;
+            }
+        }
+        ObjectNode entry = list.addObject();
+        entry.put("classification", classification);
+        return entry;
     }
 
     /**
@@ -176,12 +317,20 @@ public final class Compiler {
     // ------------------------------------------------------------------
 
     private void compileRedact(PhiSQLParser.RedactStmtContext ctx, ObjectNode identifiers) {
-        ObjectNode strategyJson = buildStrategyObject(ctx.strategyExpr());
-        if (ctx.predicate() != null) {
-            strategyJson.put("conditions", compilePredicate(ctx.predicate()));
+        ObjectNode strategyJson = null;
+        if (ctx.strategyExpr() != null) {
+            strategyJson = buildStrategyObject(ctx.strategyExpr());
+            if (ctx.predicate() != null) {
+                strategyJson.put("conditions", compilePredicate(ctx.predicate()));
+            }
         }
         for (PhiSQLParser.EntityTypeContext entityCtx : ctx.entityList().entityType()) {
-            appendStrategy(identifiers, entityCtx, strategyJson.deepCopy());
+            if (strategyJson != null) {
+                appendStrategy(identifiers, entityCtx, strategyJson.deepCopy());
+            }
+            if (ctx.optionsClause() != null) {
+                applyOptions(resolveFilterNode(identifiers, entityCtx), ctx.optionsClause());
+            }
         }
     }
 
@@ -193,6 +342,10 @@ public final class Compiler {
         for (PhiSQLParser.EntityAssignmentContext assignment : ctx.entityAssignment()) {
             ObjectNode strategyJson = buildStrategyObject(assignment.strategyExpr());
             appendStrategy(identifiers, assignment.entityType(), strategyJson);
+            if (assignment.optionsClause() != null) {
+                applyOptions(resolveFilterNode(identifiers, assignment.entityType()),
+                        assignment.optionsClause());
+            }
         }
     }
 
@@ -205,6 +358,14 @@ public final class Compiler {
                                ObjectNode policyJson) {
         boolean isTerms = ctx.TERMS() != null;
         boolean scoped = ctx.entityList() != null;
+
+        if (scoped && ctx.optionsClause() != null) {
+            // A scoped IGNORE writes a bare string into the entity's `ignored`
+            // array (or a {pattern} object); there is no object to carry options.
+            throw new CompileException(
+                    "OPTIONS is not supported on a scoped IGNORE ... FOR; set per-filter "
+                            + "options on the entity's REDACT/DEIDENTIFY statement instead.");
+        }
 
         if (isTerms) {
             List<String> terms = ctx.stringList().STRING_LITERAL().stream()
@@ -224,6 +385,7 @@ public final class Compiler {
             } else {
                 // Scope-less IGNORE TERMS compiles to the top-level `ignored` array,
                 // which is a list of named term-list objects per the Phileas schema.
+                // OPTIONS set the object's other leaf fields (name, caseSensitive, files).
                 ArrayNode topLevel = policyJson.has("ignored")
                         ? (ArrayNode) policyJson.get("ignored")
                         : policyJson.putArray("ignored");
@@ -232,6 +394,7 @@ public final class Compiler {
                 for (String term : terms) {
                     termsArray.add(term);
                 }
+                applyOptions(termsObject, ctx.optionsClause());
             }
             return;
         }
@@ -250,7 +413,10 @@ public final class Compiler {
             ArrayNode topLevel = policyJson.has("ignoredPatterns")
                     ? (ArrayNode) policyJson.get("ignoredPatterns")
                     : policyJson.putArray("ignoredPatterns");
-            topLevel.addObject().put("pattern", pattern);
+            ObjectNode patternObject = topLevel.addObject();
+            patternObject.put("pattern", pattern);
+            // OPTIONS set the ignoredPattern object's other leaf field (name).
+            applyOptions(patternObject, ctx.optionsClause());
         }
     }
 
@@ -297,6 +463,59 @@ public final class Compiler {
                 ? (ArrayNode) entry.get("identifierFilterStrategies")
                 : entry.putArray("identifierFilterStrategies");
         strategies.add(strategyJson);
+        applyOptions(entry, ctx.optionsClause());
+    }
+
+    // ------------------------------------------------------------------
+    // DEFINE DICTIONARY (custom dictionary filters)
+    // ------------------------------------------------------------------
+
+    private void compileDefineDictionary(PhiSQLParser.DefineDictionaryStmtContext ctx,
+                                         ObjectNode identifiers) {
+        ArrayNode dictionaries = identifiers.has("dictionaries")
+                ? (ArrayNode) identifiers.get("dictionaries")
+                : identifiers.putArray("dictionaries");
+        ObjectNode entry = dictionaries.addObject();
+        entry.put("classification", unquoteString(ctx.classification.getText()));
+
+        ArrayNode terms = entry.putArray("terms");
+        for (TerminalNode t : ctx.stringList().STRING_LITERAL()) {
+            terms.add(unquoteString(t.getText()));
+        }
+
+        if (ctx.FUZZY() != null) {
+            entry.put("fuzzy", true);
+            if (ctx.sensitivity != null) {
+                String level = ctx.sensitivity.getText().toLowerCase(Locale.ROOT);
+                if (!SENSITIVITY_LEVELS.contains(level)) {
+                    throw new CompileException(
+                            "SENSITIVITY must be one of " + SENSITIVITY_LEVELS + "; got '" + level + "'");
+                }
+                entry.put("sensitivity", level);
+            }
+        }
+        if (ctx.capitalized != null) {
+            entry.put("capitalized", true);
+        }
+
+        entry.putArray("customFilterStrategies").add(buildStrategyObject(ctx.strategyExpr()));
+        applyOptions(entry, ctx.optionsClause());
+    }
+
+    // ------------------------------------------------------------------
+    // DEFINE SECTION (start/end pattern redaction)
+    // ------------------------------------------------------------------
+
+    private void compileDefineSection(PhiSQLParser.DefineSectionStmtContext ctx,
+                                      ObjectNode identifiers) {
+        ArrayNode sections = identifiers.has("sections")
+                ? (ArrayNode) identifiers.get("sections")
+                : identifiers.putArray("sections");
+        ObjectNode entry = sections.addObject();
+        entry.put("startPattern", unquoteString(ctx.startPattern.getText()));
+        entry.put("endPattern", unquoteString(ctx.endPattern.getText()));
+        entry.putArray("sectionFilterStrategies").add(buildStrategyObject(ctx.strategyExpr()));
+        applyOptions(entry, ctx.optionsClause());
     }
 
     // ------------------------------------------------------------------
@@ -329,6 +548,7 @@ public final class Compiler {
                 }
             }
         }
+        applyOptions(pheye, ctx.optionsClause());
     }
 
     // ------------------------------------------------------------------
@@ -352,11 +572,15 @@ public final class Compiler {
         for (PhiSQLParser.NamedArgContext argCtx : ctx.strategyArgs().namedArg()) {
             String argName = argCtx.argName.getText();
             Catalog.StrategyArg arg = strategy.findArg(argName);
-            if (arg == null) {
-                throw new CompileException(
-                        "Strategy " + strategyName + " does not accept argument '" + argName + "'");
+            if (arg != null && argCtx.settingValue().literal() != null) {
+                // Catalogued argument with a scalar value: validate and map it
+                // (handles aliases like days -> shiftDays and enum checks).
+                placeArgValue(out, arg, argCtx.settingValue().literal());
+            } else {
+                // Any other strategy property (salt, condition, truncateDirection,
+                // anonymizationCandidates, ...) passes through by its schema name.
+                setOrMerge(out, argName, buildValue(argCtx.settingValue()));
             }
-            placeArgValue(out, arg, argCtx.literal());
         }
         return out;
     }

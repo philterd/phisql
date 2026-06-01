@@ -6,8 +6,9 @@
  * a tool-independent presentation for human readers and for implementations
  * that prefer to consume EBNF.
  *
- * Status: DRAFT. Grammar may change before v1.0. Pre-1.0, breaking changes
- * may land within a minor version.
+ * Status: Stable (v1.0). The v1.0 grammar is frozen; changes follow the
+ * versioning policy in CONTRIBUTING.md (additive features in a minor version,
+ * breaking changes in a major version).
  *
  * Covers redaction statements and discovery query verbs (FIND PII,
  * DISCOVER ENTITIES, SCAN) plus a SELECT projection over a findings store.
@@ -25,6 +26,8 @@ statement        = policy decl
                  | deidentify stmt
                  | ignore stmt
                  | define identifier stmt
+                 | define dictionary stmt
+                 | define section stmt
                  | detect stmt
                  | discovery stmt ;
 
@@ -33,21 +36,40 @@ policy decl      = "POLICY" , id , [ "DESCRIPTION" , string literal ] ;
 configure stmt   = "CONFIGURE"
                  , ( "CRYPTO" , "KEY" , "FROM" , "ENV" , string literal
                    | "FPE" , "KEY" , "FROM" , "ENV" , string literal
-                         , "TWEAK" , "FROM" , "ENV" , string literal ) ;
+                         , "TWEAK" , "FROM" , "ENV" , string literal
+                   | ( "SPLITTING" | "PDF" | "POSTFILTERS" | "ANALYSIS" )
+                         , "(" , setting list , ")"
+                   | "GRAPHICAL" , "BOX" , "(" , setting list , ")" ) ;
+
+setting list     = setting , { "," , setting } ;
+
+setting          = setting key , "=" , setting value ;
+
+setting key      = id | string literal ;
+
+setting value    = literal | object value | array value ;
+
+object value     = "(" , setting list , ")" ;
+
+array value      = "[" , [ setting value , { "," , setting value } ] , "]" ;
+
+options clause   = "OPTIONS" , "(" , setting list , ")" ;
 
 redact stmt      = "REDACT" , entity list
                  , [ "WITH" , strategy expr ]
-                 , [ "WHERE" , predicate ] ;
+                 , [ "WHERE" , predicate ]
+                 , [ options clause ] ;
 
 deidentify stmt  = "DEIDENTIFY" , entity assignment
                  , { "," , entity assignment } ;
 
-entity assignment = entity type , "AS" , strategy expr ;
+entity assignment = entity type , "AS" , strategy expr , [ options clause ] ;
 
 ignore stmt      = "IGNORE"
                  , ( "TERMS" , string list
                    | "PATTERN" , string literal )
-                 , [ "FOR" , entity list ] ;
+                 , [ "FOR" , entity list ]
+                 , [ options clause ] ;
 
 define identifier stmt
                  = "DEFINE" , "IDENTIFIER" , string literal
@@ -55,13 +77,30 @@ define identifier stmt
                  , [ "GROUP" , numeric literal ]
                  , [ "CASE" , ( "SENSITIVE" | "INSENSITIVE" ) ]
                  , "WITH" , strategy expr
-                 , [ "WHERE" , predicate ] ;
+                 , [ "WHERE" , predicate ]
+                 , [ options clause ] ;
+
+define dictionary stmt
+                 = "DEFINE" , "DICTIONARY" , string literal
+                 , "TERMS" , string list
+                 , [ "FUZZY" , [ "SENSITIVITY" , id ] ]
+                 , [ "CAPITALIZED" ]
+                 , "WITH" , strategy expr
+                 , [ options clause ] ;
+
+define section stmt
+                 = "DEFINE" , "SECTION"
+                 , "START" , string literal
+                 , "END" , string literal
+                 , "WITH" , strategy expr
+                 , [ options clause ] ;
 
 detect stmt      = "DETECT" , "PHEYE"
                  , [ "LABELS" , string list ]
                  , [ "ENDPOINT" , string literal ]
                  , "WITH" , strategy expr
-                 , [ "WHERE" , predicate ] ;
+                 , [ "WHERE" , predicate ]
+                 , [ options clause ] ;
 
 discovery stmt   = ( "FIND" , "PII" , in clause , [ where discovery ] )
                  | ( "DISCOVER" , "ENTITIES" , in clause , [ where discovery ] )
@@ -118,11 +157,12 @@ strategy name    = "MASK"
                  | "TRUNCATE"
                  | "TRUNCATE_TO_YEAR"
                  | "SHIFT"
+                 | "RELATIVE"
                  | "ABBREVIATE" ;
 
 strategy args    = named arg , { "," , named arg } ;
 
-named arg        = id , "=" , literal ;
+named arg        = id , "=" , setting value ;
 
 predicate        = confidence predicate
                  | "(" , predicate , ")"

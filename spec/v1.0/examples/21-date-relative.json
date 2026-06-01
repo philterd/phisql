@@ -1,0 +1,9 @@
+{
+  "identifiers" : {
+    "date" : {
+      "dateFilterStrategies" : [ {
+        "strategy" : "RELATIVE"
+      } ]
+    }
+  }
+}

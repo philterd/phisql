@@ -1,0 +1,27 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [
+        { "strategy": "MASK" }
+      ]
+    }
+  },
+  "config": {
+    "splitting": {
+      "enabled": true,
+      "threshold": 5000,
+      "method": "newline"
+    },
+    "pdf": {
+      "redactionColor": "red",
+      "dpi": 300,
+      "showReplacement": true
+    },
+    "postFilters": {
+      "removeTrailingPeriods": false
+    },
+    "analysis": {
+      "identification": false
+    }
+  }
+}
