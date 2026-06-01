@@ -31,6 +31,13 @@
         <antlr.version>4.13.2</antlr.version>
         <jackson.version>2.17.2</jackson.version>
         <junit.version>5.10.2</junit.version>
+        <!--
+            Version of the canonical redaction policy schema bundled into this
+            JAR. The schema is authored at ../schema/<version>/schema.json; this
+            property selects which version is packaged and exposed at runtime via
+            ai.philterd.phisql.PolicySchema.
+        -->
+        <redaction.policy.schema.version>1.0.0</redaction.policy.schema.version>
     </properties>
 
     <dependencies>
@@ -61,6 +68,19 @@
     </dependencies>
 
     <build>
+        <!--
+            Filter src/main/resources so policy-schema.properties picks up the
+            redaction.policy.schema.version property at build time. That is how
+            PolicySchema learns which schema version was bundled without the
+            version being hardcoded in Java.
+        -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.antlr</groupId>
@@ -123,6 +143,35 @@
                                     <directory>${project.basedir}/../spec/v0.1/catalog</directory>
                                     <includes>
                                         <include>*.yaml</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <!--
+                        Bundle the canonical redaction policy schema as a JAR
+                        resource so projects depending on phisql can read it via
+                        ai.philterd.phisql.PolicySchema without checking out this
+                        repo. The version is selected by the
+                        redaction.policy.schema.version property and the resource
+                        path mirrors the repo and published-URL layout
+                        (schema/<version>/schema.json). The JSON is copied
+                        verbatim (not filtered) to keep it byte-identical to the
+                        source of truth.
+                    -->
+                    <execution>
+                        <id>copy-policy-schema</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}/schema/${redaction.policy.schema.version}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/../schema/${redaction.policy.schema.version}</directory>
+                                    <includes>
+                                        <include>schema.json</include>
                                     </includes>
                                 </resource>
                             </resources>
