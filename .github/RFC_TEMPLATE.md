@@ -18,9 +18,22 @@ Concrete user stories or real-world policy files that are awkward or impossible 
 
 If a workaround exists, describe it and explain why it is insufficient.
 
+## Proposed schema changes
+
+The schema under `schema/` is the canonical policy contract, so a change to what a valid policy looks like is a schema change first. Show the exact additions, removals, or modifications to `schema/<version>/schema.json` — the relevant fragment before and after.
+
+State whether the change is:
+
+- **Backward-compatible** (an additive edit to the current `schema/<version>/schema.json`), or
+- **Backward-incompatible** (a new `schema/<new-version>/schema.json` directory, with the `version` field and `$id` bumped). Explain why the break is necessary and which existing policies it affects.
+
+If the change adds or alters an entity type or strategy, state how the **Phileas runtime** implements it. The schema must not declare anything Phileas does not support — the Phileas conformance test fails the build on drift — so an accepted RFC is complete only once the runtime conforms.
+
+If the change does not touch the policy contract (a PhiSQL-surface-only change, e.g. a new spelling that compiles to an existing construct), write "N/A — no schema change" and explain why.
+
 ## Proposed grammar changes
 
-The exact additions, removals, or modifications to `spec/v0.1/grammar/PhiSQL.g4` and `PhiSQL.ebnf`. Show the relevant productions before and after.
+The PhiSQL surface for the schema change above. The exact additions, removals, or modifications to `spec/v0.1/grammar/PhiSQL.g4` and `PhiSQL.ebnf`. Show the relevant productions before and after.
 
 ```antlr
 // Before

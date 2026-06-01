@@ -23,26 +23,31 @@ from __future__ import annotations
 
 import json
 import sys
-import urllib.request
 from pathlib import Path
 from typing import Any
 
 import yaml
 from jsonschema import Draft202012Validator
 
-SCHEMA_URL = "https://philterd.ai/schemas/redaction-policy/1.0.0/schema.json"
+SCHEMA_VERSION = "1.0.0"
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SPEC_DIR = REPO_ROOT / "spec" / "v0.1"
+
+# The canonical redaction policy schema is authored in this repository
+# (schema/<version>/schema.json) and published to philterd.ai. Validate against the in-repo
+# source of truth rather than the deployed copy.
+SCHEMA_PATH = REPO_ROOT / "schema" / SCHEMA_VERSION / "schema.json"
 
 # Discovery examples target a separate JSON shape and are validated by
 # check_discovery_examples() rather than check_examples_validate().
 DISCOVERY_EXAMPLE_PREFIXES = ("15-", "16-", "17-", "18-", "19-")
 
 
-def fetch_schema() -> dict:
-    with urllib.request.urlopen(SCHEMA_URL) as response:
-        return json.loads(response.read())
+def load_schema() -> dict:
+    """Load the canonical redaction policy schema from the in-repo source of truth."""
+    with SCHEMA_PATH.open() as f:
+        return json.load(f)
 
 
 def load_yaml(path: Path) -> Any:
@@ -217,7 +222,7 @@ def section(title: str) -> None:
 
 
 def main() -> int:
-    schema = fetch_schema()
+    schema = load_schema()
     all_errors: list[tuple[str, list[str]]] = []
 
     section("1. Catalog YAML well-formedness")

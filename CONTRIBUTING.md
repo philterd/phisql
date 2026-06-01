@@ -16,8 +16,9 @@ Bug fixes, documentation tweaks, new test cases, and clarifications that do not 
 
 ## What needs an RFC
 
-File an RFC for any change that:
+The redaction policy schema under [`schema/`](schema/) is the canonical contract; changes are proposed against it. File an RFC for any change that:
 
+- **Adds, removes, or modifies the redaction policy schema** under `schema/` — a new entity type, strategy, field, constraint, or enum value. This changes the contract itself; the catalog, grammar, and reference implementation follow from it. A backward-incompatible schema change is a new schema version (a new `schema/<version>/` directory).
 - Adds, removes, or modifies grammar productions in `spec/v0.1/grammar/PhiSQL.g4` or `PhiSQL.ebnf`.
 - Changes the catalog files in `spec/v0.1/catalog/` in a way that alters what a conforming compiler must accept or reject (adding an entity type, changing a strategy's allowed arguments, reserving a new keyword).
 - Changes how PhiSQL compiles to Phileas JSON (the compile contract documented under `catalog/`).
@@ -37,6 +38,16 @@ Open a normal PR for:
 - Reference-implementation refactoring that does not change observable compile behavior.
 - CI/workflow changes that do not affect what the spec accepts or produces.
 - Bug fixes where the spec is unambiguous and the implementation diverged from it. (Reference the spec section the fix restores.)
+
+## Changing the schema
+
+The schema under [`schema/`](schema/) is the source of truth for the policy contract, so a change to what a valid policy looks like is, first and foremost, a schema change. An RFC for such a change must:
+
+1. **Update the schema.** Edit `schema/<version>/schema.json` for an additive (backward-compatible) change, or add a new `schema/<new-version>/schema.json` for a backward-incompatible one, bumping the `version` field and `$id` to match.
+2. **Update PhiSQL to match.** Reflect the change in the catalog (`spec/v0.1/catalog/`), the grammar, and the reference compiler so PhiSQL can express it and still compiles to valid policy JSON. CI validates every example against the schema in `schema/`.
+3. **Account for the runtime.** The schema must not declare anything the Phileas runtime does not implement. Phileas downloads the published schema and embeds it, and a conformance test there fails the build if the schema and the engine drift apart — so a schema addition is complete only once Phileas implements it.
+
+The canonical source is `schema/` in this repository. The copy published at `https://philterd.ai/schemas/redaction-policy/<version>/schema.json` is kept in sync with it; do not edit the published copy directly.
 
 ## How to file an RFC
 
@@ -88,15 +99,17 @@ State definitions:
 Reviewers evaluate an RFC against these criteria, in roughly this priority order:
 
 1. **Necessity.** Is there a real problem? Could it be solved without changing the spec (e.g., a library or convention)?
-2. **Phileas-JSON representability.** Can the proposed construct compile to existing Phileas JSON, or does it require a Phileas runtime change? The latter raises the bar significantly — see the README's "Phileas JSON leads; PhiSQL follows" stance.
+2. **Phileas-JSON representability.** Can the proposed construct compile to existing Phileas JSON, or does it require a Phileas runtime change? The latter raises the bar significantly — see the README's "The policy json schema leads; PhiSQL follows" stance.
 3. **Backward compatibility.** Does the change break existing PhiSQL files or existing Phileas JSON policies? Breaking changes are not impossible but require strong justification and a migration story.
-4. **Spec clarity.** Are the proposed grammar changes unambiguous? Does the EBNF match the ANTLR grammar?
+4. **Spec clarity.** Are the proposed schema and grammar changes unambiguous? Is the `schema/<version>/schema.json` delta well-formed, does the EBNF match the ANTLR grammar, and does the catalog match the schema?
 5. **Coverage.** Are there worked examples? Do they round-trip through the reference compiler?
 6. **Alternatives.** Was the design space genuinely explored, or is the proposal the first thing the author thought of?
 
 ## Versioning policy
 
 The PhiSQL spec versions live under `spec/v<MAJOR>.<MINOR>/`. There is no patch level on the spec itself — patch-level fixes to text, comments, or example files do not change the version. The reference implementation is versioned independently and follows standard SemVer.
+
+The redaction policy schema is versioned independently of the PhiSQL spec, under `schema/<version>/`. An additive, backward-compatible change edits the current `schema/<version>/schema.json` in place. A backward-incompatible change mints a new `schema/<version>/` directory with the `version` field and `$id` bumped; the previous version stays published so existing policies keep validating. The Phileas version → schema version mapping is recorded in the Phileas README.
 
 A **minor** version bump (`v0.1` → `v0.2`) is warranted when an Accepted RFC:
 

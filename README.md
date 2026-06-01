@@ -2,7 +2,12 @@
 
 PhiSQL is the declarative query language for PII privacy operations across the Philterd toolkit.
 
-This repository contains both the **specification** and the **reference parser implementation**. They live together because they evolve together: the parser is generated from the grammar in the spec, and every example file in the spec is parsed by the implementation as part of CI.
+This repository is the home of two things that evolve together:
+
+- **The redaction policy schema** ([`schema/`](schema/)) — the canonical, versioned JSON Schema that defines a valid Phileas redaction policy. It is published to `https://philterd.ai/schemas/redaction-policy/<version>/schema.json` and is the contract that PhiSQL compiles to and that Phileas executes against.
+- **PhiSQL** — the authoring language that compiles to that schema: its **specification** (`spec/`) and the **reference parser/compiler** (`reference/`).
+
+They live in one repository because they change together: adding an entity type or strategy means updating the schema and PhiSQL's grammar and catalog in the same pull request, and CI validates every PhiSQL example against the schema under `schema/`.
 
 ## Status
 
@@ -15,6 +20,9 @@ PhiSQL today is the policy DSL; PhiSQL tomorrow is the unified query language fo
 
 ```
 philterd/phisql/
+├── schema/                       Canonical redaction policy JSON schema (the contract)
+│   ├── README.md                 Schema overview, versioning, and editor support
+│   └── 1.0.0/schema.json         One directory per schema version
 ├── spec/v0.1/
 │   ├── grammar/
 │   │   ├── PhiSQL.g4           ANTLR4 grammar (executable normative reference)
@@ -45,7 +53,7 @@ The reference implementation generates a Java parser from `spec/v0.1/grammar/Phi
 
 ## Relationship to the Phileas policy schema
 
-The [Phileas JSON policy schema](https://github.com/philterd/phileas/blob/main/policy-schema/redaction-policy-schema.json) is the **canonical execution contract** for redaction. PhiSQL is a **convenience authoring layer** that compiles to it.
+The [Phileas JSON policy schema](https://philterd.ai/schemas/redaction-policy/1.0.0/schema.json) is the **canonical execution contract** for redaction. PhiSQL is a **convenience authoring layer** that compiles to it.
 
 ```
 PhiSQL source  ->  Compiler  ->  Phileas JSON policy  ->  Phileas runtime
@@ -53,7 +61,7 @@ PhiSQL source  ->  Compiler  ->  Phileas JSON policy  ->  Phileas runtime
 
 The v0.1 governance posture:
 
-- **Phileas JSON leads; PhiSQL follows.** Anything PhiSQL can express must be representable as Phileas JSON.
+- **The policy json schema leads; PhiSQL follows.** Anything PhiSQL can express must be representable as Phileas JSON.
 - **The runtime does not change.** Phileas continues to execute against the JSON schema it already understands.
 - **The policy library stays in JSON.** [`philterd/pii-redaction-policies`](https://github.com/philterd/pii-redaction-policies) remains the source of truth for distributable policies.
 - **No proprietary extensions.** PhiSQL must not introduce constructs that have no Phileas JSON equivalent.

@@ -24,7 +24,7 @@
 #     description : human-readable description (informative).
 
 version: v0.1
-phileas_schema_ref: https://github.com/philterd/phileas/blob/main/policy-schema/redaction-policy-schema.json
+phileas_schema_ref: https://philterd.ai/schemas/redaction-policy/1.0.0/schema.json
 
 strategies:
   - name: REDACT
