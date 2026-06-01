@@ -4,8 +4,8 @@ PhiSQL is the declarative query language for PII privacy operations across the P
 
 This repository is the home of two things that evolve together:
 
-- **The redaction policy schema** ([`schema/`](schema/)) — the canonical, versioned JSON Schema that defines a valid Phileas redaction policy. It is published to `https://philterd.ai/schemas/redaction-policy/<version>/schema.json` and is the contract that PhiSQL compiles to and that Phileas executes against.
-- **PhiSQL** — the authoring language that compiles to that schema: its **specification** (`spec/`) and the **reference parser/compiler** (`reference/`).
+- **The redaction policy schema** ([`schema/`](schema/)) - the canonical, versioned JSON Schema that defines a valid Phileas redaction policy. It is published to `https://philterd.ai/schemas/redaction-policy/<version>/schema.json` and is the contract that PhiSQL compiles to and that Phileas executes against.
+- **PhiSQL** - the authoring language that compiles to that schema: its **specification** (`spec/`) and the **reference parser/compiler** (`reference/`).
 
 They live in one repository because they change together: adding an entity type or strategy means updating the schema and PhiSQL's grammar and catalog in the same pull request, and CI validates every PhiSQL example against the schema under `schema/`.
 
@@ -60,7 +60,7 @@ The Phileas JSON schema has no top-level `name` or `description` fields; policy 
 
 Two CI workflows enforce that the spec and the reference implementation cannot drift:
 
-- **`.github/workflows/validate.yml`** runs `scripts/validate_spec.py` to verify (a) the catalog YAML files are well-formed, (b) every Phileas field referenced by the catalogs exists in the canonical Phileas schema, (c) every example JSON file validates against the same Phileas schema, (d) discovery examples reference known findings columns, (e) PhiSQL covers the schema — every schema identifier, strategy, and top-level block is either exposed by PhiSQL or recorded as a deliberate deferral — and (f) PhiSQL covers every schema *leaf field*, descending into each policy object so no individual property can silently fall behind the schema.
+- **`.github/workflows/validate.yml`** runs `scripts/validate_spec.py` to verify (a) the catalog YAML files are well-formed, (b) every Phileas field referenced by the catalogs exists in the canonical Phileas schema, (c) every example JSON file validates against the same Phileas schema, (d) discovery examples reference known findings columns, (e) PhiSQL covers the schema - every schema identifier, strategy, and top-level block is either exposed by PhiSQL or recorded as a deliberate deferral - and (f) PhiSQL covers every schema *leaf field*, descending into each policy object so no individual property can silently fall behind the schema.
 
 - **`.github/workflows/reference.yml`** builds the Java reference implementation, which generates a parser from `spec/v1.0/grammar/PhiSQL.g4` and parses every `.phisql` example file as part of its test suite. Any grammar change that breaks an example, or any new example the grammar can't parse, fails this job.
 
@@ -80,10 +80,10 @@ cd reference && mvn verify
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the RFC process, lifecycle, review criteria, and versioning policy. The RFC template is at [`.github/RFC_TEMPLATE.md`](.github/RFC_TEMPLATE.md); accepted, rejected, and withdrawn RFCs live under [`rfcs/`](rfcs/).
 
-Bug fixes, documentation tweaks, and new examples exercising already-specified grammar do not need an RFC — open a normal pull request. Feedback on PhiSQL v1.0 is welcome via GitHub issues.
+Bug fixes, documentation tweaks, and new examples exercising already-specified grammar do not need an RFC - open a normal pull request. Feedback on PhiSQL v1.0 is welcome via GitHub issues.
 
 ## License
 
-"PhiSQL" is a registered trademark of Philterd, LLC. The specification is freely readable and implementable, but the **name** is reserved for implementations that pass the conformance test suite (forthcoming at [`philterd/phisql-conformance`](https://github.com/philterd/phisql-conformance)).
+"PhiSQL" is a registered trademark of Philterd, LLC. The specification is freely readable and implementable, but the name is reserved for implementations that pass the conformance test suite (forthcoming at [`philterd/phisql-conformance`](https://github.com/philterd/phisql-conformance)).
 
 The specification, reference implementation, and all artifacts in this repository are licensed under the [Apache License, Version 2.0](LICENSE).
