@@ -36,7 +36,7 @@ ignoreStmt
     ;
 ```
 
-The change is to the **compiler contract** documented in `spec/v0.1/catalog/` and enforced by the reference compiler:
+The change is to the **compiler contract** documented in `spec/v1.0/catalog/` and enforced by the reference compiler:
 
 - **Before:** `IGNORE TERMS (...)` without a `FOR` clause raised a `CompileException`.
 - **After:** `IGNORE TERMS (...)` without a `FOR` clause compiles to one entry appended to the top-level `ignored` array of the Phileas JSON output, in the `{ "terms": [...] }` object shape defined by `$defs.ignored` in the Phileas schema.
@@ -45,7 +45,7 @@ The existing scoped form (`IGNORE TERMS (...) FOR <entity>`) is unchanged: it co
 
 ## Examples
 
-PhiSQL source (`spec/v0.1/examples/11-policy-wide-ignore-terms.phisql`):
+PhiSQL source (`spec/v1.0/examples/11-policy-wide-ignore-terms.phisql`):
 
 ```sql
 -- Policy-wide ignore terms. Without a FOR <entity> clause, IGNORE TERMS
@@ -59,7 +59,7 @@ REDACT SSN, EMAIL_ADDRESS WITH MASK;
 IGNORE TERMS ('TEST', 'EXAMPLE', 'SAMPLE');
 ```
 
-Compiled Phileas JSON (`spec/v0.1/examples/11-policy-wide-ignore-terms.json`):
+Compiled Phileas JSON (`spec/v1.0/examples/11-policy-wide-ignore-terms.json`):
 
 ```json
 {
@@ -125,7 +125,7 @@ This is a strictly-additive change.
 Landed in commit [5e86cb2](https://github.com/philterd/phisql/commit/5e86cb2) — "Add policy-naming rule, fix scope-less IGNORE TERMS, license headers". Specifically:
 
 - `reference/src/main/java/ai/philterd/phisql/Compiler.java` — the `ignoreStmt` branch was updated to write to the top-level `ignored` array when the `FOR` clause is absent, rather than raising `CompileException`.
-- `spec/v0.1/examples/11-policy-wide-ignore-terms.phisql` and `.json` — the worked example.
+- `spec/v1.0/examples/11-policy-wide-ignore-terms.phisql` and `.json` — the worked example.
 - `reference/src/test/java/ai/philterd/phisql/CompilerTest.java` — picks up the new example via the existing parameterized round-trip test (no new test method needed).
 
 ## Unresolved questions

@@ -33,7 +33,7 @@ If the change does not touch the policy contract (a PhiSQL-surface-only change, 
 
 ## Proposed grammar changes
 
-The PhiSQL surface for the schema change above. The exact additions, removals, or modifications to `spec/v0.1/grammar/PhiSQL.g4` and `PhiSQL.ebnf`. Show the relevant productions before and after.
+The PhiSQL surface for the schema change above. The exact additions, removals, or modifications to `spec/v1.0/grammar/PhiSQL.g4` and `PhiSQL.ebnf`. Show the relevant productions before and after.
 
 ```antlr
 // Before
@@ -49,7 +49,7 @@ ignoreStmt
 
 If the RFC introduces a new catalog file or modifies an existing one, show the diff or the new schema.
 
-If the RFC changes the compile-to-Phileas-JSON contract, describe the new mapping in the same terms used by `spec/v0.1/catalog/*.yaml`.
+If the RFC changes the compile-to-Phileas-JSON contract, describe the new mapping in the same terms used by `spec/v1.0/catalog/*.yaml`.
 
 ## Examples
 

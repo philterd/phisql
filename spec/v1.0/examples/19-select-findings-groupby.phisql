@@ -4,8 +4,8 @@
 -- WHERE filter, and GROUP BY.
 --
 -- The findings table schema is normative; columns referenced here must
--- match spec/v0.1/catalog/findings.yaml. NOW() and INTERVAL arithmetic are
--- intentionally not part of v0.1; the example uses an absolute date so the
+-- match spec/v1.0/catalog/findings.yaml. NOW() and INTERVAL arithmetic are
+-- intentionally not part of v1.0; the example uses an absolute date so the
 -- compiled JSON is deterministic.
 --
 -- Compiles to the JSON in 19-select-findings-groupby.json.

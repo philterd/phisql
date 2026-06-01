@@ -1,4 +1,4 @@
-# PhiSQL v0.1 findings table schema.
+# PhiSQL v1.0 findings table schema.
 #
 # Defines the columns and types of a finding row produced by a discovery
 # scan. The `SELECT ... FROM findings` form in PhiSQL projects, filters,
@@ -13,7 +13,7 @@
 #
 # Status: DRAFT. Subject to change before v1.0.
 
-version: v0.1
+version: v1.0
 
 table:
   name: findings

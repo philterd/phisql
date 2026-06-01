@@ -38,9 +38,9 @@ import java.util.Map;
 public final class Catalog {
 
     /** Catalog version (matches the spec version this catalog targets). */
-    public static final String VERSION = "v0.1";
+    public static final String VERSION = "v1.0";
 
-    private static final String RESOURCE_PREFIX = "/spec/v0.1/catalog/";
+    private static final String RESOURCE_PREFIX = "/spec/v1.0/catalog/";
 
     private final Map<String, EntityType> entitiesByName;
     private final Map<String, Strategy> strategiesByName;
@@ -51,7 +51,7 @@ public final class Catalog {
         this.strategiesByName = strategiesByName;
     }
 
-    /** Loads the v0.1 catalog from JAR resources. */
+    /** Loads the v1.0 catalog from JAR resources. */
     public static Catalog loadDefault() {
         try {
             return load(RESOURCE_PREFIX);

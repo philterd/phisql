@@ -1,4 +1,4 @@
-# PhiSQL v0.1 entity type catalog.
+# PhiSQL v1.0 entity type catalog.
 #
 # Each entry maps a PhiSQL entity type name to its location in the Phileas
 # JSON policy schema. This catalog is the source of truth for entity types.
@@ -16,7 +16,7 @@
 #     phileas_strategies_field : the strategies array name on the filter object.
 #     description    : human-readable description (informative).
 
-version: v0.1
+version: v1.0
 phileas_schema_ref: https://philterd.ai/schemas/redaction-policy/1.0.0/schema.json
 
 entities:
@@ -176,7 +176,7 @@ entities:
 # Custom identifiers compile to an entry in identifiers.identifiers[] with
 # classification set to the quoted string and a corresponding entry in
 # identifierFilterStrategies. The pattern, caseSensitive, and groupNumber
-# fields are not exposed in PhiSQL v0.1; they must be configured separately
+# fields are not exposed in PhiSQL v1.0; they must be configured separately
 # in the policy library or set via JSON post-processing.
 
 custom_identifier:
@@ -191,4 +191,4 @@ deferred:
       The Phileas schema has deprecated the `person` field in favor of the
       `pheyes` array with PhEye labels. PhEye-backed PERSON requires a
       PhEye configuration block whose surface is not yet settled.
-      Use FIRST_NAME, SURNAME, and PHYSICIAN_NAME in PhiSQL v0.1.
+      Use FIRST_NAME, SURNAME, and PHYSICIAN_NAME in PhiSQL v1.0.

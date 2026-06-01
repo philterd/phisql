@@ -1,4 +1,4 @@
-# PhiSQL v0.1 reserved keyword catalog.
+# PhiSQL v1.0 reserved keyword catalog.
 #
 # These keywords are reserved by the language. Implementations must reject
 # them as user-defined identifier names (policy names, dictionary names,
@@ -11,7 +11,7 @@
 # strategies.yaml are also reserved when appearing in their respective
 # syntactic positions; they are not duplicated here.
 
-version: v0.1
+version: v1.0
 
 keywords:
   - ABBREVIATE

@@ -1,4 +1,4 @@
-# PhiSQL v0.1 policy-naming semantics.
+# PhiSQL v1.0 policy-naming semantics.
 #
 # Defines how a PhiSQL document's POLICY declaration relates to the Phileas
 # JSON policy filename. The Phileas JSON policy schema has no top-level name
@@ -8,7 +8,7 @@
 #
 # Status: DRAFT. Subject to change before v1.0.
 
-version: v0.1
+version: v1.0
 
 policy_name:
   source: filename_basename

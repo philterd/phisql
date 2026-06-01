@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Compiles every redaction example {@code .phisql} file under
- * {@code spec/v0.1/examples/} and verifies the output matches the
+ * {@code spec/v1.0/examples/} and verifies the output matches the
  * corresponding {@code .json} file. This is the load-bearing assertion that
  * the compiler stays in sync with the spec examples: any divergence fails
  * the build.
@@ -48,7 +48,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class CompilerTest {
 
     private static final Path EXAMPLES_DIR =
-            Paths.get("..", "spec", "v0.1", "examples").toAbsolutePath().normalize();
+            Paths.get("..", "spec", "v1.0", "examples").toAbsolutePath().normalize();
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 

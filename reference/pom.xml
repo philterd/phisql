@@ -6,16 +6,22 @@
 
     <groupId>ai.philterd</groupId>
     <artifactId>phisql</artifactId>
-    <version>0.1-draft-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>PhiSQL Reference Implementation</name>
     <description>
         Reference parser and AST library for the PhiSQL specification.
-        The parser is generated from spec/v0.1/grammar/PhiSQL.g4 at build time.
+        The parser is generated from spec/v1.0/grammar/PhiSQL.g4 at build time.
         The grammar file is the source of truth; any drift causes the build to fail.
     </description>
     <url>https://github.com/philterd/phisql</url>
+    <inceptionYear>2026</inceptionYear>
+
+    <organization>
+        <name>Philterd, LLC</name>
+        <url>https://www.philterd.ai</url>
+    </organization>
 
     <licenses>
         <license>
@@ -24,6 +30,21 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+
+    <developers>
+        <developer>
+            <name>Philterd, LLC</name>
+            <email>support@philterd.ai</email>
+            <organization>Philterd</organization>
+            <organizationUrl>https://www.philterd.ai</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git@github.com:philterd/phisql.git</connection>
+        <developerConnection>scm:git@github.com:philterd/phisql.git</developerConnection>
+        <url>https://github.com/philterd/phisql/</url>
+    </scm>
 
     <properties>
         <maven.compiler.release>25</maven.compiler.release>
@@ -82,6 +103,52 @@
         </resources>
 
         <plugins>
+            <!--
+                Maven Central publishing. Releases are pushed through the Sonatype
+                Central portal; the GPG signing required by Central lives in the
+                `sign` profile below so local/CI builds don't need a key.
+            -->
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.9.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.4.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.12.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <additionalOptions>
+                                <additionalOption>-Xdoclint:none</additionalOption>
+                            </additionalOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr4-maven-plugin</artifactId>
@@ -99,7 +166,7 @@
                                 cannot drift from the spec: there is only one
                                 grammar file in the repo, and it lives in spec/.
                             -->
-                            <sourceDirectory>${project.basedir}/../spec/v0.1/grammar</sourceDirectory>
+                            <sourceDirectory>${project.basedir}/../spec/v1.0/grammar</sourceDirectory>
                             <outputDirectory>${project.build.directory}/generated-sources/antlr4/ai/philterd/phisql/grammar</outputDirectory>
                             <visitor>true</visitor>
                             <listener>true</listener>
@@ -137,10 +204,10 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.outputDirectory}/spec/v0.1/catalog</outputDirectory>
+                            <outputDirectory>${project.build.outputDirectory}/spec/v1.0/catalog</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${project.basedir}/../spec/v0.1/catalog</directory>
+                                    <directory>${project.basedir}/../spec/v1.0/catalog</directory>
                                     <includes>
                                         <include>*.yaml</include>
                                     </includes>
@@ -181,4 +248,37 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!--
+            Activated with -Dsign (used by the Central release build) to GPG-sign
+            all artifacts, which Maven Central requires.
+        -->
+        <profile>
+            <id>sign</id>
+            <activation>
+                <property>
+                    <name>sign</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>3.2.7</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

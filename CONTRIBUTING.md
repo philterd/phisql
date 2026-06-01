@@ -19,8 +19,8 @@ Bug fixes, documentation tweaks, new test cases, and clarifications that do not 
 The redaction policy schema under [`schema/`](schema/) is the canonical contract; changes are proposed against it. File an RFC for any change that:
 
 - **Adds, removes, or modifies the redaction policy schema** under `schema/` — a new entity type, strategy, field, constraint, or enum value. This changes the contract itself; the catalog, grammar, and reference implementation follow from it. A backward-incompatible schema change is a new schema version (a new `schema/<version>/` directory).
-- Adds, removes, or modifies grammar productions in `spec/v0.1/grammar/PhiSQL.g4` or `PhiSQL.ebnf`.
-- Changes the catalog files in `spec/v0.1/catalog/` in a way that alters what a conforming compiler must accept or reject (adding an entity type, changing a strategy's allowed arguments, reserving a new keyword).
+- Adds, removes, or modifies grammar productions in `spec/v1.0/grammar/PhiSQL.g4` or `PhiSQL.ebnf`.
+- Changes the catalog files in `spec/v1.0/catalog/` in a way that alters what a conforming compiler must accept or reject (adding an entity type, changing a strategy's allowed arguments, reserving a new keyword).
 - Changes how PhiSQL compiles to Phileas JSON (the compile contract documented under `catalog/`).
 - Introduces a new statement, clause, or predicate form.
 - Defers, retires, or renames an existing language feature.
@@ -33,7 +33,7 @@ When in doubt, open an issue first and ask. A maintainer will tell you whether a
 Open a normal PR for:
 
 - Typo, grammar, and formatting fixes in any document.
-- New worked examples under `spec/v0.1/examples/` that exercise *already-specified* grammar.
+- New worked examples under `spec/v1.0/examples/` that exercise *already-specified* grammar.
 - Additional reference-implementation tests that lock down *already-specified* behavior.
 - Reference-implementation refactoring that does not change observable compile behavior.
 - CI/workflow changes that do not affect what the spec accepts or produces.
@@ -44,7 +44,7 @@ Open a normal PR for:
 The schema under [`schema/`](schema/) is the source of truth for the policy contract, so a change to what a valid policy looks like is, first and foremost, a schema change. An RFC for such a change must:
 
 1. **Update the schema.** Edit `schema/<version>/schema.json` for an additive (backward-compatible) change, or add a new `schema/<new-version>/schema.json` for a backward-incompatible one, bumping the `version` field and `$id` to match.
-2. **Update PhiSQL to match.** Reflect the change in the catalog (`spec/v0.1/catalog/`), the grammar, and the reference compiler so PhiSQL can express it and still compiles to valid policy JSON. CI validates every example against the schema in `schema/`.
+2. **Update PhiSQL to match.** Reflect the change in the catalog (`spec/v1.0/catalog/`), the grammar, and the reference compiler so PhiSQL can express it and still compiles to valid policy JSON. CI validates every example against the schema in `schema/`.
 3. **Account for the runtime.** The schema must not declare anything the Phileas runtime does not implement. Phileas downloads the published schema and embeds it, and a conformance test there fails the build if the schema and the engine drift apart — so a schema addition is complete only once Phileas implements it.
 
 The canonical source is `schema/` in this repository. The copy published at `https://philterd.ai/schemas/redaction-policy/<version>/schema.json` is kept in sync with it; do not edit the published copy directly.
@@ -88,13 +88,13 @@ State definitions:
 
 ## Review process and merge authority
 
-**Initially (pre-1.0):** Philterd maintainers have merge authority on all RFCs. Acceptance requires:
+**Currently:** Philterd maintainers have merge authority on all RFCs. Acceptance requires:
 
 - At least one maintainer approval on the PR.
 - The minimum 7-day Review window has elapsed.
 - No unresolved blocking objections from any maintainer.
 
-**Post-1.0:** Merge authority will move to a working group with representation from Philterd and from any organization shipping a conforming implementation. The transition will itself be governed by an RFC.
+**Once conforming third-party implementations ship:** Merge authority will move to a working group with representation from Philterd and from any organization shipping a conforming implementation. The transition will itself be governed by an RFC.
 
 Reviewers evaluate an RFC against these criteria, in roughly this priority order:
 
@@ -111,14 +111,14 @@ The PhiSQL spec versions live under `spec/v<MAJOR>.<MINOR>/`. There is no patch 
 
 The redaction policy schema is versioned independently of the PhiSQL spec, under `schema/<version>/`. An additive, backward-compatible change edits the current `schema/<version>/schema.json` in place. A backward-incompatible change mints a new `schema/<version>/` directory with the `version` field and `$id` bumped; the previous version stays published so existing policies keep validating. The Phileas version → schema version mapping is recorded in the Phileas README.
 
-A **minor** version bump (`v0.1` → `v0.2`) is warranted when an Accepted RFC:
+A **minor** version bump (`v1.0` → `v1.1`) is warranted when an Accepted RFC:
 
 - Adds a new statement, clause, predicate, entity type, or strategy.
 - Adds a new optional argument to an existing strategy.
 - Relaxes a previous restriction (formerly-rejected input is now accepted).
 - Adds a new catalog file or new fields to an existing one in a backward-compatible way.
 
-A **major** version bump (`v0.1` → `v1.0`, `v1.x` → `v2.0`) is warranted when an Accepted RFC:
+A **major** version bump (`v1.x` → `v2.0`) is warranted when an Accepted RFC:
 
 - Removes or renames any existing statement, clause, entity, or strategy.
 - Tightens a previous permissive rule (formerly-accepted input is now rejected).
@@ -126,7 +126,7 @@ A **major** version bump (`v0.1` → `v1.0`, `v1.x` → `v2.0`) is warranted whe
 - Reserves a new keyword that could have been used as an identifier in a prior version.
 - Changes the policy-naming, file-layout, or any other normative convention downstream consumers rely on.
 
-Pre-1.0 (the current state), the spec is explicitly draft and breaking changes may land within a single minor version. The first `v1.0` release establishes the compatibility contract; from that point, the rules above are binding.
+As of the `v1.0` release the compatibility contract is in force: the spec is no longer a draft, the rules above are binding, and a breaking change requires a major version bump rather than landing within a minor version.
 
 Each accepted RFC must state which kind of bump it requires in its `versioning_impact` frontmatter field. The release manager bundles accepted RFCs into the next version following these rules.
 

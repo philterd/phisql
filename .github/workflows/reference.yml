@@ -21,7 +21,7 @@ jobs:
         working-directory: reference
         run: mvn -B verify
 
-      # The parser is generated from spec/v0.1/grammar/PhiSQL.g4 at build time
+      # The parser is generated from spec/v1.0/grammar/PhiSQL.g4 at build time
       # and every example .phisql file is parsed by the generated parser as
       # part of the test suite. If the grammar drifts from the examples, this
       # job fails.

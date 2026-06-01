@@ -1,5 +1,5 @@
 (*
- * PhiSQL v0.1 grammar in ISO 14977 EBNF.
+ * PhiSQL v1.0 grammar in ISO 14977 EBNF.
  *
  * Cross-validated against the ANTLR4 grammar in PhiSQL.g4.
  * The ANTLR4 grammar is the executable normative reference; this file is

@@ -29,14 +29,14 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 /**
- * Parses every example file under spec/v0.1/examples/ to verify the generated
+ * Parses every example file under spec/v1.0/examples/ to verify the generated
  * parser stays in sync with the spec. New examples added to the spec are
  * automatically covered.
  */
 class ExamplesParseTest {
 
     private static final Path EXAMPLES_DIR =
-            Paths.get("..", "spec", "v0.1", "examples").toAbsolutePath().normalize();
+            Paths.get("..", "spec", "v1.0", "examples").toAbsolutePath().normalize();
 
     @TestFactory
     Stream<DynamicTest> everyExampleParses() throws IOException {

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Validate the PhiSQL v0.1 spec artifacts against each other and against the
+Validate the PhiSQL v1.0 spec artifacts against each other and against the
 canonical Phileas policy schema.
 
 Four checks run, in order:
@@ -9,7 +9,7 @@ Four checks run, in order:
 2. Every Phileas field referenced by the catalogs exists in the canonical
    Phileas JSON schema. This is the load-bearing assertion that PhiSQL
    compiles to valid Phileas JSON for the redaction subset.
-3. Every redaction-example JSON file under spec/v0.1/examples/ validates
+3. Every redaction-example JSON file under spec/v1.0/examples/ validates
    against the canonical Phileas schema. Examples are routed by their
    top-level `operation` field: a discovery operation skips this check,
    everything else validates as a Phileas redaction policy.
@@ -33,7 +33,7 @@ from jsonschema import Draft202012Validator
 SCHEMA_VERSION = "1.0.0"
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-SPEC_DIR = REPO_ROOT / "spec" / "v0.1"
+SPEC_DIR = REPO_ROOT / "spec" / "v1.0"
 
 # The canonical redaction policy schema is authored in this repository
 # (schema/<version>/schema.json) and published to philterd.ai. Validate against the in-repo

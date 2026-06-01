@@ -1,4 +1,4 @@
-# PhiSQL v0.1 filter strategy catalog.
+# PhiSQL v1.0 filter strategy catalog.
 #
 # Each entry maps a PhiSQL strategy keyword to a Phileas
 # baseFilterStrategy.strategy enum value and declares the allowed named
@@ -23,7 +23,7 @@
 #       enum_values : optional, for type=enum.
 #     description : human-readable description (informative).
 
-version: v0.1
+version: v1.0
 phileas_schema_ref: https://philterd.ai/schemas/redaction-policy/1.0.0/schema.json
 
 strategies:

@@ -1,4 +1,4 @@
-# PhiSQL v0.1 predicate catalog.
+# PhiSQL v1.0 predicate catalog.
 #
 # Defines the predicate functions available in WHERE clauses and how each
 # compiles to the Phileas `conditions` string on a strategy object.
@@ -20,7 +20,7 @@
 #     phileas_field : the field on the strategy object that receives the
 #                     compiled conditions string.
 
-version: v0.1
+version: v1.0
 
 # Composition of multiple predicates inside a WHERE clause.
 compose:

@@ -34,9 +34,9 @@ import java.util.List;
 /**
  * Entry point for parsing PhiSQL source into an ANTLR parse tree.
  *
- * <p>Behavior is defined by the grammar at {@code spec/v0.1/grammar/PhiSQL.g4}
+ * <p>Behavior is defined by the grammar at {@code spec/v1.0/grammar/PhiSQL.g4}
  * (the parser is generated from it at build time) and by the catalog files
- * under {@code spec/v0.1/catalog/} (consumed by the compiler).
+ * under {@code spec/v1.0/catalog/} (consumed by the compiler).
  */
 public final class PhiSQL {
 

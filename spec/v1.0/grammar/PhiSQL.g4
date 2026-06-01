@@ -1,5 +1,5 @@
 /*
- * PhiSQL v0.1 grammar.
+ * PhiSQL v1.0 grammar.
  *
  * Normative reference. Implementations may generate a parser directly from this file.
  * Reference parser: https://github.com/philterd/phisql.
@@ -9,8 +9,8 @@
  *
  * Discovery query verbs (FIND PII, DISCOVER ENTITIES, SCAN) and a SELECT
  * projection over a findings store are supported alongside the redaction
- * statements. See spec/v0.1/catalog/findings.yaml for the findings table
- * schema and spec/v0.1/catalog/sources.yaml for the supported URI schemes
+ * statements. See spec/v1.0/catalog/findings.yaml for the findings table
+ * schema and spec/v1.0/catalog/sources.yaml for the supported URI schemes
  * on the IN clause.
  *
  * Keywords and entity-type identifiers are case-insensitive. User-defined
@@ -99,7 +99,7 @@ detectStmt
 // statements do not compile to Phileas JSON. They compile to a discovery-query
 // JSON shape that a discovery engine (such as Phinder) executes against a
 // storage source or a findings store. The findings schema lives in
-// spec/v0.1/catalog/findings.yaml; the column names referenced here must
+// spec/v1.0/catalog/findings.yaml; the column names referenced here must
 // resolve against that catalog when the compiler runs.
 discoveryStmt
     : FIND PII inClause whereDiscovery?                                       # findPiiStmt

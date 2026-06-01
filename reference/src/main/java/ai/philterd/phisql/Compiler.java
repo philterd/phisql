@@ -32,7 +32,7 @@ import java.util.Locale;
  * Compiles a parsed PhiSQL document into a Phileas JSON policy.
  *
  * <p>The compiler is driven by {@link Catalog}, which loads the
- * spec/v0.1/catalog/*.yaml files. Translation rules are defined by those
+ * spec/v1.0/catalog/*.yaml files. Translation rules are defined by those
  * files; this class implements the traversal.
  *
  * <p><b>Scope.</b> This compiler targets the redaction subset of PhiSQL
@@ -69,7 +69,7 @@ public final class Compiler {
      * (with {@code .phisql} stripped). If the file contains a {@code POLICY}
      * declaration, its name must match the basename after normalization
      * (hyphens and underscores are treated as equivalent). Defined in
-     * spec/v0.1/catalog/policy.yaml.
+     * spec/v1.0/catalog/policy.yaml.
      *
      * @throws CompileException on a POLICY/filename mismatch.
      */
@@ -145,7 +145,7 @@ public final class Compiler {
     /**
      * Resolves the policy name from the expected name (typically a filename
      * basename) and the declared name (from the POLICY statement). Implements
-     * the policy-naming rule defined in spec/v0.1/catalog/policy.yaml.
+     * the policy-naming rule defined in spec/v1.0/catalog/policy.yaml.
      */
     private static String resolvePolicyName(String expected, String declared) {
         if (expected != null && declared != null) {
@@ -447,7 +447,7 @@ public final class Compiler {
             return entityNode;
         }
         throw new CompileException(
-                "IGNORE clauses scoped to custom identifiers are not supported in v0.1.");
+                "IGNORE clauses scoped to custom identifiers are not supported in v1.0.");
     }
 
     // ------------------------------------------------------------------

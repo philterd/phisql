@@ -1,4 +1,4 @@
-# PhiSQL v0.1 discovery source catalog.
+# PhiSQL v1.0 discovery source catalog.
 #
 # Lists the URI schemes recognized in the IN clause of discovery statements
 # (FIND PII IN '<uri>', DISCOVER ENTITIES IN '<uri>', SCAN IN '<uri>').
@@ -11,7 +11,7 @@
 #
 # Status: DRAFT. Subject to change before v1.0.
 
-version: v0.1
+version: v1.0
 
 schemes:
   - scheme: s3

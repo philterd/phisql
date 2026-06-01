@@ -2,12 +2,18 @@
 
 All notable changes to the PhiSQL specification are documented here.
 
-This project does not yet follow [Semantic Versioning](https://semver.org/) because it is pre-1.0. Major version semantics will be defined when v1.0 is published.
+As of v1.0.0 this project follows [Semantic Versioning](https://semver.org/): additive, backward-compatible changes bump the minor version, and changes that break existing PhiSQL or Phileas JSON require a new major version.
 
-## [Unreleased]
+## [1.0.0] - 2026-06-01
+
+First stable release. The PhiSQL language, the redaction policy schema, and the `ai.philterd:phisql` reference jar are all versioned at 1.0.
 
 ### Added
 
+- **First stable release of PhiSQL.** The v1.0 grammar and semantics are frozen; conforming implementations may now claim conformance to v1.0.
+- **The canonical redaction policy schema (`schema/1.0.0/schema.json`) now lives in this repository** as the source of truth that PhiSQL compiles to and Phileas executes against.
+- **Schema bundled in the reference jar.** The build packages `schema/<version>/schema.json` as a JAR resource — the version selected by the `redaction.policy.schema.version` Maven property — and exposes it through the `ai.philterd.phisql.PolicySchema` API (`getSupportedSchemaVersion()`, `getSchema()`), so dependents read the schema without checking out this repository.
+- **Maven Central publishing** configured for `ai.philterd:phisql`: attached sources and javadoc jars, GPG signing via the `sign` profile, and the Sonatype Central portal.
 - `CONFIGURE CRYPTO KEY FROM ENV '<name>'` and `CONFIGURE FPE KEY FROM ENV '<name>' TWEAK FROM ENV '<name>'` statements for supplying the policy-level secrets required by the `ENCRYPT` (`CRYPTO_REPLACE`) and `FPE_ENCRYPT` (`FPE_ENCRYPT_REPLACE`) strategies, which previously had no way to be configured in PhiSQL. Secrets are referenced by environment-variable name only — never inlined — and compile to the Phileas `crypto`/`fpe` blocks using the `env:` prefix (e.g. `"crypto": { "key": "env:CRYPTO_KEY" }`). Example `20-crypto-encryption`.
 - **Discovery query verbs.** Three scan verbs and one query verb were added to the grammar:
   - `FIND PII IN '<uri>' [WHERE <predicate>]`
@@ -15,36 +21,36 @@ This project does not yet follow [Semantic Versioning](https://semver.org/) beca
   - `SCAN IN '<uri>' [WHERE <predicate>]`
   - `SELECT <projection> FROM <findings-ref> [WHERE ...] [GROUP BY ...] [LIMIT n]`
   These compile to a separate discovery-query JSON shape (not Phileas JSON). Conforming discovery engines such as Phinder consume the discovery-query JSON.
-- **`IN '<uri>'` clause** in discovery statements, accepting URIs from the schemes declared in `spec/v0.1/catalog/sources.yaml` (S3, GCS, Azure Blob, local filesystem, PostgreSQL, MySQL, Snowflake, BigQuery).
+- **`IN '<uri>'` clause** in discovery statements, accepting URIs from the schemes declared in `spec/v1.0/catalog/sources.yaml` (S3, GCS, Azure Blob, local filesystem, PostgreSQL, MySQL, Snowflake, BigQuery).
 - **Discovery WHERE predicates** over finding-row columns. Supported forms: `<column> IN ('a', 'b')`, `<column> <op> <literal>`, and `AND`/`OR`/parenthesization.
 - **SELECT projection surface**: column references, `*`, and aggregates (`COUNT`, `AVG`, `SUM`, `MIN`, `MAX`).
-- **`spec/v0.1/catalog/findings.yaml`** documenting the canonical findings table schema (columns, types, filterable subset, groupable subset). Sets `phinder` as the default namespace for the unqualified `findings` reference.
-- **`spec/v0.1/catalog/sources.yaml`** listing the URI schemes recognized in the `IN` clause. Engines that do not support a scheme must reject statements with a clear error rather than silently no-op.
-- **Reserved keywords** added: `FIND`, `PII`, `DISCOVER`, `ENTITIES`, `SCAN`, `IN`, `SELECT`, `FROM`, `BY`, `LIMIT`, `COUNT`, `AVG`, `SUM`, `MIN`, `MAX`. Pre-1.0, breaking changes may land within a minor version (per `CONTRIBUTING.md`'s versioning policy), so these reservations were folded into v0.1 rather than triggering a v0.2 cut.
-- **Five discovery examples** under `spec/v0.1/examples/` covering S3, GCS, Azure Blob, local filesystem, and a `SELECT ... GROUP BY` over the findings store (`15-find-pii-s3`, `16-discover-entities-gcs`, `17-scan-azure-blob`, `18-find-pii-local-filesystem`, `19-select-findings-groupby`).
+- **`spec/v1.0/catalog/findings.yaml`** documenting the canonical findings table schema (columns, types, filterable subset, groupable subset). Sets `phinder` as the default namespace for the unqualified `findings` reference.
+- **`spec/v1.0/catalog/sources.yaml`** listing the URI schemes recognized in the `IN` clause. Engines that do not support a scheme must reject statements with a clear error rather than silently no-op.
+- **Reserved keywords** added: `FIND`, `PII`, `DISCOVER`, `ENTITIES`, `SCAN`, `IN`, `SELECT`, `FROM`, `BY`, `LIMIT`, `COUNT`, `AVG`, `SUM`, `MIN`, `MAX`. These reservations ship as part of the frozen 1.0.0 surface.
+- **Five discovery examples** under `spec/v1.0/examples/` covering S3, GCS, Azure Blob, local filesystem, and a `SELECT ... GROUP BY` over the findings store (`15-find-pii-s3`, `16-discover-entities-gcs`, `17-scan-azure-blob`, `18-find-pii-local-filesystem`, `19-select-findings-groupby`).
 - **`columnRef` accepts `CONFIDENCE`** in addition to `ID`, because `CONFIDENCE` is reserved by the redaction predicate but is a valid findings-table column.
 - **Validator check** added: `scripts/validate_spec.py` now walks discovery example JSONs and verifies every column referenced resolves against `findings.yaml`. Catalog well-formedness covers `findings.yaml` and `sources.yaml`.
 
 ### Changed
 
-- `CompilerTest` parses every `.phisql` under `spec/v0.1/examples/` but compiles only the redaction subset. The five discovery examples are listed in `DISCOVERY_EXAMPLES_NOT_YET_COMPILED` and skipped explicitly. A discovery compiler will land in a follow-up; the set shrinks as it ships.
+- `CompilerTest` parses every `.phisql` under `spec/v1.0/examples/` but compiles only the redaction subset. The five discovery examples are listed in `DISCOVERY_EXAMPLES_NOT_YET_COMPILED` and skipped explicitly. A discovery compiler will land in a follow-up; the set shrinks as it ships.
 - `ExamplesParseTest` parses all 20 examples (15 redaction + 5 discovery).
 
 ### Notes
 
 - The RFC process described in `CONTRIBUTING.md` was intentionally skipped for the discovery additions while the project is still finding its shape. Substantial future grammar changes are expected to go through an RFC. Closes philterd/philterd-website#122.
 
-### Added (v0.1 work, pre-v0.2 cut)
+### Added (earlier 1.0.0 development)
 
 - Date-shifting strategies `SHIFT` and `TRUNCATE_TO_YEAR` (DATE entities only). `SHIFT` accepts `days`, `months`, `years`, and `random` arguments, mapping to `shiftDays`/`shiftMonths`/`shiftYears`/`shiftRandom` on the Phileas `dateFilterStrategy`. Example `12-date-shift`.
 - `DEFINE IDENTIFIER '<classification>' MATCHING '<regex>' [GROUP n] [CASE SENSITIVE | CASE INSENSITIVE] WITH <strategy>` statement for declaring custom regex identifiers inline (previously only referenceable via `IDENTIFIER('name')`, with no way to supply a pattern). Compiles to an entry in the Phileas `identifiers.identifiers` array. Example `13-custom-identifier`.
 - `DETECT PHEYE [LABELS (...)] [ENDPOINT '<url>'] WITH <strategy>` statement for AI/NER detection via PhEye. Compiles to an entry in the Phileas `identifiers.pheyes` array with `phEyeFilterStrategies` and an optional `phEyeConfiguration` (`labels`, `endpoint`). This is the supported way to redact `PERSON` (which the catalog defers as a bare entity because it requires a PhEye block). Example `14-pheye-person-detection`.
 - Catalog field `phileas_strategy_def` on strategy entries, declaring which Phileas schema `$def` a strategy validates against (defaults to `baseFilterStrategy`; date-only strategies use `dateFilterStrategy`). `scripts/validate_spec.py` now resolves each strategy against its declared def so date-specific strategies and arguments validate correctly.
 
-- Reference parser implementation under `reference/` (Java, ANTLR4). The parser is generated from `spec/v0.1/grammar/PhiSQL.g4` at build time. The `ExamplesParseTest` parses every `.phisql` example file as part of the test suite; any grammar/example drift fails the build.
-- Reference compiler that translates parsed PhiSQL into Phileas JSON. The compiler is driven by the catalog YAML files (`spec/v0.1/catalog/*.yaml`), which are bundled inside the JAR as resources. `CompilerTest` compiles every example `.phisql` file and asserts byte-equivalent JSON output against the corresponding `.json` file. `CompileErrorTest` covers compile-time error cases (unknown entity, unknown strategy argument, invalid enum value).
+- Reference parser implementation under `reference/` (Java, ANTLR4). The parser is generated from `spec/v1.0/grammar/PhiSQL.g4` at build time. The `ExamplesParseTest` parses every `.phisql` example file as part of the test suite; any grammar/example drift fails the build.
+- Reference compiler that translates parsed PhiSQL into Phileas JSON. The compiler is driven by the catalog YAML files (`spec/v1.0/catalog/*.yaml`), which are bundled inside the JAR as resources. `CompilerTest` compiles every example `.phisql` file and asserts byte-equivalent JSON output against the corresponding `.json` file. `CompileErrorTest` covers compile-time error cases (unknown entity, unknown strategy argument, invalid enum value).
 - Five additional spec examples (06-10) exercising multi-strategy entities, format-preserving encryption, multiple confidence bands, policy-wide ignore patterns, and named strategy arguments. The compiler test suite now covers 10 representative policies, matching the round-trip-coverage criterion from issue #127.
-- `spec/v0.1/catalog/policy.yaml` defining the relationship between PhiSQL `POLICY` declarations and Phileas filenames: the filename basename is canonical, `POLICY` is optional, and when present the declared name must match the basename after hyphen/underscore normalization.
+- `spec/v1.0/catalog/policy.yaml` defining the relationship between PhiSQL `POLICY` declarations and Phileas filenames: the filename basename is canonical, `POLICY` is optional, and when present the declared name must match the basename after hyphen/underscore normalization.
 - Compiler overloads accepting a filename or an explicit expected name: `Compiler.compile(Path)`, `Compiler.compile(String, String expectedName)`, and `Compiler.compile(DocumentContext, String expectedName)`. `PolicyNamingTest` covers all paths through the new rule.
 - Spec example `11-policy-wide-ignore-terms` covering scope-less `IGNORE TERMS`.
 - Full Apache 2.0 license headers on every Java file.
