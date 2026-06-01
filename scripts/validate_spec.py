@@ -10,8 +10,9 @@ Four checks run, in order:
    Phileas JSON schema. This is the load-bearing assertion that PhiSQL
    compiles to valid Phileas JSON for the redaction subset.
 3. Every redaction-example JSON file under spec/v0.1/examples/ validates
-   against the canonical Phileas schema. Discovery examples (15+) target a
-   separate discovery-query JSON shape and are skipped here.
+   against the canonical Phileas schema. Examples are routed by their
+   top-level `operation` field: a discovery operation skips this check,
+   everything else validates as a Phileas redaction policy.
 4. Discovery example JSON files are well-formed and reference column names
    that resolve against the findings catalog.
 
@@ -39,9 +40,18 @@ SPEC_DIR = REPO_ROOT / "spec" / "v0.1"
 # source of truth rather than the deployed copy.
 SCHEMA_PATH = REPO_ROOT / "schema" / SCHEMA_VERSION / "schema.json"
 
-# Discovery examples target a separate JSON shape and are validated by
-# check_discovery_examples() rather than check_examples_validate().
-DISCOVERY_EXAMPLE_PREFIXES = ("15-", "16-", "17-", "18-", "19-")
+# Discovery examples target a separate JSON shape (a discovery-query AST with
+# a top-level `operation` field) and are validated by check_discovery_examples()
+# rather than check_examples_validate(). The presence of an operation in this
+# set is the routing signal; example filenames are not load-bearing.
+DISCOVERY_OPERATIONS = {"FIND_PII", "DISCOVER_ENTITIES", "SCAN", "SELECT_FINDINGS"}
+
+
+def is_discovery_example(data: Any) -> bool:
+    """A discovery example is any JSON whose top-level `operation` names a
+    known discovery verb. Anything else (including malformed JSON missing the
+    field entirely) is treated as a redaction example."""
+    return isinstance(data, dict) and data.get("operation") in DISCOVERY_OPERATIONS
 
 
 def load_schema() -> dict:
@@ -148,9 +158,9 @@ def check_examples_validate(schema: dict) -> list[str]:
     validator = Draft202012Validator(schema)
     examples_dir = SPEC_DIR / "examples"
     for path in sorted(examples_dir.glob("*.json")):
-        if path.name.startswith(DISCOVERY_EXAMPLE_PREFIXES):
-            continue
         data = json.loads(path.read_text())
+        if is_discovery_example(data):
+            continue
         problems = sorted(validator.iter_errors(data), key=lambda e: e.path)
         for problem in problems[:5]:
             location = "/".join(str(p) for p in problem.absolute_path) or "(root)"
@@ -168,21 +178,12 @@ def check_discovery_examples() -> list[str]:
     errors = []
     findings = load_yaml(SPEC_DIR / "catalog" / "findings.yaml")
     known_columns = {col["name"] for col in findings["columns"]}
-    known_operations = {"FIND_PII", "DISCOVER_ENTITIES", "SCAN", "SELECT_FINDINGS"}
 
     examples_dir = SPEC_DIR / "examples"
     for path in sorted(examples_dir.glob("*.json")):
-        if not path.name.startswith(DISCOVERY_EXAMPLE_PREFIXES):
-            continue
         data = json.loads(path.read_text())
-        op = data.get("operation")
-        if op not in known_operations:
-            errors.append(
-                f"examples/{path.name}: unknown operation '{op}' "
-                f"(expected one of {sorted(known_operations)})"
-            )
+        if not is_discovery_example(data):
             continue
-
         for col in _columns_referenced(data):
             if col not in known_columns and col != "*":
                 errors.append(
