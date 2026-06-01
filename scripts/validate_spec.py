@@ -30,10 +30,7 @@ from typing import Any
 import yaml
 from jsonschema import Draft202012Validator
 
-SCHEMA_URL = (
-    "https://raw.githubusercontent.com/philterd/phileas/main/"
-    "policy-schema/redaction-policy-schema.json"
-)
+SCHEMA_URL = "https://philterd.ai/schemas/redaction-policy/1.0.0/schema.json"
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SPEC_DIR = REPO_ROOT / "spec" / "v0.1"
@@ -44,9 +41,6 @@ DISCOVERY_EXAMPLE_PREFIXES = ("15-", "16-", "17-", "18-", "19-")
 
 
 def fetch_schema() -> dict:
-    cached = REPO_ROOT / ".cache" / "phileas-schema.json"
-    if cached.exists():
-        return json.loads(cached.read_text())
     with urllib.request.urlopen(SCHEMA_URL) as response:
         return json.loads(response.read())
 
