@@ -18,29 +18,6 @@ PhiSQL today is the policy DSL; PhiSQL tomorrow is the unified query language fo
 
 ## Repository layout
 
-```
-philterd/phisql/
-├── schema/                       Canonical redaction policy JSON schema (the contract)
-│   ├── README.md                 Schema overview, versioning, and editor support
-│   └── 1.0.0/schema.json         One directory per schema version
-├── spec/v1.0/
-│   ├── grammar/
-│   │   ├── PhiSQL.g4           ANTLR4 grammar (executable normative reference)
-│   │   └── PhiSQL.ebnf         ISO 14977 EBNF (tool-independent presentation)
-│   ├── catalog/
-│   │   ├── entity-types.yaml   Entity name -> Phileas field + strategies array
-│   │   ├── strategies.yaml     Strategy name -> Phileas enum + allowed arguments
-│   │   ├── keywords.yaml       Reserved keyword list
-│   │   ├── predicates.yaml     Predicate forms and how they compile to conditions
-│   │   └── policy.yaml         POLICY declaration / filename relationship
-│   └── examples/               Worked examples (.phisql source + compiled .json)
-├── reference/                  Java reference implementation
-│   ├── pom.xml
-│   └── src/                    Wrapper around the ANTLR-generated parser
-├── rfcs/                       Accepted/rejected RFCs (historical record)
-└── scripts/                    Spec validators (Python)
-```
-
 The spec is the set of machine-readable artifacts under `spec/`. There is no prose specification document; the artifacts are the spec.
 
 The reference implementation generates a Java parser from `spec/v1.0/grammar/PhiSQL.g4` at build time. It is published as `ai.philterd:phisql` and consumed by other Philterd projects (Phileas, Phinder, the future PhiSQL CLI).
@@ -50,11 +27,18 @@ The reference implementation generates a Java parser from `spec/v1.0/grammar/Phi
 | Version | Status | Tag |
 |---|---|---|
 | v1.0 | Stable | [`v1.0.0`](https://github.com/philterd/phisql/releases/tag/v1.0.0) |
-| v0.1 | Superseded (pre-1.0 draft) | [`v0.1-draft`](https://github.com/philterd/phisql/releases/tag/v0.1-draft) |
 
-## Relationship to the Phileas policy schema
+## Reference implementation compatibility
 
-The [Phileas JSON policy schema](https://philterd.ai/schemas/redaction-policy/1.0.0/schema.json) is the **canonical execution contract** for redaction. PhiSQL is a **convenience authoring layer** that compiles to it.
+The `ai.philterd:phisql` jar version and the schema version are independent. The jar may receive bug fixes and improvements without a schema change. Use this table to find the right jar version for your target schema.
+
+| Schema version | Compatible jar versions |
+|---|---|
+| 1.0.0 | 1.0.0 |
+
+## Relationship to the redaction policy schema
+
+The [redaction JSON policy schema](https://philterd.ai/schemas/redaction-policy/1.0.0/schema.json) is the **canonical execution contract** for redaction. PhiSQL is a **convenience authoring layer** that compiles to it.
 
 ```
 PhiSQL source  ->  Compiler  ->  Phileas JSON policy  ->  Phileas runtime
@@ -92,20 +76,6 @@ python3 -m venv .venv
 cd reference && mvn verify
 ```
 
-## When this repo will split
-
-This single-repo arrangement is the right shape while PhiSQL has a single implementation. It will split into separate repos when at least one of these is true:
-
-- A second implementation ships (third-party or first-party in another language).
-- The conformance program goes public and starts certifying external implementations.
-- The spec governance moves to a foundation.
-
-The Phase 5 SDKs (Go, Python, etc.) and the conformance test suite already plan to be separate repos.
-
-## Trademark
-
-"PhiSQL" is a registered trademark of Philterd, LLC. The specification is freely readable and implementable, but the **name** is reserved for implementations that pass the conformance test suite (forthcoming at [`philterd/phisql-conformance`](https://github.com/philterd/phisql-conformance)).
-
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the RFC process, lifecycle, review criteria, and versioning policy. The RFC template is at [`.github/RFC_TEMPLATE.md`](.github/RFC_TEMPLATE.md); accepted, rejected, and withdrawn RFCs live under [`rfcs/`](rfcs/).
@@ -113,5 +83,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the RFC process, lifecycle, review cr
 Bug fixes, documentation tweaks, and new examples exercising already-specified grammar do not need an RFC — open a normal pull request. Feedback on PhiSQL v1.0 is welcome via GitHub issues.
 
 ## License
+
+"PhiSQL" is a registered trademark of Philterd, LLC. The specification is freely readable and implementable, but the **name** is reserved for implementations that pass the conformance test suite (forthcoming at [`philterd/phisql-conformance`](https://github.com/philterd/phisql-conformance)).
 
 The specification, reference implementation, and all artifacts in this repository are licensed under the [Apache License, Version 2.0](LICENSE).

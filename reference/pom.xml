@@ -6,6 +6,11 @@
 
     <groupId>ai.philterd</groupId>
     <artifactId>phisql</artifactId>
+    <!--
+        This version is the implementation version and is independent of the schema version
+        (redaction.policy.schema.version below). Increment this freely for code-only changes.
+        See the compatibility matrix in README.md for the schema <-> jar version mapping.
+    -->
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
@@ -16,7 +21,7 @@
         The grammar file is the source of truth; any drift causes the build to fail.
     </description>
     <url>https://github.com/philterd/phisql</url>
-    <inceptionYear>2026</inceptionYear>
+    <inceptionYear>2022</inceptionYear>
 
     <organization>
         <name>Philterd, LLC</name>
