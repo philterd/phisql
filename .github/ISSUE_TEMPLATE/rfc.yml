@@ -1,0 +1,114 @@
+name: RFC proposal
+description: Propose a change to the PhiSQL spec or the redaction policy schema. File this first, before drafting the full RFC.
+title: "RFC: <short summary>"
+labels: ["phisql-rfc"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for proposing a change to PhiSQL.
+
+        **What an RFC is for.** The redaction policy JSON schema under
+        [`schema/`](https://github.com/philterd/phisql/tree/main/schema) is the canonical contract
+        that PhiSQL compiles to and that Phileas executes against. An RFC is how that contract, and
+        the PhiSQL surface over it, is changed. File one to:
+
+        - Add, remove, or change a **PII entity type** (for example a new identifier to detect).
+        - Add or change a **filter / redaction strategy** (for example a new way to mask, hash, or replace a value), or its allowed arguments.
+        - Add, remove, or change a schema **field, constraint, or enum value**.
+        - Add or change a **PhiSQL statement, clause, predicate, or grammar production**, or how it compiles to Phileas JSON.
+
+        A backward-incompatible schema change becomes a new `schema/<version>/` directory. See
+        [CONTRIBUTING.md](https://github.com/philterd/phisql/blob/main/CONTRIBUTING.md#what-needs-an-rfc)
+        for the full list.
+
+        This issue is the **first step** of the RFC process: a lightweight sanity check so the idea
+        can be discussed before you invest time drafting the full RFC. A maintainer will confirm
+        whether an RFC is needed and, if so, assign you the next RFC number (`NNNN`).
+
+        **Not every change needs an RFC.** Typo fixes, new examples that exercise already-specified
+        grammar, and reference-implementation refactors should be opened as a normal pull request
+        instead. When in doubt, open this issue and ask.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: One or two sentences describing the change you want to propose.
+      placeholder: Allow scope-less `IGNORE TERMS` to compile to the top-level `ignored` block.
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: >
+        What problem does this solve, and why does it need to be solved in the spec rather than at a
+        higher layer (a library, a convention, a downstream tool)? Concrete policy files or user
+        stories that are awkward or impossible to express today are far more persuasive than abstract
+        concerns. If a workaround exists, describe it and why it is insufficient.
+    validations:
+      required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: What does this change touch?
+      description: Select every layer the proposal affects. See CONTRIBUTING.md for what each implies.
+      multiple: true
+      options:
+        - Redaction policy schema (schema/)
+        - PhiSQL grammar (spec/.../grammar/)
+        - Catalog (spec/.../catalog/)
+        - Compile-to-Phileas-JSON contract
+        - Phileas runtime behavior
+        - Documentation or convention only
+    validations:
+      required: true
+  - type: textarea
+    id: sketch
+    attributes:
+      label: Proposed change (sketch)
+      description: >
+        A rough sketch of the schema, grammar, or compile change. Do not write the full RFC here;
+        a short before/after or a sample of the new PhiSQL surface is enough at this stage.
+      render: text
+    validations:
+      required: false
+  - type: dropdown
+    id: versioning_impact
+    attributes:
+      label: Expected versioning impact
+      description: >
+        Your best guess per the [versioning policy](https://github.com/philterd/phisql/blob/main/CONTRIBUTING.md#versioning-policy).
+        A maintainer will confirm. Additive features are minor; removals, renames, tightened rules, or
+        changed compiled output are major.
+      options:
+        - "Minor: additive, backward compatible"
+        - "Major: removes, renames, tightens, or changes existing output"
+        - "Not sure yet"
+    validations:
+      required: true
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Backward compatibility
+      description: >
+        Does this break existing `.phisql` files, existing Phileas JSON policies, or downstream
+        consumers (Phileas, Phinder)? If you are not sure, say so and a maintainer will help assess.
+    validations:
+      required: false
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Other designs you weighed, and why this one. Even "the obvious shape is the right shape" is a valid answer if you explain why.
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you file
+      options:
+        - label: I have read [CONTRIBUTING.md](https://github.com/philterd/phisql/blob/main/CONTRIBUTING.md) and this change needs an RFC (it is not a bug fix, typo, or already-specified example).
+          required: true
+        - label: I searched existing issues and RFCs under [`rfcs/`](https://github.com/philterd/phisql/tree/main/rfcs) for prior or overlapping proposals.
+          required: true

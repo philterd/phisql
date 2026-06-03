@@ -51,7 +51,7 @@ The canonical source is `schema/` in this repository. The copy published at `htt
 
 ## How to file an RFC
 
-1. **Open an issue first** with the `phisql-rfc` label so the idea can be sanity-checked before you invest time in drafting. A maintainer will confirm it needs an RFC and assign you the next RFC number (`NNNN`, four digits, zero-padded).
+1. **Open an issue first** using the [RFC proposal form](.github/ISSUE_TEMPLATE/rfc.yml) (New issue, then "RFC proposal"), which applies the `phisql-rfc` label automatically, so the idea can be sanity-checked before you invest time in drafting. A maintainer will confirm it needs an RFC and assign you the next RFC number (`NNNN`, four digits, zero-padded).
 2. **Copy the template** from [`.github/RFC_TEMPLATE.md`](.github/RFC_TEMPLATE.md) to `rfcs/NNNN-short-slug.md` on a branch in your fork.
 3. **Fill out every section.** Empty sections are a signal the proposal is not ready. If a section genuinely does not apply, write "N/A" and explain in one sentence why.
 4. **Open a pull request** titled `RFC NNNN: <short summary>`. Link the originating issue. The PR itself is the discussion thread; comments and revisions happen there.

@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: RFC process and contributing guide
+    url: https://github.com/philterd/phisql/blob/main/CONTRIBUTING.md
+    about: How spec and schema changes are proposed, reviewed, versioned, and accepted. Read this before filing an RFC.
+  - name: PhiSQL specification and reference implementation
+    url: https://github.com/philterd/phisql/blob/main/README.md
+    about: What PhiSQL is, the repository layout, and how the policy schema relates to the language.
