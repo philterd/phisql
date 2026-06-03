@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "currency": {
+      "currencyFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  }
+}

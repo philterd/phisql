@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "ibanCode": {
+      "ibanCodeFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  }
+}

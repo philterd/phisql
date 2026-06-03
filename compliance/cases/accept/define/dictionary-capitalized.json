@@ -1,0 +1,19 @@
+{
+  "identifiers": {
+    "dictionaries": [
+      {
+        "classification": "brands",
+        "terms": [
+          "Acme",
+          "Globex"
+        ],
+        "capitalized": true,
+        "customFilterStrategies": [
+          {
+            "strategy": "MASK"
+          }
+        ]
+      }
+    ]
+  }
+}

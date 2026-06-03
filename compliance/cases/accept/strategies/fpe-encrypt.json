@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [
+        {
+          "strategy": "FPE_ENCRYPT_REPLACE"
+        }
+      ]
+    }
+  }
+}

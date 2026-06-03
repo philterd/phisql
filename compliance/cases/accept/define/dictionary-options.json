@@ -1,0 +1,22 @@
+{
+  "identifiers": {
+    "dictionaries": [
+      {
+        "classification": "meds",
+        "terms": [
+          "aspirin"
+        ],
+        "customFilterStrategies": [
+          {
+            "strategy": "REDACT"
+          }
+        ],
+        "files": [
+          "meds.txt"
+        ],
+        "enabled": true,
+        "priority": 3
+      }
+    ]
+  }
+}

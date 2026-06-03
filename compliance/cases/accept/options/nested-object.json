@@ -1,0 +1,20 @@
+{
+  "identifiers": {
+    "pheyes": [
+      {
+        "phEyeFilterStrategies": [
+          {
+            "strategy": "REDACT"
+          }
+        ],
+        "phEyeConfiguration": {
+          "labels": [
+            "PER"
+          ],
+          "timeout": 30,
+          "maxIdleConnections": 5
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,2 @@
+REDACT SSN WITH MASK;
+IGNORE PATTERN '[0-9]{4}' OPTIONS (name = 'four-digits');

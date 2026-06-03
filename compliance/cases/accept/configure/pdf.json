@@ -1,0 +1,18 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  },
+  "config": {
+    "pdf": {
+      "redactionColor": "red",
+      "dpi": 300,
+      "showReplacement": true
+    }
+  }
+}

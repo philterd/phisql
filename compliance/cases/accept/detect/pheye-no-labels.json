@@ -1,0 +1,13 @@
+{
+  "identifiers": {
+    "pheyes": [
+      {
+        "phEyeFilterStrategies": [
+          {
+            "strategy": "REDACT"
+          }
+        ]
+      }
+    ]
+  }
+}

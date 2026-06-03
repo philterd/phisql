@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "creditCard": {
+      "creditCardFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  }
+}

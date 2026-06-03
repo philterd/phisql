@@ -1,0 +1,15 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [
+        {
+          "strategy": "FPE_ENCRYPT_REPLACE"
+        }
+      ]
+    }
+  },
+  "fpe": {
+    "key": "env:FPE_KEY",
+    "tweak": "env:FPE_TWEAK"
+  }
+}

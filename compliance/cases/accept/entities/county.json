@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "county": {
+      "countyFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  }
+}

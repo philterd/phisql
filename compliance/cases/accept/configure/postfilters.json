@@ -1,0 +1,16 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  },
+  "config": {
+    "postFilters": {
+      "removeTrailingPeriods": false
+    }
+  }
+}

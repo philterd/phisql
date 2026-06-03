@@ -1,0 +1,17 @@
+{
+  "identifiers": {
+    "identifiers": [
+      {
+        "classification": "MRN",
+        "pattern": "MRN[0-9]{5,}",
+        "caseSensitive": false,
+        "identifierFilterStrategies": [
+          {
+            "strategy": "REDACT",
+            "redactionFormat": "{{{REDACTED-MRN}}}"
+          }
+        ]
+      }
+    ]
+  }
+}

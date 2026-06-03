@@ -1,0 +1,17 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  },
+  "ignoredPatterns": [
+    {
+      "pattern": "[0-9]{4}",
+      "name": "four-digits"
+    }
+  ]
+}

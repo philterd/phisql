@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "date": {
+      "dateFilterStrategies": [
+        {
+          "strategy": "TRUNCATE"
+        }
+      ]
+    }
+  }
+}

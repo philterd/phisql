@@ -1,0 +1,2 @@
+DEFINE DICTIONARY 'meds' TERMS ('aspirin') WITH REDACT
+  OPTIONS (files = ['meds.txt'], enabled = TRUE, priority = 3);

@@ -1,0 +1,3 @@
+POLICY a_different_name;
+
+REDACT SSN WITH MASK;

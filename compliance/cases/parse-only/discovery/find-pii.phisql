@@ -1,0 +1,3 @@
+FIND PII IN 's3://prod-data/customers/'
+  WHERE entity_type IN ('SSN', 'CREDIT_CARD')
+    AND risk_score > 7;

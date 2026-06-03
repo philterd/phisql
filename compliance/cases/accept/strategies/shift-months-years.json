@@ -1,0 +1,13 @@
+{
+  "identifiers": {
+    "date": {
+      "dateFilterStrategies": [
+        {
+          "strategy": "SHIFT",
+          "shiftMonths": 2,
+          "shiftYears": 1
+        }
+      ]
+    }
+  }
+}

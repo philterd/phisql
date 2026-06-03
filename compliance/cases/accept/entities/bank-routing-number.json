@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "bankRoutingNumber": {
+      "bankRoutingNumberFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  }
+}

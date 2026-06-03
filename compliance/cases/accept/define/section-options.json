@@ -1,0 +1,16 @@
+{
+  "identifiers": {
+    "sections": [
+      {
+        "startPattern": "BEGIN",
+        "endPattern": "END",
+        "sectionFilterStrategies": [
+          {
+            "strategy": "REDACT"
+          }
+        ],
+        "priority": 2
+      }
+    ]
+  }
+}

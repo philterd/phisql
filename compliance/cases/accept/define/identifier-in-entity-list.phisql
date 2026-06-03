@@ -1,0 +1,1 @@
+REDACT IDENTIFIER('account_number') WITH LAST_4;

@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "stateAbbreviation": {
+      "stateAbbreviationFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  }
+}

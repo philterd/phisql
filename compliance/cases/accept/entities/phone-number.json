@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "phoneNumber": {
+      "phoneNumberFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  }
+}

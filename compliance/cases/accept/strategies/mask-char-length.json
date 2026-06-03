@@ -1,0 +1,13 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [
+        {
+          "strategy": "MASK",
+          "maskCharacter": "#",
+          "maskLength": 4
+        }
+      ]
+    }
+  }
+}

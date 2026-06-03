@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "url": {
+      "urlFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  }
+}

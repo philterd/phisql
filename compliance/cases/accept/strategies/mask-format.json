@@ -1,0 +1,20 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [
+        {
+          "strategy": "MASK",
+          "redactionFormat": "{{{REDACTED-%t}}}"
+        }
+      ]
+    },
+    "phoneNumber": {
+      "phoneNumberFilterStrategies": [
+        {
+          "strategy": "MASK",
+          "redactionFormat": "{{{REDACTED-%t}}}"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "streetAddress": {
+      "streetAddressFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    },
+    "emailAddress": {
+      "emailAddressFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    },
+    "phoneNumber": {
+      "phoneNumberFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  }
+}

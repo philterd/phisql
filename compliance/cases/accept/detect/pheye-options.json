@@ -1,0 +1,22 @@
+{
+  "identifiers": {
+    "pheyes": [
+      {
+        "phEyeFilterStrategies": [
+          {
+            "strategy": "REDACT"
+          }
+        ],
+        "phEyeConfiguration": {
+          "labels": [
+            "PER"
+          ],
+          "timeout": 30
+        },
+        "thresholds": {
+          "PER": 0.8
+        }
+      }
+    ]
+  }
+}

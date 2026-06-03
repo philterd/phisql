@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "firstName": {
+      "firstNameFilterStrategies": [
+        {
+          "strategy": "RANDOM_REPLACE"
+        }
+      ]
+    }
+  }
+}

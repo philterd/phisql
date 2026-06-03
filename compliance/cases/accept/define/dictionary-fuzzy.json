@@ -1,0 +1,19 @@
+{
+  "identifiers": {
+    "dictionaries": [
+      {
+        "classification": "medications",
+        "terms": [
+          "aspirin",
+          "ibuprofen"
+        ],
+        "fuzzy": true,
+        "customFilterStrategies": [
+          {
+            "strategy": "REDACT"
+          }
+        ]
+      }
+    ]
+  }
+}

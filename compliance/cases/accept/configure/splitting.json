@@ -1,0 +1,18 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  },
+  "config": {
+    "splitting": {
+      "enabled": true,
+      "threshold": 5000,
+      "method": "newline"
+    }
+  }
+}

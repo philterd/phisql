@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "bitcoinAddress": {
+      "bitcoinFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "identifiers": {
+    "identifiers": [
+      {
+        "classification": "MRN",
+        "pattern": "MRN[0-9]{5,}",
+        "identifierFilterStrategies": [
+          {
+            "strategy": "REDACT"
+          }
+        ]
+      }
+    ]
+  }
+}

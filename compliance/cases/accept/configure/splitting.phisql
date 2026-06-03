@@ -1,0 +1,2 @@
+REDACT SSN WITH MASK;
+CONFIGURE SPLITTING (enabled = TRUE, threshold = 5000, method = 'newline');

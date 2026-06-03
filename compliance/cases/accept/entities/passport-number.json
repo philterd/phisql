@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "passportNumber": {
+      "passportNumberFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  }
+}

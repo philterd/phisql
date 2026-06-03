@@ -1,0 +1,2 @@
+FIND PII IN 'file:///mnt/exports/intake/'
+  WHERE entity_type IN ('EMAIL_ADDRESS', 'PHONE_NUMBER');

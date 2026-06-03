@@ -1,0 +1,14 @@
+{
+  "identifiers": {
+    "emailAddress": {
+      "emailAddressFilterStrategies": [
+        {
+          "strategy": "HASH_SHA256_REPLACE"
+        },
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "identifiers": {
+    "pheyes": [
+      {
+        "phEyeFilterStrategies": [
+          {
+            "strategy": "REDACT"
+          }
+        ],
+        "phEyeConfiguration": {
+          "endpoint": "http://pheye.internal:8080",
+          "labels": [
+            "PER"
+          ]
+        }
+      }
+    ]
+  }
+}

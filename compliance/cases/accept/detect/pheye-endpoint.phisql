@@ -1,0 +1,1 @@
+DETECT PHEYE LABELS ('PER') ENDPOINT 'http://pheye.internal:8080' WITH REDACT;

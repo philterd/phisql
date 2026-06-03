@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "surname": {
+      "surnameFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  }
+}

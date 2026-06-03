@@ -1,0 +1,12 @@
+{
+  "identifiers": {
+    "creditCard": {
+      "creditCardFilterStrategies": [
+        {
+          "strategy": "LAST_4",
+          "conditions": "confidence > 0.85"
+        }
+      ]
+    }
+  }
+}

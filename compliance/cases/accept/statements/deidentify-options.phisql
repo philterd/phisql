@@ -1,0 +1,1 @@
+DEIDENTIFY SSN AS MASK OPTIONS (priority = 1);

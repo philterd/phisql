@@ -1,0 +1,5 @@
+DEFINE SECTION
+  START 'BEGIN'
+  END 'END'
+  WITH REDACT
+  OPTIONS (priority = 2);

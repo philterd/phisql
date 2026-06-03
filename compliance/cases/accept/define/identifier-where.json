@@ -1,0 +1,16 @@
+{
+  "identifiers": {
+    "identifiers": [
+      {
+        "classification": "TICKET",
+        "pattern": "TKT[0-9]+",
+        "identifierFilterStrategies": [
+          {
+            "strategy": "REDACT",
+            "conditions": "confidence > 0.5"
+          }
+        ]
+      }
+    ]
+  }
+}

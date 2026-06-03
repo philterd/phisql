@@ -1,0 +1,16 @@
+{
+  "identifiers": {
+    "identifiers": [
+      {
+        "classification": "ACCT",
+        "pattern": "ACCT-([0-9]+)",
+        "groupNumber": 1,
+        "identifierFilterStrategies": [
+          {
+            "strategy": "LAST_4"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "zipCode": {
+      "zipCodeFilterStrategy": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  }
+}

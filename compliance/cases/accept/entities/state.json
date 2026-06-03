@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "state": {
+      "stateFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,3 @@
+DETECT PHEYE LABELS ('PER')
+  WITH REDACT
+  OPTIONS (thresholds = (PER = 0.8), phEyeConfiguration = (timeout = 30));

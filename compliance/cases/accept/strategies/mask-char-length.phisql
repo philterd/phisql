@@ -1,0 +1,1 @@
+REDACT SSN WITH MASK(mask_char='#', mask_length=4);

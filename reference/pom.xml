@@ -256,6 +256,49 @@
 
     <profiles>
         <!--
+            Activated with -Pcli to build a self-contained, runnable jar for the
+            command-line front end (ai.philterd.phisql.Cli). The conformance
+            suite under ../compliance drives the reference implementation through
+            this jar. It is attached with the "cli" classifier and is NOT the
+            primary artifact, so the default build and Maven Central publishing
+            are unaffected: `mvn -Pcli package` produces
+            target/phisql-<version>-cli.jar alongside the normal library jar.
+        -->
+        <profile>
+            <id>cli</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <version>3.5.3</version>
+                        <executions>
+                            <execution>
+                                <id>cli-jar</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>shade</goal>
+                                </goals>
+                                <configuration>
+                                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                                    <shadedClassifierName>cli</shadedClassifierName>
+                                    <!-- The CLI jar is a build-time convenience, not a
+                                         published artifact, so do not rewrite the POM. -->
+                                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                                    <transformers>
+                                        <transformer
+                                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                            <mainClass>ai.philterd.phisql.Cli</mainClass>
+                                        </transformer>
+                                    </transformers>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!--
             Activated with -Dsign (used by the Central release build) to GPG-sign
             all artifacts, which Maven Central requires.
         -->

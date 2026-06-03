@@ -1,0 +1,4 @@
+POLICY policy_with_description
+  DESCRIPTION 'A policy that carries a human-readable description.';
+
+REDACT SSN WITH MASK;

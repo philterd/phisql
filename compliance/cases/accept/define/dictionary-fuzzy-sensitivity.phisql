@@ -1,0 +1,1 @@
+DEFINE DICTIONARY 'medications' TERMS ('aspirin') FUZZY SENSITIVITY high WITH REDACT;

@@ -1,0 +1,23 @@
+{
+  "identifiers": {
+    "dictionaries": [
+      {
+        "classification": "meds",
+        "terms": [
+          "aspirin"
+        ],
+        "customFilterStrategies": [
+          {
+            "strategy": "REDACT"
+          }
+        ],
+        "ignoredPatterns": [
+          {
+            "name": "skip-codes",
+            "pattern": "[A-Z]{3}[0-9]+"
+          }
+        ]
+      }
+    ]
+  }
+}

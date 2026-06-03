@@ -1,0 +1,3 @@
+DEFINE DICTIONARY 'meds' TERMS ('aspirin')
+  WITH REDACT
+  OPTIONS (ignoredPatterns = [ (name = 'skip-codes', 'pattern' = '[A-Z]{3}[0-9]+') ]);

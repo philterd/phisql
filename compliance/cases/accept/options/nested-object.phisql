@@ -1,0 +1,3 @@
+DETECT PHEYE LABELS ('PER')
+  WITH REDACT
+  OPTIONS (phEyeConfiguration = (timeout = 30, maxIdleConnections = 5));

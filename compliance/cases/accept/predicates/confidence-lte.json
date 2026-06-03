@@ -1,0 +1,12 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [
+        {
+          "strategy": "MASK",
+          "conditions": "confidence <= 0.8"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "age": {
+      "ageFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  }
+}

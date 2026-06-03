@@ -1,0 +1,1 @@
+DEFINE DICTIONARY 'medications' TERMS ('aspirin', 'ibuprofen') FUZZY WITH REDACT;

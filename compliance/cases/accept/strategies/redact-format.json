@@ -1,0 +1,12 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [
+        {
+          "strategy": "REDACT",
+          "redactionFormat": "{{{REDACTED-SSN}}}"
+        }
+      ]
+    }
+  }
+}

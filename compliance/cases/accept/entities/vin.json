@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "vin": {
+      "vinFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  }
+}

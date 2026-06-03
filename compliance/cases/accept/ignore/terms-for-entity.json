@@ -1,0 +1,15 @@
+{
+  "identifiers": {
+    "firstName": {
+      "firstNameFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ],
+      "ignored": [
+        "Acme",
+        "AcmeCorp"
+      ]
+    }
+  }
+}

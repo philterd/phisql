@@ -1,0 +1,13 @@
+{
+  "identifiers": {
+    "surname": {
+      "surnameFilterStrategies": [
+        {
+          "strategy": "STATIC_REPLACE",
+          "staticReplacement": "X",
+          "replacementScope": "CONTEXT"
+        }
+      ]
+    }
+  }
+}

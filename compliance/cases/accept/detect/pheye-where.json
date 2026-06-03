@@ -1,0 +1,19 @@
+{
+  "identifiers": {
+    "pheyes": [
+      {
+        "phEyeFilterStrategies": [
+          {
+            "strategy": "REDACT",
+            "conditions": "confidence > 0.7"
+          }
+        ],
+        "phEyeConfiguration": {
+          "labels": [
+            "PER"
+          ]
+        }
+      }
+    ]
+  }
+}

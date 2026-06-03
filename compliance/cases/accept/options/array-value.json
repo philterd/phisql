@@ -1,0 +1,15 @@
+{
+  "identifiers": {
+    "creditCard": {
+      "creditCardFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ],
+      "ignoredFiles": [
+        "a.txt",
+        "b.txt"
+      ]
+    }
+  }
+}

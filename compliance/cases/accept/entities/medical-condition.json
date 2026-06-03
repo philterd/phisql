@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "medicalCondition": {
+      "medicalConditionFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  }
+}

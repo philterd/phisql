@@ -1,0 +1,1 @@
+DEFINE DICTIONARY 'brands' TERMS ('Acme', 'Globex') CAPITALIZED WITH MASK;

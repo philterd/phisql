@@ -1,0 +1,20 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  },
+  "ignored": [
+    {
+      "terms": [
+        "TEST",
+        "EXAMPLE",
+        "SAMPLE"
+      ]
+    }
+  ]
+}

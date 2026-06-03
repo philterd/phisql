@@ -1,0 +1,2 @@
+DISCOVER ENTITIES IN 'gs://analytics-exports/2026/'
+  WHERE confidence > 0.9;

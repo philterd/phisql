@@ -1,0 +1,3 @@
+REDACT SSN WITH MASK;
+CONFIGURE GRAPHICAL BOX (x = 10, y = 20, w = 100, h = 50, page = 2, color = 'black');
+CONFIGURE GRAPHICAL BOX (x = 200, y = 40, w = 80, h = 30);

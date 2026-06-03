@@ -1,0 +1,16 @@
+{
+  "identifiers": {
+    "identifiers": [
+      {
+        "classification": "CASEID",
+        "pattern": "CASE[0-9]+",
+        "caseSensitive": true,
+        "identifierFilterStrategies": [
+          {
+            "strategy": "MASK"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "trackingNumber": {
+      "trackingNumberFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  }
+}

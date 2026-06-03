@@ -1,0 +1,12 @@
+{
+  "identifiers": {
+    "creditCard": {
+      "creditCardFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ],
+      "priority": 10
+    }
+  }
+}

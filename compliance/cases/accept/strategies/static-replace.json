@@ -1,0 +1,12 @@
+{
+  "identifiers": {
+    "surname": {
+      "surnameFilterStrategies": [
+        {
+          "strategy": "STATIC_REPLACE",
+          "staticReplacement": "REDACTED"
+        }
+      ]
+    }
+  }
+}

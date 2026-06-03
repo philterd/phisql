@@ -1,0 +1,14 @@
+{
+  "identifiers": {
+    "identifiers": [
+      {
+        "classification": "account_number",
+        "identifierFilterStrategies": [
+          {
+            "strategy": "LAST_4"
+          }
+        ]
+      }
+    ]
+  }
+}

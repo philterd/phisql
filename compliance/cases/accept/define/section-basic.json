@@ -1,0 +1,15 @@
+{
+  "identifiers": {
+    "sections": [
+      {
+        "startPattern": "-----BEGIN PRIVATE-----",
+        "endPattern": "-----END PRIVATE-----",
+        "sectionFilterStrategies": [
+          {
+            "strategy": "REDACT"
+          }
+        ]
+      }
+    ]
+  }
+}
