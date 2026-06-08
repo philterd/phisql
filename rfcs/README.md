@@ -9,6 +9,8 @@ For the RFC process itself — when to file one, the template, the lifecycle, an
 | Number | Title                                                                                | Status   | Target  |
 |--------|--------------------------------------------------------------------------------------|----------|---------|
 | [0001](0001-scope-less-ignore-terms.md) | Allow scope-less `IGNORE TERMS` to compile to top-level `ignored` | Accepted | v0.1    |
+| [0002](0002-monitoring-query-verbs.md) | Monitoring query verbs over Phield trend and alert data | Draft | v1.1    |
+| [0003](0003-benchmarking-query-verbs.md) | Benchmarking query verbs over Philter Scope policy evaluations | Draft | v1.1    |
 | [0004](0004-cross-tool-join-semantics.md) | Cross-tool join semantics across the Philterd toolkit | Draft | v1.2    |
 
 ## Numbering
