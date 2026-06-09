@@ -76,6 +76,34 @@ python3 -m venv .venv
 cd reference && mvn verify
 ```
 
+## Documentation site
+
+The published spec reference lives at **https://philterd.github.io/phisql/**. It
+is generated from the spec artifacts (`spec/<version>/`) — the grammar, the
+catalog YAML, and the example pairs — so the rendered reference cannot drift
+from the artifacts it documents.
+
+- **`scripts/gen_docs.py`** renders the catalogs, grammar, and examples into
+  Markdown pages (run via the `mkdocs-gen-files` plugin at build time; no
+  generated pages are committed).
+- **`mkdocs.yml`** configures the MkDocs Material site, search, and the `mike`
+  version selector.
+- **`.github/workflows/docs.yml`** checks the build on every pull request and
+  publishes the versioned site to GitHub Pages (the `gh-pages` branch) on every
+  push to `main`.
+
+Build and preview locally:
+
+```sh
+python3 -m venv .venv
+.venv/bin/pip install -r docs/requirements.txt
+.venv/bin/mkdocs serve        # live preview at http://127.0.0.1:8000
+```
+
+> [!NOTE]
+> Publishing requires GitHub Pages to be enabled for this repository with the
+> source set to the `gh-pages` branch (Settings → Pages).
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the RFC process, lifecycle, review criteria, and versioning policy. The RFC template is at [`.github/RFC_TEMPLATE.md`](.github/RFC_TEMPLATE.md); accepted, rejected, and withdrawn RFCs live under [`rfcs/`](rfcs/).

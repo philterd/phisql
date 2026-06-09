@@ -1,0 +1,56 @@
+name: Publish documentation site
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# mike pushes the built site to the gh-pages branch.
+permissions:
+  contents: write
+
+# Avoid concurrent gh-pages deploys racing each other.
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # mike needs the full history of gh-pages to update it in place.
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: docs/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r docs/requirements.txt
+
+      # On pull requests, only verify the site builds (no deploy). --strict
+      # turns broken links and missing pages into failures.
+      - name: Build site (check only)
+        if: github.event_name == 'pull_request'
+        run: mkdocs build --strict
+
+      - name: Configure git for mike
+        if: github.event_name == 'push'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      # On push to main, deploy the current spec version (v1.0) and point the
+      # `latest` alias at it. When a new spec version ships, add another
+      # `mike deploy` here for it; the version selector lists every deployed
+      # version automatically.
+      - name: Deploy versioned docs
+        if: github.event_name == 'push'
+        run: |
+          git fetch origin gh-pages --depth=1 || true
+          mike deploy --push --update-aliases v1.0 latest
+          mike set-default --push latest
