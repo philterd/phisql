@@ -12,6 +12,7 @@ For the RFC process itself — when to file one, the template, the lifecycle, an
 | [0002](0002-monitoring-query-verbs.md) | Monitoring query verbs over Phield trend and alert data | Draft | v1.1    |
 | [0003](0003-benchmarking-query-verbs.md) | Benchmarking query verbs over Philter Scope policy evaluations | Draft | v1.1    |
 | [0004](0004-cross-tool-join-semantics.md) | Cross-tool join semantics across the Philterd toolkit | Draft | v1.2    |
+| [0005](0005-required-strategy-arguments.md) | Enforce required strategy arguments at compile time | Draft | v2.0    |
 
 ## Numbering
 
