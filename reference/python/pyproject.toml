@@ -4,7 +4,8 @@
 # See ../../LICENSE.
 
 [build-system]
-requires = ["setuptools>=61.0"]
+# setuptools>=77 for PEP 639 SPDX `license` / `license-files` support.
+requires = ["setuptools>=77.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -16,13 +17,15 @@ version = "1.0.0"
 description = "Python reference parser and compiler for the PhiSQL specification."
 readme = "README.md"
 requires-python = ">=3.9"
-license = { text = "Apache-2.0" }
+# PEP 639: SPDX expression plus the license file (copied in at build time by
+# setup.py). The deprecated License classifier is intentionally omitted.
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 authors = [{ name = "Philterd, LLC", email = "support@philterd.ai" }]
 keywords = ["phisql", "pii", "redaction", "deidentification", "phileas", "privacy"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
@@ -52,14 +55,13 @@ phisql = "phisql.cli:main"
 
 [tool.setuptools]
 packages = ["phisql"]
-# The LICENSE is copied in from the repository root at build time by setup.py
-# (it lives outside this project directory); license-files then ships it in the
-# sdist and wheel.
-license-files = ["LICENSE"]
 
 # Spec catalog and policy schema copied into phisql/_data at build time by
 # setup.py (the analogue of the Maven copy-resources executions). Bundling them
-# makes the wheel self-contained.
+# makes the wheel self-contained. NOTE: `python -m build` prints a benign
+# "Package 'phisql._data.spec' is absent from the packages configuration"
+# warning because setuptools scans the data subdirectories; the data is data,
+# not importable code, and is shipped correctly. The warning is cosmetic.
 [tool.setuptools.package-data]
 phisql = [
     "_data/spec/v1.0/catalog/*.yaml",
