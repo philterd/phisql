@@ -46,3 +46,22 @@ jobs:
       # The hand-written parser mirrors spec/v1.0/grammar/PhiSQL.g4 and every
       # example .phisql file is parsed and compiled as part of the test suite.
       # If the grammar or catalog drifts from the examples, this job fails.
+
+  dotnet:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Test the .NET reference implementation
+        working-directory: reference/dotnet
+        run: dotnet test PhiSql.Tests -c Release
+
+      # The hand-written parser mirrors spec/v1.0/grammar/PhiSQL.g4 and the
+      # catalog + schema are embedded from spec/ and schema/ at build time.
+      # Every example .phisql file is parsed and compiled, and every compiled
+      # example is validated against the schema, as part of the test suite. If
+      # the grammar, catalog, or schema drifts from the examples, this job fails.
