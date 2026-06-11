@@ -1,0 +1,4 @@
+{
+  "issue": 13,
+  "reason": "maskLength is emitted as an integer because the strategy catalog declares mask_length as type integer, but schema/1.0.0 declares maskLength as a string. Exempt from the accept-case schema check until issue #13 (the maskLength RFC) resolves the contradiction."
+}

@@ -66,6 +66,21 @@ EXIT_OK = 0
 EXIT_PARSE = 2
 EXIT_SEMANTIC = 3
 
+# The canonical redaction policy schema. Accept-case output must validate
+# against it, not merely match the expected fixture, so a schema-invalid fixture
+# (or a compiler emitting malformed policy JSON) is caught rather than passing by
+# faithful reproduction. jsonschema is listed in scripts/requirements.txt; if it
+# is not installed the schema checks are skipped so the runner still drives any
+# adapter.
+REPO_ROOT = HERE.parent
+SCHEMA_PATH = REPO_ROOT / "schema" / "1.0.0" / "schema.json"
+try:
+    from jsonschema import Draft202012Validator as _Draft202012Validator
+    _SCHEMA_VALIDATOR = _Draft202012Validator(
+        json.loads(SCHEMA_PATH.read_text(encoding="utf-8")))
+except ImportError:
+    _SCHEMA_VALIDATOR = None
+
 # ANSI colors, disabled when stdout is not a TTY or NO_COLOR is set.
 if sys.stdout.isatty() and not os.environ.get("NO_COLOR"):
     GREEN, RED, YELLOW, DIM, RESET = "\033[32m", "\033[31m", "\033[33m", "\033[2m", "\033[0m"
@@ -74,12 +89,18 @@ else:
 
 
 class Case:
-    def __init__(self, phisql_path, kind, expected_exit, expected_json, message_contains):
+    def __init__(self, phisql_path, kind, expected_exit, expected_json,
+                 message_contains, schema_exempt=None):
         self.phisql_path = phisql_path
         self.kind = kind                      # "accept" | "parse-only" | "reject-parse" | "reject-semantic"
         self.expected_exit = expected_exit
         self.expected_json = expected_json    # parsed JSON for accept cases, else None
         self.message_contains = message_contains
+        # When set (from a sibling <name>.schema-exempt sidecar), the accept
+        # case is still checked for exit code and fixture match but is skipped
+        # by the schema check. Used for cases whose expected output is known to
+        # diverge from the schema pending an RFC (the dict carries the reason).
+        self.schema_exempt = schema_exempt
 
 
 def classify(phisql_path, cases_root):
@@ -97,8 +118,12 @@ def classify(phisql_path, cases_root):
             raise CaseConfigError(
                 f"accept case has no expected output: {expected.name} "
                 f"(generate it with: python3 compliance/run.py --bless)")
+        exempt_path = phisql_path.with_suffix(".schema-exempt")
+        schema_exempt = (json.loads(exempt_path.read_text(encoding="utf-8"))
+                         if exempt_path.exists() else None)
         return Case(phisql_path, "accept", EXIT_OK,
-                    json.loads(expected.read_text(encoding="utf-8")), message_contains)
+                    json.loads(expected.read_text(encoding="utf-8")),
+                    message_contains, schema_exempt)
     if "parse-only" in rel_parts:
         return Case(phisql_path, "parse-only", EXIT_OK, None, message_contains)
     if "reject" in rel_parts and "parse" in rel_parts:
@@ -136,6 +161,17 @@ def check(case, code, stdout, stderr):
         if actual != case.expected_json:
             return ("compiled JSON did not match expected\n"
                     + _json_diff(case.expected_json, actual))
+        # The accepted output must also be a valid Phileas policy, not merely
+        # match the fixture — this catches a schema-invalid fixture or a
+        # compiler emitting malformed policy JSON. Cases with a .schema-exempt
+        # sidecar are skipped here (a known, documented divergence pending an RFC).
+        if _SCHEMA_VALIDATOR is not None and case.schema_exempt is None:
+            errors = sorted(_SCHEMA_VALIDATOR.iter_errors(actual),
+                            key=lambda e: list(e.path))
+            if errors:
+                e0 = errors[0]
+                loc = "/" + "/".join(map(str, e0.path))
+                return f"compiled JSON is not schema-valid: at {loc}: {e0.message}"
     return None
 
 
@@ -199,7 +235,7 @@ def main():
         print("no cases found", file=sys.stderr)
         return 70
 
-    passed = failed = errored = 0
+    passed = failed = errored = schema_exempt_ct = 0
     by_kind = {}
     failures = []
     for phisql_path in cases:
@@ -210,6 +246,8 @@ def main():
             errored += 1
             print(f"{YELLOW}ERROR{RESET} {rel}: {e}")
             continue
+        if case.kind == "accept" and case.schema_exempt is not None:
+            schema_exempt_ct += 1
         code, stdout, stderr = run_adapter(adapter, phisql_path)
         reason = check(case, code, stdout, stderr)
         by_kind.setdefault(case.kind, [0, 0])
@@ -233,6 +271,12 @@ def main():
     color = GREEN if failed == 0 and errored == 0 else RED
     print(f"  {'total':16} {color}{passed}/{total}{RESET} passed"
           + (f", {errored} config error(s)" if errored else ""))
+    if schema_exempt_ct:
+        print(f"  {DIM}{schema_exempt_ct} accept case(s) schema-exempt "
+              f"(see .schema-exempt sidecars){RESET}")
+    if _SCHEMA_VALIDATOR is None:
+        print(f"  {YELLOW}note:{RESET} jsonschema not installed; "
+              f"accept-case schema checks were skipped")
 
     return 0 if failed == 0 and errored == 0 else 1
 

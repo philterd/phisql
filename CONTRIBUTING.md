@@ -8,11 +8,21 @@ Bug fixes, documentation tweaks, new test cases, and clarifications that do not 
 
 - [What needs an RFC](#what-needs-an-rfc)
 - [What does not need an RFC](#what-does-not-need-an-rfc)
-- [How to file an RFC](#how-to-file-an-rfc)
+- [Changing the schema](#changing-the-schema)
+- [How to open an RFC](#how-to-open-an-rfc)
 - [Lifecycle](#lifecycle)
-- [Review process and merge authority](#review-process-and-merge-authority)
+- [Deciding and implementing](#deciding-and-implementing)
 - [Versioning policy](#versioning-policy)
 - [Code of conduct](#code-of-conduct)
+
+> **Process scope.** While Philterd is the sole maintainer, the RFC process is
+> deliberately minimal: an RFC is a **GitHub issue** — a short design note opened
+> with the [RFC proposal form](.github/ISSUE_TEMPLATE/rfc.yml) — and CI, not a
+> review committee, is the gate. There is no review window and no approval quorum.
+> The heavier multi-party review returns, via its own RFC, once a third party
+> ships a conforming implementation. The value the RFC keeps even for one person
+> is the **written rationale** and the **discipline of the core questions** in
+> [Deciding and implementing](#deciding-and-implementing).
 
 ## What needs an RFC
 
@@ -26,7 +36,7 @@ The redaction policy schema under [`schema/`](schema/) is the canonical contract
 - Defers, retires, or renames an existing language feature.
 - Adjusts the policy-naming rule, file-layout convention, or any other normative behavior that downstream consumers rely on.
 
-When in doubt, open an issue first and ask. A maintainer will tell you whether an RFC is needed.
+When in doubt, err toward writing one — it is a short note, and the written rationale is the point.
 
 ## What does not need an RFC
 
@@ -49,61 +59,42 @@ The schema under [`schema/`](schema/) is the source of truth for the policy cont
 
 The canonical source is `schema/` in this repository. The copy published at `https://philterd.ai/schemas/redaction-policy/<version>/schema.json` is kept in sync with it; do not edit the published copy directly.
 
-## How to file an RFC
+## How to open an RFC
 
-1. **Open an issue first** using the [RFC proposal form](.github/ISSUE_TEMPLATE/rfc.yml) (New issue, then "RFC proposal"), which applies the `phisql-rfc` label automatically, so the idea can be sanity-checked before you invest time in drafting. A maintainer will confirm it needs an RFC and assign you the next RFC number (`NNNN`, four digits, zero-padded).
-2. **Copy the template** from [`.github/RFC_TEMPLATE.md`](.github/RFC_TEMPLATE.md) to `rfcs/NNNN-short-slug.md` on a branch in your fork.
-3. **Fill out every section.** Empty sections are a signal the proposal is not ready. If a section genuinely does not apply, write "N/A" and explain in one sentence why.
-4. **Open a pull request** titled `RFC NNNN: <short summary>`. Link the originating issue. The PR itself is the discussion thread; comments and revisions happen there.
-5. **Iterate.** Reviewers may ask for changes to motivation, grammar, examples, or alternatives. Update the RFC in place — the PR diff is the record of how the design evolved.
-6. **Implementation does not block acceptance**, but an RFC must include at least one worked PhiSQL example and, where applicable, the compiled Phileas JSON. The reference implementation lands in a follow-up PR that links back to the RFC.
+An RFC is a GitHub issue. The issue *is* the RFC — there is no committed RFC file.
+
+1. **Open an issue** with the [RFC proposal form](.github/ISSUE_TEMPLATE/rfc.yml) ("New issue" → "RFC proposal"), which applies the `phisql-rfc` label. The issue number is the RFC's identifier.
+2. **Answer the core questions** the form asks: the problem it solves, the exact schema/grammar/catalog delta, whether it is backward-compatible and which version bump it triggers ([minor or major](#versioning-policy)), whether the Phileas runtime supports it, and at least one worked example with its compiled Phileas JSON.
+3. **Discuss in the issue thread.** Revise the description as the design firms up; the issue and its comments are the record of how it evolved.
+
+Implementation is a separate, normal pull request — see [Deciding and implementing](#deciding-and-implementing).
 
 ## Lifecycle
 
-Every RFC moves through these states. The current state lives in the RFC's frontmatter (`status: Draft|Review|Accepted|Rejected|Withdrawn`).
+An RFC is tracked by its issue state and labels:
 
-```mermaid
-stateDiagram-v2
-    [*] --> Draft: author opens PR
-    Draft --> Review: author requests review
-    Review --> Draft: revisions requested
-    Review --> Accepted: maintainers merge
-    Review --> Rejected: maintainers close with reasoning
-    Draft --> Withdrawn: author closes PR
-    Review --> Withdrawn: author closes PR
-    Accepted --> [*]
-    Rejected --> [*]
-    Withdrawn --> [*]
-```
+| State | Meaning |
+|-------|---------|
+| **Open** (`phisql-rfc`) | Proposed and under consideration. |
+| **Accepted** (`phisql-rfc` + `accepted`) | The design is approved; the issue stays open until the implementing PR closes it, then it is closed as completed. |
+| **Closed, not planned** | Declined or withdrawn, with a comment stating why. |
 
-State definitions:
+There is no fixed review window — accept when you are satisfied, or leave the issue open for comment as long as you like.
 
-| State       | Meaning                                                                                          |
-|-------------|--------------------------------------------------------------------------------------------------|
-| **Draft**   | Author is still writing or iterating. Feedback is welcome but the design is not yet stable.      |
-| **Review**  | Author considers the RFC ready. Maintainers and the community are explicitly invited to weigh in. Minimum 7 days in this state before acceptance, to give time-zone-spread reviewers a fair chance. |
-| **Accepted**| Merged to `main`. The change is now part of the spec on the next release. The RFC file remains in `rfcs/` as the historical record. |
-| **Rejected**| Closed without merging. The PR description must state the reason. The RFC may be re-proposed later if circumstances change; a new RFC number is assigned. |
-| **Withdrawn**| Author closed the PR before a decision. The number is retired (not re-used) to keep the historical record stable. |
+## Deciding and implementing
 
-## Review process and merge authority
+While Philterd is the sole maintainer, **accept** an RFC by adding the `accepted` label once you are satisfied the design answers the core questions below. No approval quorum, no waiting period. (Once a third party ships a conforming implementation, a review window and shared merge authority return, established by their own RFC.)
 
-**Currently:** Philterd maintainers have merge authority on all RFCs. Acceptance requires:
+**Implement** in a normal pull request that references the issue and closes it on merge (`Closes #N`). The PR carries the change — schema, catalog, grammar, the Java and Python reference implementations, and examples — and CI is the reviewer: `validate_spec.py`, the conformance suite, and the accept-case schema check must pass. The issue and its discussion are the durable record of *why*; the merged PR is the record of *what*.
 
-- At least one maintainer approval on the PR.
-- The minimum 7-day Review window has elapsed.
-- No unresolved blocking objections from any maintainer.
+Weigh every proposal against these — the questions that actually catch breakage:
 
-**Once conforming third-party implementations ship:** Merge authority will move to a working group with representation from Philterd and from any organization shipping a conforming implementation. The transition will itself be governed by an RFC.
-
-Reviewers evaluate an RFC against these criteria, in roughly this priority order:
-
-1. **Necessity.** Is there a real problem? Could it be solved without changing the spec (e.g., a library or convention)?
-2. **Phileas-JSON representability.** Can the proposed construct compile to existing Phileas JSON, or does it require a Phileas runtime change? The latter raises the bar significantly — see the README's "The policy json schema leads; PhiSQL follows" stance.
-3. **Backward compatibility.** Does the change break existing PhiSQL files or existing Phileas JSON policies? Breaking changes are not impossible but require strong justification and a migration story.
-4. **Spec clarity.** Are the proposed schema and grammar changes unambiguous? Is the `schema/<version>/schema.json` delta well-formed, does the EBNF match the ANTLR grammar, and does the catalog match the schema?
-5. **Coverage.** Are there worked examples? Do they round-trip through the reference compiler?
-6. **Alternatives.** Was the design space genuinely explored, or is the proposal the first thing the author thought of?
+1. **Necessity.** Is there a real problem? Could it be solved without a spec change (a library or convention)?
+2. **Phileas-JSON representability.** Does it compile to existing Phileas JSON, or need a Phileas runtime change? The latter raises the bar — "the schema leads; PhiSQL follows."
+3. **Backward compatibility.** Does it break existing `.phisql` files or existing Phileas JSON policies? If so it is a major bump and needs a migration story.
+4. **Spec clarity.** Is the `schema/<version>/schema.json` delta well-formed? Does the EBNF match the ANTLR grammar, and the catalog match the schema?
+5. **Coverage.** Are there worked examples that round-trip through the reference compilers?
+6. **Alternatives.** Was the design space genuinely explored, or just the first idea?
 
 ## Versioning policy
 
@@ -128,7 +119,7 @@ A **major** version bump (`v1.x` → `v2.0`) is warranted when an Accepted RFC:
 
 As of the `v1.0` release the compatibility contract is in force: the spec is no longer a draft, the rules above are binding, and a breaking change requires a major version bump rather than landing within a minor version.
 
-Each accepted RFC must state which kind of bump it requires in its `versioning_impact` frontmatter field. The release manager bundles accepted RFCs into the next version following these rules.
+Each accepted RFC notes which kind of bump it requires (in the issue); accepted changes are bundled into the next version following these rules.
 
 ## Code of conduct
 

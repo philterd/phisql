@@ -1,5 +1,5 @@
 name: RFC proposal
-description: Propose a change to the PhiSQL spec or the redaction policy schema. File this first, before drafting the full RFC.
+description: Propose a change to the PhiSQL spec or the redaction policy schema. This issue is the RFC.
 title: "RFC: <short summary>"
 labels: ["phisql-rfc"]
 body:
@@ -22,13 +22,14 @@ body:
         [CONTRIBUTING.md](https://github.com/philterd/phisql/blob/main/CONTRIBUTING.md#what-needs-an-rfc)
         for the full list.
 
-        This issue is the **first step** of the RFC process: a lightweight sanity check so the idea
-        can be discussed before you invest time drafting the full RFC. A maintainer will confirm
-        whether an RFC is needed and, if so, assign you the next RFC number (`NNNN`).
+        **This issue is the RFC.** There is no separate file or document — the issue and its
+        discussion are the record. Fill in the sections below; the design is decided here, and the
+        implementation lands in a normal pull request that closes this issue. See
+        [CONTRIBUTING.md](https://github.com/philterd/phisql/blob/main/CONTRIBUTING.md#how-to-open-an-rfc).
 
         **Not every change needs an RFC.** Typo fixes, new examples that exercise already-specified
         grammar, and reference-implementation refactors should be opened as a normal pull request
-        instead. When in doubt, open this issue and ask.
+        instead. When in doubt, err toward writing a short RFC.
   - type: textarea
     id: summary
     attributes:
@@ -110,5 +111,5 @@ body:
       options:
         - label: I have read [CONTRIBUTING.md](https://github.com/philterd/phisql/blob/main/CONTRIBUTING.md) and this change needs an RFC (it is not a bug fix, typo, or already-specified example).
           required: true
-        - label: I searched existing issues and RFCs under [`rfcs/`](https://github.com/philterd/phisql/tree/main/rfcs) for prior or overlapping proposals.
+        - label: I searched existing [`phisql-rfc` issues](https://github.com/philterd/phisql/issues?q=label%3Aphisql-rfc) for prior or overlapping proposals.
           required: true

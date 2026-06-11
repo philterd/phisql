@@ -114,7 +114,7 @@ python3 -m venv .venv
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the RFC process, lifecycle, review criteria, and versioning policy. The RFC template is at [`.github/RFC_TEMPLATE.md`](.github/RFC_TEMPLATE.md); accepted, rejected, and withdrawn RFCs live under [`rfcs/`](rfcs/).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the RFC process, lifecycle, decision criteria, and versioning policy. RFCs are filed and tracked as GitHub issues using the [RFC proposal form](.github/ISSUE_TEMPLATE/rfc.yml) (the `phisql-rfc` label).
 
 Bug fixes, documentation tweaks, and new examples exercising already-specified grammar do not need an RFC - open a normal pull request. Feedback on PhiSQL v1.0 is welcome via GitHub issues.
 
