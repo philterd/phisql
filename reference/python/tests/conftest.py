@@ -35,9 +35,39 @@ def examples_dir():
     return EXAMPLES_DIR
 
 
+#: Discovery examples parse but do not compile to a Phileas redaction policy
+#: (they target a separate discovery-query schema). Compilation/schema tests
+#: skip them; they are still covered by parse and discovery-specific tests.
+DISCOVERY_EXAMPLES = {
+    "15-find-pii-s3.phisql",
+    "16-discover-entities-gcs.phisql",
+    "17-scan-azure-blob.phisql",
+    "18-find-pii-local-filesystem.phisql",
+    "19-select-findings-groupby.phisql",
+}
+
+
 def example_phisql_files():
     """Returns the sorted list of example .phisql paths (for parametrization)."""
     files = sorted(EXAMPLES_DIR.glob("*.phisql"))
     if not files:
         raise AssertionError(f"No example files found at {EXAMPLES_DIR}")
     return files
+
+
+def example_json_files():
+    """Returns the sorted list of example .json paths (for parametrization)."""
+    files = sorted(EXAMPLES_DIR.glob("*.json"))
+    if not files:
+        raise AssertionError(f"No example .json files found at {EXAMPLES_DIR}")
+    return files
+
+
+def redaction_example_files():
+    """Example .phisql files that compile to a Phileas redaction policy."""
+    return [p for p in example_phisql_files() if p.name not in DISCOVERY_EXAMPLES]
+
+
+def discovery_example_files():
+    """Example .phisql files for the discovery verbs (parse-only)."""
+    return [p for p in example_phisql_files() if p.name in DISCOVERY_EXAMPLES]

@@ -27,23 +27,10 @@ import json
 import pytest
 
 from phisql import Compiler
-from conftest import example_phisql_files
-
-DISCOVERY_EXAMPLES_NOT_YET_COMPILED = {
-    "15-find-pii-s3.phisql",
-    "16-discover-entities-gcs.phisql",
-    "17-scan-azure-blob.phisql",
-    "18-find-pii-local-filesystem.phisql",
-    "19-select-findings-groupby.phisql",
-}
-
-_REDACTION_EXAMPLES = [
-    p for p in example_phisql_files()
-    if p.name not in DISCOVERY_EXAMPLES_NOT_YET_COMPILED
-]
+from conftest import redaction_example_files
 
 
-@pytest.mark.parametrize("source_path", _REDACTION_EXAMPLES, ids=lambda p: p.name)
+@pytest.mark.parametrize("source_path", redaction_example_files(), ids=lambda p: p.name)
 def test_every_example_compiles_to_expected_json(source_path):
     compiler = Compiler()
     result = compiler.compile(source_path.read_text(encoding="utf-8"))
