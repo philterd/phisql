@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 class ExamplesParseTest {
 
     private static final Path EXAMPLES_DIR =
-            Paths.get("..", "spec", "v1.0", "examples").toAbsolutePath().normalize();
+            Paths.get("..", "..", "spec", "v1.0", "examples").toAbsolutePath().normalize();
 
     @TestFactory
     Stream<DynamicTest> everyExampleParses() throws IOException {

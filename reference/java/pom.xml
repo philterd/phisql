@@ -59,7 +59,7 @@
         <junit.version>5.10.2</junit.version>
         <!--
             Version of the canonical redaction policy schema bundled into this
-            JAR. The schema is authored at ../schema/<version>/schema.json; this
+            JAR. The schema is authored at ../../schema/<version>/schema.json; this
             property selects which version is packaged and exposed at runtime via
             ai.philterd.phisql.PolicySchema.
         -->
@@ -171,7 +171,7 @@
                                 cannot drift from the spec: there is only one
                                 grammar file in the repo, and it lives in spec/.
                             -->
-                            <sourceDirectory>${project.basedir}/../spec/v1.0/grammar</sourceDirectory>
+                            <sourceDirectory>${project.basedir}/../../spec/v1.0/grammar</sourceDirectory>
                             <outputDirectory>${project.build.directory}/generated-sources/antlr4/ai/philterd/phisql/grammar</outputDirectory>
                             <visitor>true</visitor>
                             <listener>true</listener>
@@ -212,7 +212,7 @@
                             <outputDirectory>${project.build.outputDirectory}/spec/v1.0/catalog</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${project.basedir}/../spec/v1.0/catalog</directory>
+                                    <directory>${project.basedir}/../../spec/v1.0/catalog</directory>
                                     <includes>
                                         <include>*.yaml</include>
                                     </includes>
@@ -241,7 +241,7 @@
                             <outputDirectory>${project.build.outputDirectory}/schema/${redaction.policy.schema.version}</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${project.basedir}/../schema/${redaction.policy.schema.version}</directory>
+                                    <directory>${project.basedir}/../../schema/${redaction.policy.schema.version}</directory>
                                     <includes>
                                         <include>schema.json</include>
                                     </includes>

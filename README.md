@@ -20,7 +20,12 @@ PhiSQL v1.0 is a complete authoring surface for the Phileas redaction policy sch
 
 The spec is the set of machine-readable artifacts under `spec/`. There is no prose specification document; the artifacts are the spec.
 
-The reference implementation generates a Java parser from `spec/v1.0/grammar/PhiSQL.g4` at build time. It is published as `ai.philterd:phisql` and consumed by other Philterd projects (Phileas, Phinder, the future PhiSQL CLI).
+There are two reference implementations under `reference/`, which produce identical Phileas JSON from the same input:
+
+- [`reference/java/`](reference/java/) generates a Java parser from `spec/v1.0/grammar/PhiSQL.g4` at build time. It is published as `ai.philterd:phisql` and consumed by other Philterd projects (Phileas, Phinder, the future PhiSQL CLI).
+- [`reference/python/`](reference/python/) is a Python parser and compiler whose hand-written parser mirrors the same grammar.
+
+Both are driven by the catalog YAML under `spec/v1.0/catalog/`; neither keeps a copy of the grammar or catalog.
 
 ## Versions
 
@@ -62,7 +67,7 @@ Two CI workflows enforce that the spec and the reference implementation cannot d
 
 - **`.github/workflows/validate.yml`** runs `scripts/validate_spec.py` to verify (a) the catalog YAML files are well-formed, (b) every Phileas field referenced by the catalogs exists in the canonical Phileas schema, (c) every example JSON file validates against the same Phileas schema, (d) discovery examples reference known findings columns, (e) PhiSQL covers the schema - every schema identifier, strategy, and top-level block is either exposed by PhiSQL or recorded as a deliberate deferral - and (f) PhiSQL covers every schema *leaf field*, descending into each policy object so no individual property can silently fall behind the schema.
 
-- **`.github/workflows/reference.yml`** builds the Java reference implementation, which generates a parser from `spec/v1.0/grammar/PhiSQL.g4` and parses every `.phisql` example file as part of its test suite. Any grammar change that breaks an example, or any new example the grammar can't parse, fails this job.
+- **`.github/workflows/reference.yml`** builds both reference implementations (Java and Python), each of which parses every `.phisql` example file — and the Java job compiles them — as part of its test suite. Any grammar change that breaks an example, or any new example an implementation can't handle, fails this job.
 
 Run them locally:
 
@@ -72,8 +77,11 @@ python3 -m venv .venv
 .venv/bin/pip install -r scripts/requirements.txt
 .venv/bin/python scripts/validate_spec.py
 
-# Reference implementation
-cd reference && mvn verify
+# Reference implementation (Java)
+cd reference/java && mvn verify
+
+# Reference implementation (Python)
+cd reference/python && pip install -e ".[test]" && pytest
 ```
 
 ## Documentation site

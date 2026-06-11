@@ -1,0 +1,36 @@
+# Copyright 2026 Philterd, LLC.
+#
+# Licensed under the Apache License, Version 2.0 (the "License").
+# See ../../LICENSE.
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "phisql"
+# This is the implementation version and is independent of the redaction
+# policy schema version (see phisql/policy_schema.py). Increment it freely for
+# code-only changes.
+version = "1.0.0"
+description = "Python reference parser and compiler for the PhiSQL specification."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Philterd, LLC", email = "support@philterd.ai" }]
+urls = { Homepage = "https://github.com/philterd/phisql" }
+dependencies = [
+    "PyYAML>=5.4",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=7.0"]
+
+[project.scripts]
+phisql = "phisql.cli:main"
+
+[tool.setuptools]
+packages = ["phisql"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

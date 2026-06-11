@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  build:
+  java:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,11 +17,32 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build and test reference implementation
-        working-directory: reference
+      - name: Build and test the Java reference implementation
+        working-directory: reference/java
         run: mvn -B verify
 
       # The parser is generated from spec/v1.0/grammar/PhiSQL.g4 at build time
       # and every example .phisql file is parsed by the generated parser as
       # part of the test suite. If the grammar drifts from the examples, this
       # job fails.
+
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install the Python reference implementation
+        working-directory: reference/python
+        run: pip install -e ".[test]"
+
+      - name: Test the Python reference implementation
+        working-directory: reference/python
+        run: pytest
+
+      # The hand-written parser mirrors spec/v1.0/grammar/PhiSQL.g4 and every
+      # example .phisql file is parsed and compiled as part of the test suite.
+      # If the grammar or catalog drifts from the examples, this job fails.

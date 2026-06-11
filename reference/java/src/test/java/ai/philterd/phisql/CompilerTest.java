@@ -48,7 +48,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class CompilerTest {
 
     private static final Path EXAMPLES_DIR =
-            Paths.get("..", "spec", "v1.0", "examples").toAbsolutePath().normalize();
+            Paths.get("..", "..", "spec", "v1.0", "examples").toAbsolutePath().normalize();
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 

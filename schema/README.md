@@ -30,7 +30,7 @@ String version = PolicySchema.getSupportedSchemaVersion(); // e.g. "1.0.0"
 String schema  = PolicySchema.getSchema();                 // the full schema JSON
 ```
 
-The bundled version is selected by the `redaction.policy.schema.version` Maven property in [`reference/pom.xml`](../reference/pom.xml).
+The bundled version is selected by the `redaction.policy.schema.version` Maven property in [`reference/java/pom.xml`](../reference/java/pom.xml). The Python reference selects it via `SUPPORTED_SCHEMA_VERSION` in [`reference/python/phisql/policy_schema.py`](../reference/python/phisql/policy_schema.py).
 
 ## Editor Support
 

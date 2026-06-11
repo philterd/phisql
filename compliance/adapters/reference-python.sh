@@ -13,25 +13,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# Conformance adapter for the PhiSQL Java reference implementation.
+# Conformance adapter for the PhiSQL Python reference implementation.
 #
 # The runner invokes this script with a single argument, the path to a .phisql
 # file. It must print the compiled Phileas JSON to stdout and exit 0, or exit 2
-# (parse error) / 3 (semantic error). All of that behavior lives in the CLI; this
-# wrapper just locates the runnable jar and forwards the argument and exit code.
+# (parse error) / 3 (semantic error). All of that behavior lives in the CLI;
+# this wrapper just runs `python -m phisql` with the package on PYTHONPATH and
+# forwards the argument and exit code.
 #
-# Build the jar first:
-#   (cd reference/java && mvn -Pcli -DskipTests package)
+# Requires PyYAML to be importable (pip install -e reference/python, or
+# pip install pyyaml).
 set -euo pipefail
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo="$(cd "$here/../.." && pwd)"
 
-jar="$(ls "$repo"/reference/java/target/phisql-*-cli.jar 2>/dev/null | head -n 1 || true)"
-if [[ -z "$jar" ]]; then
-  echo "reference CLI jar not found under reference/java/target/" >&2
-  echo "build it with: (cd reference/java && mvn -Pcli -DskipTests package)" >&2
-  exit 70
-fi
-
-exec java -jar "$jar" "$1"
+exec env PYTHONPATH="$repo/reference/python${PYTHONPATH:+:$PYTHONPATH}" \
+  "${PYTHON:-python3}" -m phisql "$1"
