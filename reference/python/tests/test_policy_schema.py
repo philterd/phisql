@@ -19,7 +19,12 @@ selected version, the version reported at runtime, and the schema's own
 
 import json
 
-from phisql import get_schema, get_supported_schema_version
+from phisql import (
+    PolicySchema,
+    get_schema,
+    get_schema_dict,
+    get_supported_schema_version,
+)
 
 
 def test_version_is_non_empty():
@@ -38,3 +43,17 @@ def test_schema_matches_reported_version():
 
     # The $id encodes the same version in its path.
     assert f"/{get_supported_schema_version()}/" in root.get("$id", "")
+
+
+def test_policy_schema_class_mirrors_module_functions():
+    # The class API (mirroring Java's PolicySchema) and the module functions
+    # return the same things.
+    assert PolicySchema.get_supported_schema_version() == get_supported_schema_version()
+    assert PolicySchema.get_schema() == get_schema()
+
+
+def test_get_schema_dict_parses_to_matching_object():
+    parsed = get_schema_dict()
+    assert isinstance(parsed, dict)
+    assert parsed == json.loads(get_schema())
+    assert parsed["version"] == get_supported_schema_version()

@@ -1,0 +1,3 @@
+# Include the spec data copied into the package at build time (see setup.py)
+# so it is present in source distributions as well as wheels.
+recursive-include phisql/_data *.yaml *.json

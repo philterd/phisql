@@ -33,7 +33,9 @@ from .errors import CompileException, ParseException
 from .phisql import parse
 from .policy_schema import (
     SUPPORTED_SCHEMA_VERSION,
+    PolicySchema,
     get_schema,
+    get_schema_dict,
     get_supported_schema_version,
 )
 
@@ -46,7 +48,9 @@ __all__ = [
     "CompileException",
     "ParseException",
     "parse",
+    "PolicySchema",
     "get_schema",
+    "get_schema_dict",
     "get_supported_schema_version",
     "SUPPORTED_SCHEMA_VERSION",
     "__version__",

@@ -1,5 +1,9 @@
 __pycache__/
 *.pyc
+
+# Spec catalog and schema copied in at build time (single source of truth is
+# the repo's spec/ and schema/; this is a build artifact, like Java's target/).
+phisql/_data/
 *.egg-info/
 .eggs/
 build/

@@ -103,6 +103,40 @@ It writes the compiled Phileas JSON to stdout. Exit codes form the adapter
 contract the conformance runner relies on: `0` success, `2` parse error, `3`
 compile error, `64` usage error, `1` other I/O error.
 
+### Retrieve the policy schema
+
+An application that depends on `phisql` can read the canonical redaction policy
+JSON Schema straight from the library — no network fetch, no separate checkout —
+exactly as the Java reference exposes it through `ai.philterd.phisql.PolicySchema`:
+
+```python
+from phisql import PolicySchema
+
+PolicySchema.get_supported_schema_version()  # "1.0.0"
+PolicySchema.get_schema()                    # the schema as a JSON string
+PolicySchema.get_schema_dict()               # the schema parsed into a dict
+```
+
+The schema (and the catalog the compiler uses) are copied into the package at
+build time — see [How the spec data is bundled](#how-the-spec-data-is-bundled) —
+so these work from an installed wheel regardless of where it came from.
+
+## How the spec data is bundled
+
+The compiler is driven by the catalog YAML and the policy schema, both of which
+live in the repository root (`spec/` and `schema/`). The build copies them into
+the package at `phisql/_data/` — the Python analogue of the Maven
+`copy-resources` steps that pack the same files into the Java JAR. This is done
+by `setup.py` at build time, so:
+
+- an **installed wheel** (or a Git/path install) is self-contained;
+- a **source checkout** falls back to reading `spec/`/`schema/` directly, so the
+  tests run without a build step;
+- set `PHISQL_SPEC_ROOT` to a repository root to override the lookup explicitly.
+
+The repository remains the single source of truth; `phisql/_data/` is a
+gitignored build artifact, like the Java `target/` resources.
+
 ## Scope
 
 Like the Java reference, this compiler targets the redaction subset of PhiSQL

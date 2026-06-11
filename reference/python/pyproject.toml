@@ -32,5 +32,14 @@ phisql = "phisql.cli:main"
 [tool.setuptools]
 packages = ["phisql"]
 
+# Spec catalog and policy schema copied into phisql/_data at build time by
+# setup.py (the analogue of the Maven copy-resources executions). Bundling them
+# makes the wheel self-contained.
+[tool.setuptools.package-data]
+phisql = [
+    "_data/spec/v1.0/catalog/*.yaml",
+    "_data/schema/*/schema.json",
+]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
