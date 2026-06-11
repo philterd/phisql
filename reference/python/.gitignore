@@ -4,6 +4,8 @@ __pycache__/
 # Spec catalog and schema copied in at build time (single source of truth is
 # the repo's spec/ and schema/; this is a build artifact, like Java's target/).
 phisql/_data/
+# LICENSE copied from the repo root at build time (source of truth is ../../LICENSE).
+/LICENSE
 *.egg-info/
 .eggs/
 build/

@@ -1,11 +1,11 @@
 # PhiSQL Reference Implementation (Python)
 
-The Python reference parser and compiler for the [PhiSQL specification](../../spec/).
-It is a sibling of the [Java reference implementation](../java/) and produces the
+The Python reference parser and compiler for the [PhiSQL specification](https://github.com/philterd/phisql/tree/main/spec).
+It is a sibling of the [Java reference implementation](https://github.com/philterd/phisql/tree/main/reference/java) and produces the
 same Phileas JSON output for the same input.
 
 The parser is a hand-written recursive-descent parser that mirrors
-[`spec/v1.0/grammar/PhiSQL.g4`](../../spec/v1.0/grammar/PhiSQL.g4) rule-for-rule.
+[`spec/v1.0/grammar/PhiSQL.g4`](https://github.com/philterd/phisql/blob/main/spec/v1.0/grammar/PhiSQL.g4) rule-for-rule.
 (The Java reference generates its parser from that grammar with ANTLR; the
 Python reference transcribes it instead, keeping the dependency footprint to a
 single runtime library.) The grammar file in the spec remains the source of
@@ -13,7 +13,7 @@ truth: the test suite parses every `.phisql` example in the spec, so any drift
 between the grammar and this parser fails the build.
 
 The compiler is driven by the catalog YAML files under
-[`spec/v1.0/catalog/`](../../spec/v1.0/catalog/) — the same files the Java
+[`spec/v1.0/catalog/`](https://github.com/philterd/phisql/tree/main/spec/v1.0/catalog) — the same files the Java
 reference, the spec validator, and the conformance suite use. There is no copy
 of the catalog or grammar inside this directory; both are read from the spec.
 
@@ -91,7 +91,7 @@ the file is optional; when present, its name must match the basename after
 hyphen/underscore normalization (so `hipaa-safe-harbor.phisql` may declare
 `POLICY hipaa_safe_harbor`). The compiler raises a `CompileException` on
 mismatch. This rule is defined in
-[`spec/v1.0/catalog/policy.yaml`](../../spec/v1.0/catalog/policy.yaml).
+[`spec/v1.0/catalog/policy.yaml`](https://github.com/philterd/phisql/blob/main/spec/v1.0/catalog/policy.yaml).
 
 ### Command line
 
@@ -148,4 +148,4 @@ discovery-query schema.
 
 ## License
 
-Apache License, Version 2.0. See [LICENSE](../../LICENSE).
+Apache License, Version 2.0. See [LICENSE](https://github.com/philterd/phisql/blob/main/LICENSE).

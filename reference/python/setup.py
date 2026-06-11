@@ -54,6 +54,20 @@ def _schema_version() -> str:
     return match.group(1)
 
 
+def _copy_license() -> None:
+    """Copies the repo-root LICENSE into this project so it ships in the dist.
+
+    The Apache LICENSE lives at the repository root, outside this project
+    directory, which packaging tools cannot reach. Copying it here (and
+    declaring license-files = ["LICENSE"] in pyproject.toml) includes it in the
+    sdist and wheel. No-op when the repo tree is absent (building from an sdist
+    that already contains LICENSE).
+    """
+    license_src = _REPO_ROOT / "LICENSE"
+    if license_src.is_file():
+        shutil.copy2(license_src, _HERE / "LICENSE")
+
+
 def _copy_spec_data() -> None:
     """Copies the catalog and schema from the repo into phisql/_data.
 
@@ -90,7 +104,8 @@ class BuildPyWithSpecData(build_py):
 
 
 # Also copy at setup.py load time so that any command (sdist, egg_info, develop)
-# packages the data, not just bdist_wheel.
+# packages the data and license, not just bdist_wheel.
+_copy_license()
 _copy_spec_data()
 
 setup(cmdclass={"build_py": BuildPyWithSpecData})

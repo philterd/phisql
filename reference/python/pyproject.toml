@@ -18,10 +18,31 @@ readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "Apache-2.0" }
 authors = [{ name = "Philterd, LLC", email = "support@philterd.ai" }]
-urls = { Homepage = "https://github.com/philterd/phisql" }
+keywords = ["phisql", "pii", "redaction", "deidentification", "phileas", "privacy"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Security",
+    "Topic :: Software Development :: Compilers",
+    "Topic :: Text Processing :: Linguistic",
+]
 dependencies = [
     "PyYAML>=5.4",
 ]
+
+[project.urls]
+Homepage = "https://github.com/philterd/phisql"
+Source = "https://github.com/philterd/phisql"
+Issues = "https://github.com/philterd/phisql/issues"
+Documentation = "https://philterd.github.io/phisql/"
 
 [project.optional-dependencies]
 test = ["pytest>=7.0"]
@@ -31,6 +52,10 @@ phisql = "phisql.cli:main"
 
 [tool.setuptools]
 packages = ["phisql"]
+# The LICENSE is copied in from the repository root at build time by setup.py
+# (it lives outside this project directory); license-files then ships it in the
+# sdist and wheel.
+license-files = ["LICENSE"]
 
 # Spec catalog and policy schema copied into phisql/_data at build time by
 # setup.py (the analogue of the Maven copy-resources executions). Bundling them
