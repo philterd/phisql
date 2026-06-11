@@ -35,11 +35,11 @@ Both are driven by the catalog YAML under `spec/v1.0/catalog/`; neither keeps a 
 
 ## Reference implementation compatibility
 
-The `ai.philterd:phisql` jar version and the schema version are independent. The jar may receive bug fixes and improvements without a schema change. Use this table to find the right jar version for your target schema.
+The reference implementation versions and the schema version are independent. An implementation may receive bug fixes and improvements without a schema change. Use this table to find the right implementation version for your target schema.
 
-| Schema version | Compatible jar versions |
-|---|---|
-| 1.0.0 | 1.0.0 |
+| Schema version | Java jar (`ai.philterd:phisql`) | Python package (`phisql`) |
+|---|---|---|
+| 1.0.0 | 1.0.0 | 1.0.0 |
 
 ## Relationship to the redaction policy schema
 
