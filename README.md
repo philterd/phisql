@@ -38,9 +38,9 @@ All are driven by the catalog YAML under `spec/v1.0/catalog/`; none keeps a copy
 
 The reference implementation versions and the schema version are independent. An implementation may receive bug fixes and improvements without a schema change. Use this table to find the right implementation version for your target schema.
 
-| Schema version | Java jar (`ai.philterd:phisql`) | Python package (`phisql`) |
-|---|---|---|
-| 1.0.0 | 1.0.0 | 1.0.0 |
+| Schema version | Java jar (`ai.philterd:phisql`) | Python package (`phisql`) | .NET package (`Philterd.PhiSql`) |
+|---|---|---|---|
+| 1.0.0 | 1.0.0 | 1.0.0 | 1.0.0 |
 
 ## Relationship to the redaction policy schema
 
