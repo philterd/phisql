@@ -14,9 +14,10 @@
 """
 PhiSQL reference implementation (Python).
 
-The parser mirrors ``spec/v1.0/grammar/PhiSQL.g4`` and the compiler is driven
-by the catalog files under ``spec/v1.0/catalog/``. This package is a sibling of
-the Java reference implementation and produces the same Phileas JSON output.
+The parser is generated from ``spec/v1.0/grammar/PhiSQL.g4`` with ANTLR (see
+``phisql._generated``) and the compiler is driven by the catalog files under
+``spec/v1.0/catalog/``. This package is a sibling of the Java reference
+implementation and produces the same Phileas JSON output.
 
 Quick start::
 

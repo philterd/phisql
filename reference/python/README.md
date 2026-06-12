@@ -4,13 +4,20 @@ The Python reference parser and compiler for the [PhiSQL specification](https://
 It is a sibling of the [Java reference implementation](https://github.com/philterd/phisql/tree/main/reference/java) and produces the
 same Phileas JSON output for the same input.
 
-The parser is a hand-written recursive-descent parser that mirrors
-[`spec/v1.0/grammar/PhiSQL.g4`](https://github.com/philterd/phisql/blob/main/spec/v1.0/grammar/PhiSQL.g4) rule-for-rule.
-(The Java reference generates its parser from that grammar with ANTLR; the
-Python reference transcribes it instead, keeping the dependency footprint to a
-single runtime library.) The grammar file in the spec remains the source of
-truth: the test suite parses every `.phisql` example in the spec, so any drift
-between the grammar and this parser fails the build.
+The lexer and parser are generated from
+[`spec/v1.0/grammar/PhiSQL.g4`](https://github.com/philterd/phisql/blob/main/spec/v1.0/grammar/PhiSQL.g4)
+with ANTLR (the same grammar the Java reference generates from). The generated
+sources are committed under [`phisql/_generated/`](phisql/_generated/) so that
+installing and testing this package stays pure-Python, with no Java needed to
+use it. The parser walks its parse tree into the AST the compiler consumes
+(`phisql/parser.py`).
+
+The grammar in the spec remains the single source of truth.
+[`scripts/generate_parser.sh`](scripts/generate_parser.sh) regenerates the
+parser from it, and CI regenerates and runs `git diff --exit-code` over
+`phisql/_generated/`, so any drift between the grammar and the committed parser
+fails the build. (Regenerating needs a JDK to run the ANTLR tool; using and
+testing the package does not.)
 
 The compiler is driven by the catalog YAML files under
 [`spec/v1.0/catalog/`](https://github.com/philterd/phisql/tree/main/spec/v1.0/catalog) — the same files the Java
@@ -21,6 +28,10 @@ of the catalog or grammar inside this directory; both are read from the spec.
 
 - Python 3.9+
 - [PyYAML](https://pyyaml.org/) (declared as a dependency)
+- [antlr4-python3-runtime](https://pypi.org/project/antlr4-python3-runtime/) (declared as a dependency; loads the generated parser)
+
+A JDK is required only to *regenerate* the parser (see below), not to install,
+use, or test the package.
 
 ## Install
 
@@ -51,6 +62,21 @@ The suite mirrors the Java reference's tests:
 These two are the load-bearing assertions that the implementation stays in sync
 with the spec: any grammar change that breaks an example, or any new example
 the parser or compiler can't handle, fails the build.
+
+## Regenerating the parser
+
+The lexer/parser/visitor under `phisql/_generated/` are generated from
+`spec/v1.0/grammar/PhiSQL.g4`. After changing the grammar, regenerate them:
+
+```sh
+cd reference/python
+./scripts/generate_parser.sh
+```
+
+The script downloads the pinned ANTLR tool jar to a gitignored cache on first
+run (override with `ANTLR_JAR=/path/to/antlr-complete.jar`) and needs a JDK on
+`PATH`. Commit the regenerated files. CI runs the same script and fails if the
+committed output differs, so the grammar stays the single source of truth.
 
 ## Usage
 

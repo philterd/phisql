@@ -19,7 +19,7 @@ assertion, but the bundled examples happen not to use string escapes, negative
 numbers, the ``=`` comparison operator, boolean/parenthesised redaction
 predicates, the ``DETECT ... ENDPOINT`` clause, or several catalogued strategy
 arguments. These tests cover those paths directly so a regression in the
-hand-written parser or in the compiler's translation is caught.
+generated parser, the AST builder, or the compiler's translation is caught.
 """
 
 import pytest

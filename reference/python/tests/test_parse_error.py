@@ -73,3 +73,22 @@ def test_error_message_reports_correct_line_number():
     with pytest.raises(ParseException) as exc:
         parse(source)
     assert "line 3:" in str(exc.value), f"Expected error on line 3, got: {exc.value}"
+
+
+# --- lexical errors surface through the same ParseException ------------------
+#
+# Tokenization is handled by the ANTLR-generated lexer; these confirm a lexer
+# error reaches the caller as a ParseException with the line:column prefix,
+# matching syntax errors.
+
+
+def test_rejects_unterminated_string_literal():
+    with pytest.raises(ParseException) as exc:
+        parse("REDACT SSN WITH STATIC_REPLACE(value='oops);")
+    _assert_has_line_and_column(exc)
+
+
+def test_rejects_unrecognized_character():
+    with pytest.raises(ParseException) as exc:
+        parse("REDACT SSN @ MASK;")
+    _assert_has_line_and_column(exc)

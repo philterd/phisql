@@ -6,6 +6,9 @@ __pycache__/
 phisql/_data/
 # LICENSE copied from the repo root at build time (source of truth is ../../LICENSE).
 /LICENSE
+# Cached ANTLR tool jar fetched by scripts/generate_parser.sh. The generated
+# parser under phisql/_generated/ IS committed; only the tool jar is ignored.
+.antlr/
 *.egg-info/
 .eggs/
 build/
