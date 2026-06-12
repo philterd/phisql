@@ -5,27 +5,30 @@
 # Licensed under the Apache License, Version 2.0 (the "License").
 # See ../../../LICENSE.
 #
-# Regenerates the ANTLR parser for the Python reference implementation from the
+# Regenerates the ANTLR parser for the .NET reference implementation from the
 # canonical grammar at spec/v1.0/grammar/PhiSQL.g4.
 #
 # The grammar is the single source of truth. The generated lexer/parser/visitor
-# are committed under phisql/_generated/ so that `pip install` and `pytest` stay
-# pure-Python (no Java needed to use or test the package). CI regenerates with
-# this script and runs `git diff --exit-code` over phisql/_generated/, so any
-# drift between the grammar and the committed parser fails the build. That is
-# the same "the parser cannot drift from the grammar" guarantee the Java
-# reference gets from generating at build time; here it is enforced in CI.
+# are committed under PhiSql/Generated/ so that `dotnet build`/`dotnet test`
+# stay self-contained (no Java needed to build or test the package). CI
+# regenerates with this script and runs `git diff --exit-code` over
+# PhiSql/Generated/, so any drift between the grammar and the committed parser
+# fails the build. That is the same "the parser cannot drift from the grammar"
+# guarantee the Java reference gets from generating at build time; here it is
+# enforced in CI.
 #
 # Requirements: a JDK (java on PATH). The pinned ANTLR tool jar is downloaded to
 # a gitignored cache on first run, or supplied via the ANTLR_JAR environment
-# variable. The ANTLR runtime version in pyproject.toml must match ANTLR_VERSION
-# below; ANTLR generates code only the matching runtime can load.
+# variable. The Antlr4.Runtime.Standard package version in PhiSql/PhiSql.csproj
+# must be compatible with ANTLR_VERSION below; generated code only loads on a
+# compatible runtime.
 
 set -euo pipefail
 
 ANTLR_VERSION="4.13.2"
+NAMESPACE="Philterd.PhiSql.Generated"
 
-# reference/python (this script lives in reference/python/scripts).
+# reference/dotnet (this script lives in reference/dotnet/scripts).
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 REPO_ROOT="$(cd "${PROJECT_DIR}/../.." && pwd)"
 
@@ -35,7 +38,7 @@ REPO_ROOT="$(cd "${PROJECT_DIR}/../.." && pwd)"
 # in and the CI drift-check diffs against a developer's local path).
 GRAMMAR_REL="spec/v1.0/grammar/PhiSQL.g4"
 GRAMMAR="${REPO_ROOT}/${GRAMMAR_REL}"
-OUT_DIR="${PROJECT_DIR}/phisql/_generated"
+OUT_DIR="${PROJECT_DIR}/PhiSql/Generated"
 CACHE_DIR="${PROJECT_DIR}/.antlr"
 JAR="${ANTLR_JAR:-${CACHE_DIR}/antlr-${ANTLR_VERSION}-complete.jar}"
 
@@ -58,22 +61,24 @@ if [[ ! -f "${JAR}" ]]; then
     curl -fsSL -o "${JAR}" "${url}"
 fi
 
-# Generate into a clean temp dir, then copy only the Python sources we keep.
+# Generate into a clean temp dir, then copy only the C# sources we keep.
 # (-Xexact-output-dir writes directly into TMP_OUT rather than a grammar-named
 # subdirectory; the .interp/.tokens byproducts are not copied.)
 TMP_OUT="$(mktemp -d)"
 trap 'rm -rf "${TMP_OUT}"' EXIT
 
 ( cd "${REPO_ROOT}" && java -jar "${JAR}" \
-    -Dlanguage=Python3 \
+    -Dlanguage=CSharp \
     -visitor \
+    -package "${NAMESPACE}" \
     -o "${TMP_OUT}" \
     -Xexact-output-dir \
     "${GRAMMAR_REL}" )
 
 mkdir -p "${OUT_DIR}"
-for f in PhiSQLLexer.py PhiSQLParser.py PhiSQLListener.py PhiSQLVisitor.py; do
+for f in PhiSQLLexer.cs PhiSQLParser.cs PhiSQLBaseListener.cs PhiSQLListener.cs \
+         PhiSQLBaseVisitor.cs PhiSQLVisitor.cs; do
     cp "${TMP_OUT}/${f}" "${OUT_DIR}/${f}"
 done
 
-echo "Regenerated parser in ${OUT_DIR} from ${GRAMMAR#"${REPO_ROOT}/"}"
+echo "Regenerated parser in ${OUT_DIR} from ${GRAMMAR_REL}"

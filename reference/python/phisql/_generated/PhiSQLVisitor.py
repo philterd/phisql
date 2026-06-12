@@ -1,4 +1,4 @@
-# Generated from /Users/jeff/work/philterd/code/phisql/spec/v1.0/grammar/PhiSQL.g4 by ANTLR 4.13.2
+# Generated from spec/v1.0/grammar/PhiSQL.g4 by ANTLR 4.13.2
 from antlr4 import *
 if "." in __name__:
     from .PhiSQLParser import PhiSQLParser

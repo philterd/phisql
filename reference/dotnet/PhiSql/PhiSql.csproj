@@ -7,6 +7,10 @@
     <RootNamespace>Philterd.PhiSql</RootNamespace>
     <AssemblyName>Philterd.PhiSql</AssemblyName>
     <LangVersion>latest</LangVersion>
+    <!-- CS3021: the ANTLR-generated sources under PhiSql/Generated/ carry
+         [CLSCompliant] attributes the assembly does not need. Suppress that
+         generated-code noise; it is not actionable. -->
+    <NoWarn>$(NoWarn);CS3021</NoWarn>
 
     <!-- NuGet package metadata. -->
     <PackageId>Philterd.PhiSql</PackageId>
@@ -25,6 +29,10 @@
 
   <ItemGroup>
     <PackageReference Include="YamlDotNet" Version="15.1.2" />
+    <!-- Runtime that loads the ANTLR-generated parser under PhiSql/Generated/
+         (regenerated from spec/v1.0/grammar/PhiSQL.g4 by scripts/generate_parser.sh).
+         Compatible with the ANTLR tool version pinned in that script. -->
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
   </ItemGroup>
 
   <!--

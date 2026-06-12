@@ -47,11 +47,17 @@ jobs:
       # generated sources are committed under phisql/_generated/). Every example
       # .phisql file is parsed and compiled as part of the test suite, so if the
       # grammar or catalog drifts from the examples, this job fails. The
-      # python-parser-drift job below additionally checks that the committed
-      # generated parser still matches the grammar. Installing and testing here
-      # is pure-Python; no Java is needed.
+      # parser-drift job below additionally checks that the committed generated
+      # parser still matches the grammar. Installing and testing here is
+      # pure-Python; no Java is needed.
 
-  python-parser-drift:
+  parser-drift:
+    # The Python and .NET references commit their ANTLR-generated parsers (so
+    # those packages stay pure-Python / pure-.NET to install and test). This job
+    # regenerates both from the grammar and fails if either differs, giving the
+    # same "the parser cannot drift from the grammar" guarantee the Java
+    # reference gets by generating at build time. Only Java is needed here; the
+    # generate scripts run the ANTLR tool and do not build the packages.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -61,23 +67,20 @@ jobs:
           java-version: '25'
           distribution: 'temurin'
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      # Regenerate the committed parser from the grammar and fail if it differs.
-      # This is the "the parser cannot drift from the grammar" guarantee: the
-      # Java reference gets it by generating at build time; here, because the
-      # generated sources are committed so the package stays pure-Python, it is
-      # enforced by regenerating in CI and diffing.
-      - name: Regenerate the parser from the grammar
+      - name: Regenerate the Python parser from the grammar
         working-directory: reference/python
         run: ./scripts/generate_parser.sh
 
-      - name: Fail if the committed parser is out of date
+      - name: Regenerate the .NET parser from the grammar
+        working-directory: reference/dotnet
+        run: ./scripts/generate_parser.sh
+
+      - name: Fail if either committed parser is out of date
         run: |
-          if ! git diff --exit-code -- reference/python/phisql/_generated; then
-            echo "::error::phisql/_generated is out of date with spec/v1.0/grammar/PhiSQL.g4. Run reference/python/scripts/generate_parser.sh and commit the result." >&2
+          if ! git diff --exit-code -- \
+              reference/python/phisql/_generated \
+              reference/dotnet/PhiSql/Generated; then
+            echo "::error::A committed generated parser is out of date with spec/v1.0/grammar/PhiSQL.g4. Run the reference's scripts/generate_parser.sh and commit the result." >&2
             exit 1
           fi
 
@@ -94,8 +97,10 @@ jobs:
         working-directory: reference/dotnet
         run: dotnet test PhiSql.Tests -c Release
 
-      # The hand-written parser mirrors spec/v1.0/grammar/PhiSQL.g4 and the
-      # catalog + schema are embedded from spec/ and schema/ at build time.
-      # Every example .phisql file is parsed and compiled, and every compiled
-      # example is validated against the schema, as part of the test suite. If
-      # the grammar, catalog, or schema drifts from the examples, this job fails.
+      # The parser is generated from spec/v1.0/grammar/PhiSQL.g4 by ANTLR (the
+      # generated sources are committed under PhiSql/Generated/) and the catalog
+      # + schema are embedded from spec/ and schema/ at build time. Every example
+      # .phisql file is parsed and compiled, and every compiled example is
+      # validated against the schema, as part of the test suite. If the grammar,
+      # catalog, or schema drifts from the examples, this job fails. The
+      # parser-drift job above checks the committed parser against the grammar.

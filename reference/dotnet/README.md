@@ -5,17 +5,27 @@ It is a sibling of the [Java](https://github.com/philterd/phisql/tree/main/refer
 and [Python](https://github.com/philterd/phisql/tree/main/reference/python) reference
 implementations and produces the same Phileas JSON output for the same input.
 
-The parser is a hand-written recursive-descent parser that mirrors
+The lexer and parser are generated from
 [`spec/v1.0/grammar/PhiSQL.g4`](https://github.com/philterd/phisql/blob/main/spec/v1.0/grammar/PhiSQL.g4)
-rule-for-rule (a direct port of the Python reference). The compiler is driven by
-the catalog YAML under
+with ANTLR (the same grammar the Java and Python references generate from). The
+generated C# sources are committed under [`PhiSql/Generated/`](PhiSql/Generated/)
+so building and testing the package needs only the .NET SDK (no Java). The
+parser walks its parse tree into the AST the compiler consumes (`PhiSql/Parser.cs`).
+The compiler is driven by the catalog YAML under
 [`spec/v1.0/catalog/`](https://github.com/philterd/phisql/tree/main/spec/v1.0/catalog) —
 the single source of truth shared by all three implementations.
+
+The grammar in the spec remains the single source of truth.
+[`scripts/generate_parser.sh`](scripts/generate_parser.sh) regenerates the
+parser from it (it needs a JDK to run the ANTLR tool), and CI regenerates and
+runs `git diff --exit-code` over `PhiSql/Generated/`, so any drift between the
+grammar and the committed parser fails the build.
 
 ## Target framework
 
 **.NET 10.0** (`net10.0`, the current LTS). Dependencies: `YamlDotNet` (catalog
-parsing) and, for the test project only, `xUnit` and `JsonSchema.Net`.
+parsing) and `Antlr4.Runtime.Standard` (loads the generated parser), plus, for
+the test project only, `xUnit` and `JsonSchema.Net`.
 
 ## Layout
 

@@ -42,4 +42,18 @@ public class ParseErrorTests
         var ex = Assert.Throws<ParseException>(() => Parser.Parse(source));
         Assert.Contains("line 3:", ex.Message);
     }
+
+    // Tokenization is handled by the ANTLR-generated lexer; these confirm a
+    // lexer error reaches the caller as a ParseException with the line:column
+    // prefix, matching syntax errors.
+
+    [Fact]
+    public void RejectsUnterminatedStringLiteral() =>
+        AssertHasLineAndColumn(Assert.Throws<ParseException>(
+            () => Parser.Parse("REDACT SSN WITH STATIC_REPLACE(value='oops);")));
+
+    [Fact]
+    public void RejectsUnrecognizedCharacter() =>
+        AssertHasLineAndColumn(Assert.Throws<ParseException>(
+            () => Parser.Parse("REDACT SSN @ MASK;")));
 }
