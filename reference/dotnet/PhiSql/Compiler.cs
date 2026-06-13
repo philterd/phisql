@@ -372,12 +372,14 @@ public sealed class Compiler
 
         bool hasLabels = ctx.Labels is not null;
         bool hasEndpoint = ctx.EndpointRaw is not null;
-        if (hasLabels || hasEndpoint)
+        bool hasModel = ctx.ModelRaw is not null;
+        if (hasLabels || hasEndpoint || hasModel)
         {
             var config = new JsonObject();
             pheye["phEyeConfiguration"] = config;
             if (hasEndpoint) config["endpoint"] = Unquote(ctx.EndpointRaw!);
             if (hasLabels) config["labels"] = StringArray(ctx.Labels!.Select(Unquote));
+            if (hasModel) config["modelPath"] = Unquote(ctx.ModelRaw!);
         }
         ApplyOptions(pheye, ctx.Options);
     }

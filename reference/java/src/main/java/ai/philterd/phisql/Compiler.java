@@ -536,7 +536,8 @@ public final class Compiler {
 
         boolean hasLabels = ctx.stringList() != null;
         boolean hasEndpoint = ctx.endpoint != null;
-        if (hasLabels || hasEndpoint) {
+        boolean hasModel = ctx.model != null;
+        if (hasLabels || hasEndpoint || hasModel) {
             ObjectNode config = pheye.putObject("phEyeConfiguration");
             if (hasEndpoint) {
                 config.put("endpoint", unquoteString(ctx.endpoint.getText()));
@@ -546,6 +547,9 @@ public final class Compiler {
                 for (TerminalNode t : ctx.stringList().STRING_LITERAL()) {
                     labels.add(unquoteString(t.getText()));
                 }
+            }
+            if (hasModel) {
+                config.put("modelPath", unquoteString(ctx.model.getText()));
             }
         }
         applyOptions(pheye, ctx.optionsClause());

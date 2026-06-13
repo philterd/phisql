@@ -4,6 +4,27 @@ All notable changes to the PhiSQL specification are documented here.
 
 As of v1.0.0 this project follows [Semantic Versioning](https://semver.org/): additive, backward-compatible changes bump the minor version, and changes that break existing PhiSQL or Phileas JSON require a new major version.
 
+## [1.1.0] - Unreleased
+
+Local, on-device inference for `DETECT PHEYE`. A policy can now point PhEye at a local GLiNER model for fully offline redaction, with no remote PhEye service. Additive and backward-compatible: every 1.0.0 policy and compiled Phileas JSON remains valid and unchanged in meaning.
+
+### Added
+
+- **Local GLiNER inference for `DETECT PHEYE`** (RFC #14). A new optional `MODEL '<path>'` clause points PhEye at a local GLiNER model directory (the ONNX model, the SentencePiece tokenizer, and the GLiNER config) instead of, or in addition to, a remote `ENDPOINT`. When `MODEL` is set, detection runs on-device, and `LABELS` is the GLiNER detection prompt. The target model is the GLiNER-based Philterd PII model exported to ONNX. Example `pheye-local-model`.
+- **Schema `1.1.0`** (`schema/1.1.0/schema.json`). `phEyeConfiguration` gains two optional properties:
+  - `modelPath`: filesystem path to the local GLiNER model directory.
+  - `threshold`: minimum span confidence for the local model to return a detection (number, default `0.5`).
+- **`MODEL` reserved keyword**, added to the grammar, the EBNF, and `spec/v1.0/catalog/keywords.yaml`.
+- **`spec/v1.1.0/examples/pheye-local-model`** example pair (`.phisql` and compiled `.json`), exercised by the Java, Python, and .NET reference test suites.
+
+### Changed
+
+- The Java, Python, and .NET reference implementations target schema `1.1.0` and recognize the `MODEL` clause. The bundled schema version advances accordingly (`redaction.policy.schema.version`, `SchemaVersion`, and `SUPPORTED_SCHEMA_VERSION`).
+
+### Notes
+
+- `threshold` is schema-only in 1.1: there is no PhiSQL clause for it, so a policy relies on the default or filters detections with `WHERE CONFIDENCE`. Only `MODEL` is expressible in the language.
+
 ## [1.0.0] - 2026-06-01
 
 First stable release. The PhiSQL language, the redaction policy schema, and the `ai.philterd:phisql` reference jar are all versioned at 1.0.

@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -47,8 +48,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  */
 class CompilerTest {
 
-    private static final Path EXAMPLES_DIR =
-            Paths.get("..", "..", "spec", "v1.0", "examples").toAbsolutePath().normalize();
+    private static final List<Path> EXAMPLES_DIRS = List.of(
+            Paths.get("..", "..", "spec", "v1.0", "examples").toAbsolutePath().normalize(),
+            Paths.get("..", "..", "spec", "v1.1.0", "examples").toAbsolutePath().normalize());
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -63,20 +65,22 @@ class CompilerTest {
     @TestFactory
     Stream<DynamicTest> everyExampleCompilesToExpectedJson() throws IOException {
         Compiler compiler = new Compiler();
-        List<Path> sources;
-        try (Stream<Path> entries = Files.list(EXAMPLES_DIR)) {
-            sources = entries
-                    .filter(p -> p.getFileName().toString().endsWith(".phisql"))
-                    .filter(p -> !DISCOVERY_EXAMPLES_NOT_YET_COMPILED.contains(p.getFileName().toString()))
-                    .sorted()
-                    .toList();
+        List<Path> sources = new ArrayList<>();
+        for (Path dir : EXAMPLES_DIRS) {
+            if (!Files.isDirectory(dir)) continue;
+            try (Stream<Path> entries = Files.list(dir)) {
+                entries.filter(p -> p.getFileName().toString().endsWith(".phisql"))
+                       .filter(p -> !DISCOVERY_EXAMPLES_NOT_YET_COMPILED.contains(p.getFileName().toString()))
+                       .forEach(sources::add);
+            }
         }
+        sources.sort(null);
         if (sources.isEmpty()) {
-            throw new IllegalStateException("No example files found at " + EXAMPLES_DIR);
+            throw new IllegalStateException("No example files found in " + EXAMPLES_DIRS);
         }
         return sources.stream().map(source -> {
             String stem = source.getFileName().toString().replaceFirst("\\.phisql$", "");
-            Path expected = EXAMPLES_DIR.resolve(stem + ".json");
+            Path expected = source.getParent().resolve(stem + ".json");
             return DynamicTest.dynamicTest(source.getFileName().toString(), () -> {
                 String phisql = Files.readString(source);
                 CompileResult result = compiler.compile(phisql);

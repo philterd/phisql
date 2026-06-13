@@ -177,6 +177,7 @@ public sealed class DetectStmt : IStatement
 {
     public List<string>? Labels { get; init; }   // raw STRING_LITERALs or null
     public string? EndpointRaw { get; init; }    // raw STRING_LITERAL or null
+    public string? ModelRaw { get; init; }       // raw STRING_LITERAL (local model path) or null
     public required StrategyExpr Strategy { get; init; }
     public IPredicate? Predicate { get; init; }
     public List<Setting>? Options { get; init; }

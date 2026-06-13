@@ -63,7 +63,7 @@
             property selects which version is packaged and exposed at runtime via
             ai.philterd.phisql.PolicySchema.
         -->
-        <redaction.policy.schema.version>1.0.0</redaction.policy.schema.version>
+        <redaction.policy.schema.version>1.1.0</redaction.policy.schema.version>
     </properties>
 
     <dependencies>

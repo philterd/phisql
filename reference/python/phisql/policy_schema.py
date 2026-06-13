@@ -38,7 +38,7 @@ from . import _paths
 #: Version of the canonical redaction policy schema this implementation targets.
 #: The Java reference selects this via the ``redaction.policy.schema.version``
 #: Maven property; here it is a module constant. Keep the two in sync.
-SUPPORTED_SCHEMA_VERSION = "1.0.0"
+SUPPORTED_SCHEMA_VERSION = "1.1.0"
 
 
 class PolicySchema:

@@ -45,13 +45,13 @@ public partial class PhiSQLParser : Parser {
 		OR=39, CONFIDENCE=40, DEFINE=41, MATCHING=42, GROUP=43, CASE=44, SENSITIVE=45, 
 		INSENSITIVE=46, DICTIONARY=47, SECTION=48, START=49, END=50, FUZZY=51, 
 		SENSITIVITY=52, CAPITALIZED=53, OPTIONS=54, DETECT=55, PHEYE=56, LABELS=57, 
-		ENDPOINT=58, FIND=59, PII=60, DISCOVER=61, ENTITIES=62, SCAN=63, IN=64, 
-		SELECT=65, BY=66, LIMIT=67, COUNT=68, AVG=69, SUM=70, MIN=71, MAX=72, 
-		IDENTIFIER_KW=73, MASK=74, ENCRYPT=75, FPE_ENCRYPT=76, HASH_SHA256=77, 
-		RANDOM_REPLACE=78, STATIC_REPLACE=79, LAST_4=80, TRUNCATE_TO_YEAR=81, 
-		TRUNCATE=82, SHIFT=83, RELATIVE=84, ABBREVIATE=85, BOOLEAN_LITERAL=86, 
-		ID=87, STRING_LITERAL=88, NUMERIC_LITERAL=89, LINE_COMMENT=90, BLOCK_COMMENT=91, 
-		WS=92;
+		ENDPOINT=58, MODEL=59, FIND=60, PII=61, DISCOVER=62, ENTITIES=63, SCAN=64, 
+		IN=65, SELECT=66, BY=67, LIMIT=68, COUNT=69, AVG=70, SUM=71, MIN=72, MAX=73, 
+		IDENTIFIER_KW=74, MASK=75, ENCRYPT=76, FPE_ENCRYPT=77, HASH_SHA256=78, 
+		RANDOM_REPLACE=79, STATIC_REPLACE=80, LAST_4=81, TRUNCATE_TO_YEAR=82, 
+		TRUNCATE=83, SHIFT=84, RELATIVE=85, ABBREVIATE=86, BOOLEAN_LITERAL=87, 
+		ID=88, STRING_LITERAL=89, NUMERIC_LITERAL=90, LINE_COMMENT=91, BLOCK_COMMENT=92, 
+		WS=93;
 	public const int
 		RULE_document = 0, RULE_statement = 1, RULE_policyDecl = 2, RULE_configureStmt = 3, 
 		RULE_settingList = 4, RULE_setting = 5, RULE_settingKey = 6, RULE_settingValue = 7, 
@@ -85,12 +85,12 @@ public partial class PhiSQLParser : Parser {
 		"'AND'", "'OR'", "'CONFIDENCE'", "'DEFINE'", "'MATCHING'", "'GROUP'", 
 		"'CASE'", "'SENSITIVE'", "'INSENSITIVE'", "'DICTIONARY'", "'SECTION'", 
 		"'START'", "'END'", "'FUZZY'", "'SENSITIVITY'", "'CAPITALIZED'", "'OPTIONS'", 
-		"'DETECT'", "'PHEYE'", "'LABELS'", "'ENDPOINT'", "'FIND'", "'PII'", "'DISCOVER'", 
-		"'ENTITIES'", "'SCAN'", "'IN'", "'SELECT'", "'BY'", "'LIMIT'", "'COUNT'", 
-		"'AVG'", "'SUM'", "'MIN'", "'MAX'", "'IDENTIFIER'", "'MASK'", "'ENCRYPT'", 
-		"'FPE_ENCRYPT'", "'HASH_SHA256'", "'RANDOM_REPLACE'", "'STATIC_REPLACE'", 
-		"'LAST_4'", "'TRUNCATE_TO_YEAR'", "'TRUNCATE'", "'SHIFT'", "'RELATIVE'", 
-		"'ABBREVIATE'"
+		"'DETECT'", "'PHEYE'", "'LABELS'", "'ENDPOINT'", "'MODEL'", "'FIND'", 
+		"'PII'", "'DISCOVER'", "'ENTITIES'", "'SCAN'", "'IN'", "'SELECT'", "'BY'", 
+		"'LIMIT'", "'COUNT'", "'AVG'", "'SUM'", "'MIN'", "'MAX'", "'IDENTIFIER'", 
+		"'MASK'", "'ENCRYPT'", "'FPE_ENCRYPT'", "'HASH_SHA256'", "'RANDOM_REPLACE'", 
+		"'STATIC_REPLACE'", "'LAST_4'", "'TRUNCATE_TO_YEAR'", "'TRUNCATE'", "'SHIFT'", 
+		"'RELATIVE'", "'ABBREVIATE'"
 	};
 	private static readonly string[] _SymbolicNames = {
 		null, null, null, null, null, null, null, null, null, null, null, null, 
@@ -100,7 +100,7 @@ public partial class PhiSQLParser : Parser {
 		"FOR", "WITH", "WHERE", "AS", "AND", "OR", "CONFIDENCE", "DEFINE", "MATCHING", 
 		"GROUP", "CASE", "SENSITIVE", "INSENSITIVE", "DICTIONARY", "SECTION", 
 		"START", "END", "FUZZY", "SENSITIVITY", "CAPITALIZED", "OPTIONS", "DETECT", 
-		"PHEYE", "LABELS", "ENDPOINT", "FIND", "PII", "DISCOVER", "ENTITIES", 
+		"PHEYE", "LABELS", "ENDPOINT", "MODEL", "FIND", "PII", "DISCOVER", "ENTITIES", 
 		"SCAN", "IN", "SELECT", "BY", "LIMIT", "COUNT", "AVG", "SUM", "MIN", "MAX", 
 		"IDENTIFIER_KW", "MASK", "ENCRYPT", "FPE_ENCRYPT", "HASH_SHA256", "RANDOM_REPLACE", 
 		"STATIC_REPLACE", "LAST_4", "TRUNCATE_TO_YEAR", "TRUNCATE", "SHIFT", "RELATIVE", 
@@ -181,7 +181,7 @@ public partial class PhiSQLParser : Parser {
 			State = 87;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			while (((((_la - 14)) & ~0x3f) == 0 && ((1L << (_la - 14)) & 2992870785253381L) != 0)) {
+			while (((((_la - 14)) & ~0x3f) == 0 && ((1L << (_la - 14)) & 5983542412804101L) != 0)) {
 				{
 				{
 				State = 82;
@@ -934,7 +934,7 @@ public partial class PhiSQLParser : Parser {
 			State = 170;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if (_la==T__1 || _la==T__5 || ((((_la - 86)) & ~0x3f) == 0 && ((1L << (_la - 86)) & 15L) != 0)) {
+			if (_la==T__1 || _la==T__5 || ((((_la - 87)) & ~0x3f) == 0 && ((1L << (_la - 87)) & 15L) != 0)) {
 				{
 				State = 162;
 				settingValue();
@@ -1726,6 +1726,7 @@ public partial class PhiSQLParser : Parser {
 
 	public partial class DetectStmtContext : ParserRuleContext {
 		public IToken endpoint;
+		public IToken model;
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode DETECT() { return GetToken(PhiSQLParser.DETECT, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode PHEYE() { return GetToken(PhiSQLParser.PHEYE, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode WITH() { return GetToken(PhiSQLParser.WITH, 0); }
@@ -1737,6 +1738,7 @@ public partial class PhiSQLParser : Parser {
 			return GetRuleContext<StringListContext>(0);
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode ENDPOINT() { return GetToken(PhiSQLParser.ENDPOINT, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode MODEL() { return GetToken(PhiSQLParser.MODEL, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode WHERE() { return GetToken(PhiSQLParser.WHERE, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public PredicateContext predicate() {
 			return GetRuleContext<PredicateContext>(0);
@@ -1744,7 +1746,10 @@ public partial class PhiSQLParser : Parser {
 		[System.Diagnostics.DebuggerNonUserCode] public OptionsClauseContext optionsClause() {
 			return GetRuleContext<OptionsClauseContext>(0);
 		}
-		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode STRING_LITERAL() { return GetToken(PhiSQLParser.STRING_LITERAL, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode[] STRING_LITERAL() { return GetTokens(PhiSQLParser.STRING_LITERAL); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode STRING_LITERAL(int i) {
+			return GetToken(PhiSQLParser.STRING_LITERAL, i);
+		}
 		public DetectStmtContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -1804,28 +1809,40 @@ public partial class PhiSQLParser : Parser {
 				}
 			}
 
-			State = 284;
-			Match(WITH);
-			State = 285;
-			strategyExpr();
+			State = 286;
+			ErrorHandler.Sync(this);
+			_la = TokenStream.LA(1);
+			if (_la==MODEL) {
+				{
+				State = 284;
+				Match(MODEL);
+				State = 285;
+				_localctx.model = Match(STRING_LITERAL);
+				}
+			}
+
 			State = 288;
+			Match(WITH);
+			State = 289;
+			strategyExpr();
+			State = 292;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==WHERE) {
 				{
-				State = 286;
+				State = 290;
 				Match(WHERE);
-				State = 287;
+				State = 291;
 				predicate(0);
 				}
 			}
 
-			State = 291;
+			State = 295;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==OPTIONS) {
 				{
-				State = 290;
+				State = 294;
 				optionsClause();
 				}
 			}
@@ -1978,25 +1995,25 @@ public partial class PhiSQLParser : Parser {
 		EnterRule(_localctx, 38, RULE_discoveryStmt);
 		int _la;
 		try {
-			State = 323;
+			State = 327;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case FIND:
 				_localctx = new FindPiiStmtContext(_localctx);
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 293;
-				Match(FIND);
-				State = 294;
-				Match(PII);
-				State = 295;
-				inClause();
 				State = 297;
+				Match(FIND);
+				State = 298;
+				Match(PII);
+				State = 299;
+				inClause();
+				State = 301;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==WHERE) {
 					{
-					State = 296;
+					State = 300;
 					whereDiscovery();
 					}
 				}
@@ -2007,18 +2024,18 @@ public partial class PhiSQLParser : Parser {
 				_localctx = new DiscoverEntitiesStmtContext(_localctx);
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 299;
-				Match(DISCOVER);
-				State = 300;
-				Match(ENTITIES);
-				State = 301;
-				inClause();
 				State = 303;
+				Match(DISCOVER);
+				State = 304;
+				Match(ENTITIES);
+				State = 305;
+				inClause();
+				State = 307;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==WHERE) {
 					{
-					State = 302;
+					State = 306;
 					whereDiscovery();
 					}
 				}
@@ -2029,16 +2046,16 @@ public partial class PhiSQLParser : Parser {
 				_localctx = new ScanStmtContext(_localctx);
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 305;
+				State = 309;
 				Match(SCAN);
-				State = 306;
+				State = 310;
 				inClause();
-				State = 308;
+				State = 312;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==WHERE) {
 					{
-					State = 307;
+					State = 311;
 					whereDiscovery();
 					}
 				}
@@ -2049,40 +2066,40 @@ public partial class PhiSQLParser : Parser {
 				_localctx = new SelectFindingsStmtContext(_localctx);
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 310;
+				State = 314;
 				Match(SELECT);
-				State = 311;
-				projectionList();
-				State = 312;
-				Match(FROM);
-				State = 313;
-				findingsRef();
 				State = 315;
+				projectionList();
+				State = 316;
+				Match(FROM);
+				State = 317;
+				findingsRef();
+				State = 319;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==WHERE) {
 					{
-					State = 314;
+					State = 318;
 					whereDiscovery();
 					}
 				}
 
-				State = 318;
+				State = 322;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==GROUP) {
 					{
-					State = 317;
+					State = 321;
 					groupByClause();
 					}
 				}
 
-				State = 321;
+				State = 325;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==LIMIT) {
 					{
-					State = 320;
+					State = 324;
 					limitClause();
 					}
 				}
@@ -2138,9 +2155,9 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 325;
+			State = 329;
 			Match(IN);
-			State = 326;
+			State = 330;
 			_localctx.uri = Match(STRING_LITERAL);
 			}
 		}
@@ -2190,9 +2207,9 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 328;
+			State = 332;
 			Match(WHERE);
-			State = 329;
+			State = 333;
 			discoveryPredicate(0);
 			}
 		}
@@ -2340,20 +2357,20 @@ public partial class PhiSQLParser : Parser {
 			int _alt;
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 344;
+			State = 348;
 			ErrorHandler.Sync(this);
-			switch ( Interpreter.AdaptivePredict(TokenStream,36,Context) ) {
+			switch ( Interpreter.AdaptivePredict(TokenStream,37,Context) ) {
 			case 1:
 				{
 				_localctx = new InDiscoveryPredicateContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
 
-				State = 332;
+				State = 336;
 				columnRef();
-				State = 333;
+				State = 337;
 				Match(IN);
-				State = 334;
+				State = 338;
 				stringList();
 				}
 				break;
@@ -2362,13 +2379,13 @@ public partial class PhiSQLParser : Parser {
 				_localctx = new CompareDiscoveryPredicateContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 336;
+				State = 340;
 				columnRef();
-				State = 337;
+				State = 341;
 				compareOp();
-				State = 338;
+				State = 342;
 				_la = TokenStream.LA(1);
-				if ( !(((((_la - 86)) & ~0x3f) == 0 && ((1L << (_la - 86)) & 13L) != 0)) ) {
+				if ( !(((((_la - 87)) & ~0x3f) == 0 && ((1L << (_la - 87)) & 13L) != 0)) ) {
 				ErrorHandler.RecoverInline(this);
 				}
 				else {
@@ -2382,19 +2399,19 @@ public partial class PhiSQLParser : Parser {
 				_localctx = new ParenDiscoveryPredicateContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 340;
+				State = 344;
 				Match(T__1);
-				State = 341;
+				State = 345;
 				discoveryPredicate(0);
-				State = 342;
+				State = 346;
 				Match(T__2);
 				}
 				break;
 			}
 			Context.Stop = TokenStream.LT(-1);
-			State = 351;
+			State = 355;
 			ErrorHandler.Sync(this);
-			_alt = Interpreter.AdaptivePredict(TokenStream,37,Context);
+			_alt = Interpreter.AdaptivePredict(TokenStream,38,Context);
 			while ( _alt!=2 && _alt!=global::Antlr4.Runtime.Atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( ParseListeners!=null )
@@ -2404,9 +2421,9 @@ public partial class PhiSQLParser : Parser {
 					{
 					_localctx = new LogicalDiscoveryPredicateContext(new DiscoveryPredicateContext(_parentctx, _parentState));
 					PushNewRecursionContext(_localctx, _startState, RULE_discoveryPredicate);
-					State = 346;
+					State = 350;
 					if (!(Precpred(Context, 1))) throw new FailedPredicateException(this, "Precpred(Context, 1)");
-					State = 347;
+					State = 351;
 					_la = TokenStream.LA(1);
 					if ( !(_la==AND || _la==OR) ) {
 					ErrorHandler.RecoverInline(this);
@@ -2415,14 +2432,14 @@ public partial class PhiSQLParser : Parser {
 						ErrorHandler.ReportMatch(this);
 					    Consume();
 					}
-					State = 348;
+					State = 352;
 					discoveryPredicate(2);
 					}
 					} 
 				}
-				State = 353;
+				State = 357;
 				ErrorHandler.Sync(this);
-				_alt = Interpreter.AdaptivePredict(TokenStream,37,Context);
+				_alt = Interpreter.AdaptivePredict(TokenStream,38,Context);
 			}
 			}
 		}
@@ -2475,21 +2492,21 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 354;
+			State = 358;
 			projection();
-			State = 359;
+			State = 363;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			while (_la==T__3) {
 				{
 				{
-				State = 355;
+				State = 359;
 				Match(T__3);
-				State = 356;
+				State = 360;
 				projection();
 				}
 				}
-				State = 361;
+				State = 365;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 			}
@@ -2587,14 +2604,14 @@ public partial class PhiSQLParser : Parser {
 		ProjectionContext _localctx = new ProjectionContext(Context, State);
 		EnterRule(_localctx, 48, RULE_projection);
 		try {
-			State = 365;
+			State = 369;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case T__7:
 				_localctx = new StarProjectionContext(_localctx);
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 362;
+				State = 366;
 				Match(T__7);
 				}
 				break;
@@ -2606,7 +2623,7 @@ public partial class PhiSQLParser : Parser {
 				_localctx = new AggregateProjectionContext(_localctx);
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 363;
+				State = 367;
 				aggregate();
 				}
 				break;
@@ -2615,7 +2632,7 @@ public partial class PhiSQLParser : Parser {
 				_localctx = new ColumnProjectionContext(_localctx);
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 364;
+				State = 368;
 				columnRef();
 				}
 				break;
@@ -2675,21 +2692,21 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 367;
+			State = 371;
 			_localctx.aggFn = TokenStream.LT(1);
 			_la = TokenStream.LA(1);
-			if ( !(((((_la - 68)) & ~0x3f) == 0 && ((1L << (_la - 68)) & 31L) != 0)) ) {
+			if ( !(((((_la - 69)) & ~0x3f) == 0 && ((1L << (_la - 69)) & 31L) != 0)) ) {
 				_localctx.aggFn = ErrorHandler.RecoverInline(this);
 			}
 			else {
 				ErrorHandler.ReportMatch(this);
 			    Consume();
 			}
-			State = 368;
+			State = 372;
 			Match(T__1);
-			State = 369;
+			State = 373;
 			aggArg();
-			State = 370;
+			State = 374;
 			Match(T__2);
 			}
 		}
@@ -2763,14 +2780,14 @@ public partial class PhiSQLParser : Parser {
 		AggArgContext _localctx = new AggArgContext(Context, State);
 		EnterRule(_localctx, 52, RULE_aggArg);
 		try {
-			State = 374;
+			State = 378;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case T__7:
 				_localctx = new StarAggArgContext(_localctx);
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 372;
+				State = 376;
 				Match(T__7);
 				}
 				break;
@@ -2779,7 +2796,7 @@ public partial class PhiSQLParser : Parser {
 				_localctx = new ColumnAggArgContext(_localctx);
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 373;
+				State = 377;
 				columnRef();
 				}
 				break;
@@ -2832,7 +2849,7 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 376;
+			State = 380;
 			_la = TokenStream.LA(1);
 			if ( !(_la==CONFIDENCE || _la==ID) ) {
 			ErrorHandler.RecoverInline(this);
@@ -2891,19 +2908,19 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 380;
+			State = 384;
 			ErrorHandler.Sync(this);
-			switch ( Interpreter.AdaptivePredict(TokenStream,41,Context) ) {
+			switch ( Interpreter.AdaptivePredict(TokenStream,42,Context) ) {
 			case 1:
 				{
-				State = 378;
+				State = 382;
 				_localctx.@namespace = Match(ID);
-				State = 379;
+				State = 383;
 				Match(T__8);
 				}
 				break;
 			}
-			State = 382;
+			State = 386;
 			_localctx.table = Match(ID);
 			}
 		}
@@ -2958,25 +2975,25 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 384;
+			State = 388;
 			Match(GROUP);
-			State = 385;
+			State = 389;
 			Match(BY);
-			State = 386;
+			State = 390;
 			columnRef();
-			State = 391;
+			State = 395;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			while (_la==T__3) {
 				{
 				{
-				State = 387;
+				State = 391;
 				Match(T__3);
-				State = 388;
+				State = 392;
 				columnRef();
 				}
 				}
-				State = 393;
+				State = 397;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 			}
@@ -3026,9 +3043,9 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 394;
+			State = 398;
 			Match(LIMIT);
-			State = 395;
+			State = 399;
 			Match(NUMERIC_LITERAL);
 			}
 		}
@@ -3081,21 +3098,21 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 397;
+			State = 401;
 			entityType();
-			State = 402;
+			State = 406;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			while (_la==T__3) {
 				{
 				{
-				State = 398;
+				State = 402;
 				Match(T__3);
-				State = 399;
+				State = 403;
 				entityType();
 				}
 				}
-				State = 404;
+				State = 408;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 			}
@@ -3171,14 +3188,14 @@ public partial class PhiSQLParser : Parser {
 		EntityTypeContext _localctx = new EntityTypeContext(Context, State);
 		EnterRule(_localctx, 64, RULE_entityType);
 		try {
-			State = 410;
+			State = 414;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case ID:
 				_localctx = new SimpleEntityTypeContext(_localctx);
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 405;
+				State = 409;
 				Match(ID);
 				}
 				break;
@@ -3186,13 +3203,13 @@ public partial class PhiSQLParser : Parser {
 				_localctx = new CustomIdentifierContext(_localctx);
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 406;
+				State = 410;
 				Match(IDENTIFIER_KW);
-				State = 407;
+				State = 411;
 				Match(T__1);
-				State = 408;
+				State = 412;
 				Match(STRING_LITERAL);
-				State = 409;
+				State = 413;
 				Match(T__2);
 				}
 				break;
@@ -3249,18 +3266,18 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 412;
+			State = 416;
 			strategyName();
-			State = 417;
+			State = 421;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==T__1) {
 				{
-				State = 413;
+				State = 417;
 				Match(T__1);
-				State = 414;
+				State = 418;
 				strategyArgs();
-				State = 415;
+				State = 419;
 				Match(T__2);
 				}
 			}
@@ -3323,9 +3340,9 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 419;
+			State = 423;
 			_la = TokenStream.LA(1);
-			if ( !(((((_la - 29)) & ~0x3f) == 0 && ((1L << (_la - 29)) & 144080003703767041L) != 0)) ) {
+			if ( !(((((_la - 29)) & ~0x3f) == 0 && ((1L << (_la - 29)) & 288160007407534081L) != 0)) ) {
 			ErrorHandler.RecoverInline(this);
 			}
 			else {
@@ -3383,21 +3400,21 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 421;
+			State = 425;
 			namedArg();
-			State = 426;
+			State = 430;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			while (_la==T__3) {
 				{
 				{
-				State = 422;
+				State = 426;
 				Match(T__3);
-				State = 423;
+				State = 427;
 				namedArg();
 				}
 				}
-				State = 428;
+				State = 432;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 			}
@@ -3450,11 +3467,11 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 429;
+			State = 433;
 			_localctx.argName = Match(ID);
-			State = 430;
+			State = 434;
 			Match(T__4);
-			State = 431;
+			State = 435;
 			settingValue();
 			}
 		}
@@ -3572,7 +3589,7 @@ public partial class PhiSQLParser : Parser {
 			int _alt;
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 442;
+			State = 446;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case CONFIDENCE:
@@ -3581,11 +3598,11 @@ public partial class PhiSQLParser : Parser {
 				Context = _localctx;
 				_prevctx = _localctx;
 
-				State = 434;
+				State = 438;
 				Match(CONFIDENCE);
-				State = 435;
+				State = 439;
 				compareOp();
-				State = 436;
+				State = 440;
 				Match(NUMERIC_LITERAL);
 				}
 				break;
@@ -3594,11 +3611,11 @@ public partial class PhiSQLParser : Parser {
 				_localctx = new ParenPredicateContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 438;
+				State = 442;
 				Match(T__1);
-				State = 439;
+				State = 443;
 				predicate(0);
-				State = 440;
+				State = 444;
 				Match(T__2);
 				}
 				break;
@@ -3606,9 +3623,9 @@ public partial class PhiSQLParser : Parser {
 				throw new NoViableAltException(this);
 			}
 			Context.Stop = TokenStream.LT(-1);
-			State = 449;
+			State = 453;
 			ErrorHandler.Sync(this);
-			_alt = Interpreter.AdaptivePredict(TokenStream,48,Context);
+			_alt = Interpreter.AdaptivePredict(TokenStream,49,Context);
 			while ( _alt!=2 && _alt!=global::Antlr4.Runtime.Atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( ParseListeners!=null )
@@ -3618,9 +3635,9 @@ public partial class PhiSQLParser : Parser {
 					{
 					_localctx = new LogicalPredicateContext(new PredicateContext(_parentctx, _parentState));
 					PushNewRecursionContext(_localctx, _startState, RULE_predicate);
-					State = 444;
+					State = 448;
 					if (!(Precpred(Context, 1))) throw new FailedPredicateException(this, "Precpred(Context, 1)");
-					State = 445;
+					State = 449;
 					_la = TokenStream.LA(1);
 					if ( !(_la==AND || _la==OR) ) {
 					ErrorHandler.RecoverInline(this);
@@ -3629,14 +3646,14 @@ public partial class PhiSQLParser : Parser {
 						ErrorHandler.ReportMatch(this);
 					    Consume();
 					}
-					State = 446;
+					State = 450;
 					predicate(2);
 					}
 					} 
 				}
-				State = 451;
+				State = 455;
 				ErrorHandler.Sync(this);
-				_alt = Interpreter.AdaptivePredict(TokenStream,48,Context);
+				_alt = Interpreter.AdaptivePredict(TokenStream,49,Context);
 			}
 			}
 		}
@@ -3683,7 +3700,7 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 452;
+			State = 456;
 			_la = TokenStream.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 15392L) != 0)) ) {
 			ErrorHandler.RecoverInline(this);
@@ -3741,27 +3758,27 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 454;
+			State = 458;
 			Match(T__1);
-			State = 455;
+			State = 459;
 			Match(STRING_LITERAL);
-			State = 460;
+			State = 464;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			while (_la==T__3) {
 				{
 				{
-				State = 456;
+				State = 460;
 				Match(T__3);
-				State = 457;
+				State = 461;
 				Match(STRING_LITERAL);
 				}
 				}
-				State = 462;
+				State = 466;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 			}
-			State = 463;
+			State = 467;
 			Match(T__2);
 			}
 		}
@@ -3812,9 +3829,9 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 465;
+			State = 469;
 			_la = TokenStream.LA(1);
-			if ( !(((((_la - 86)) & ~0x3f) == 0 && ((1L << (_la - 86)) & 15L) != 0)) ) {
+			if ( !(((((_la - 87)) & ~0x3f) == 0 && ((1L << (_la - 87)) & 15L) != 0)) ) {
 			ErrorHandler.RecoverInline(this);
 			}
 			else {
@@ -3855,7 +3872,7 @@ public partial class PhiSQLParser : Parser {
 	}
 
 	private static int[] _serializedATN = {
-		4,1,92,468,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,7,
+		4,1,93,472,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,7,
 		7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,2,14,7,14,
 		2,15,7,15,2,16,7,16,2,17,7,17,2,18,7,18,2,19,7,19,2,20,7,20,2,21,7,21,
 		2,22,7,22,2,23,7,23,2,24,7,24,2,25,7,25,2,26,7,26,2,27,7,27,2,28,7,28,
@@ -3875,141 +3892,142 @@ public partial class PhiSQLParser : Parser {
 		3,15,242,8,15,1,16,1,16,1,16,1,16,1,16,1,16,1,16,1,16,3,16,252,8,16,3,
 		16,254,8,16,1,16,3,16,257,8,16,1,16,1,16,1,16,3,16,262,8,16,1,17,1,17,
 		1,17,1,17,1,17,1,17,1,17,1,17,1,17,3,17,273,8,17,1,18,1,18,1,18,1,18,3,
-		18,279,8,18,1,18,1,18,3,18,283,8,18,1,18,1,18,1,18,1,18,3,18,289,8,18,
-		1,18,3,18,292,8,18,1,19,1,19,1,19,1,19,3,19,298,8,19,1,19,1,19,1,19,1,
-		19,3,19,304,8,19,1,19,1,19,1,19,3,19,309,8,19,1,19,1,19,1,19,1,19,1,19,
-		3,19,316,8,19,1,19,3,19,319,8,19,1,19,3,19,322,8,19,3,19,324,8,19,1,20,
-		1,20,1,20,1,21,1,21,1,21,1,22,1,22,1,22,1,22,1,22,1,22,1,22,1,22,1,22,
-		1,22,1,22,1,22,1,22,3,22,345,8,22,1,22,1,22,1,22,5,22,350,8,22,10,22,12,
-		22,353,9,22,1,23,1,23,1,23,5,23,358,8,23,10,23,12,23,361,9,23,1,24,1,24,
-		1,24,3,24,366,8,24,1,25,1,25,1,25,1,25,1,25,1,26,1,26,3,26,375,8,26,1,
-		27,1,27,1,28,1,28,3,28,381,8,28,1,28,1,28,1,29,1,29,1,29,1,29,1,29,5,29,
-		390,8,29,10,29,12,29,393,9,29,1,30,1,30,1,30,1,31,1,31,1,31,5,31,401,8,
-		31,10,31,12,31,404,9,31,1,32,1,32,1,32,1,32,1,32,3,32,411,8,32,1,33,1,
-		33,1,33,1,33,1,33,3,33,418,8,33,1,34,1,34,1,35,1,35,1,35,5,35,425,8,35,
-		10,35,12,35,428,9,35,1,36,1,36,1,36,1,36,1,37,1,37,1,37,1,37,1,37,1,37,
-		1,37,1,37,1,37,3,37,443,8,37,1,37,1,37,1,37,5,37,448,8,37,10,37,12,37,
-		451,9,37,1,38,1,38,1,39,1,39,1,39,1,39,5,39,459,8,39,10,39,12,39,462,9,
-		39,1,39,1,39,1,40,1,40,1,40,0,2,44,74,41,0,2,4,6,8,10,12,14,16,18,20,22,
-		24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,
-		72,74,76,78,80,0,10,1,0,23,26,1,0,87,88,1,0,45,46,2,0,86,86,88,89,1,0,
-		38,39,1,0,68,72,2,0,40,40,87,87,2,0,29,29,74,85,2,0,5,5,10,13,1,0,86,89,
-		491,0,87,1,0,0,0,2,102,1,0,0,0,4,104,1,0,0,0,6,110,1,0,0,0,8,138,1,0,0,
-		0,10,146,1,0,0,0,12,150,1,0,0,0,14,155,1,0,0,0,16,157,1,0,0,0,18,161,1,
-		0,0,0,20,174,1,0,0,0,22,179,1,0,0,0,24,192,1,0,0,0,26,201,1,0,0,0,28,207,
-		1,0,0,0,30,221,1,0,0,0,32,243,1,0,0,0,34,263,1,0,0,0,36,274,1,0,0,0,38,
-		323,1,0,0,0,40,325,1,0,0,0,42,328,1,0,0,0,44,344,1,0,0,0,46,354,1,0,0,
-		0,48,365,1,0,0,0,50,367,1,0,0,0,52,374,1,0,0,0,54,376,1,0,0,0,56,380,1,
-		0,0,0,58,384,1,0,0,0,60,394,1,0,0,0,62,397,1,0,0,0,64,410,1,0,0,0,66,412,
-		1,0,0,0,68,419,1,0,0,0,70,421,1,0,0,0,72,429,1,0,0,0,74,442,1,0,0,0,76,
-		452,1,0,0,0,78,454,1,0,0,0,80,465,1,0,0,0,82,83,3,2,1,0,83,84,5,1,0,0,
-		84,86,1,0,0,0,85,82,1,0,0,0,86,89,1,0,0,0,87,85,1,0,0,0,87,88,1,0,0,0,
-		88,90,1,0,0,0,89,87,1,0,0,0,90,91,5,0,0,1,91,1,1,0,0,0,92,103,3,4,2,0,
-		93,103,3,6,3,0,94,103,3,22,11,0,95,103,3,24,12,0,96,103,3,28,14,0,97,103,
-		3,30,15,0,98,103,3,32,16,0,99,103,3,34,17,0,100,103,3,36,18,0,101,103,
-		3,38,19,0,102,92,1,0,0,0,102,93,1,0,0,0,102,94,1,0,0,0,102,95,1,0,0,0,
-		102,96,1,0,0,0,102,97,1,0,0,0,102,98,1,0,0,0,102,99,1,0,0,0,102,100,1,
-		0,0,0,102,101,1,0,0,0,103,3,1,0,0,0,104,105,5,14,0,0,105,108,5,87,0,0,
-		106,107,5,15,0,0,107,109,5,88,0,0,108,106,1,0,0,0,108,109,1,0,0,0,109,
-		5,1,0,0,0,110,136,5,16,0,0,111,112,5,17,0,0,112,113,5,19,0,0,113,114,5,
-		21,0,0,114,115,5,22,0,0,115,137,5,88,0,0,116,117,5,18,0,0,117,118,5,19,
-		0,0,118,119,5,21,0,0,119,120,5,22,0,0,120,121,5,88,0,0,121,122,5,20,0,
-		0,122,123,5,21,0,0,123,124,5,22,0,0,124,137,5,88,0,0,125,126,7,0,0,0,126,
-		127,5,2,0,0,127,128,3,8,4,0,128,129,5,3,0,0,129,137,1,0,0,0,130,131,5,
-		27,0,0,131,132,5,28,0,0,132,133,5,2,0,0,133,134,3,8,4,0,134,135,5,3,0,
-		0,135,137,1,0,0,0,136,111,1,0,0,0,136,116,1,0,0,0,136,125,1,0,0,0,136,
-		130,1,0,0,0,137,7,1,0,0,0,138,143,3,10,5,0,139,140,5,4,0,0,140,142,3,10,
-		5,0,141,139,1,0,0,0,142,145,1,0,0,0,143,141,1,0,0,0,143,144,1,0,0,0,144,
-		9,1,0,0,0,145,143,1,0,0,0,146,147,3,12,6,0,147,148,5,5,0,0,148,149,3,14,
-		7,0,149,11,1,0,0,0,150,151,7,1,0,0,151,13,1,0,0,0,152,156,3,80,40,0,153,
-		156,3,16,8,0,154,156,3,18,9,0,155,152,1,0,0,0,155,153,1,0,0,0,155,154,
-		1,0,0,0,156,15,1,0,0,0,157,158,5,2,0,0,158,159,3,8,4,0,159,160,5,3,0,0,
-		160,17,1,0,0,0,161,170,5,6,0,0,162,167,3,14,7,0,163,164,5,4,0,0,164,166,
-		3,14,7,0,165,163,1,0,0,0,166,169,1,0,0,0,167,165,1,0,0,0,167,168,1,0,0,
-		0,168,171,1,0,0,0,169,167,1,0,0,0,170,162,1,0,0,0,170,171,1,0,0,0,171,
-		172,1,0,0,0,172,173,5,7,0,0,173,19,1,0,0,0,174,175,5,54,0,0,175,176,5,
-		2,0,0,176,177,3,8,4,0,177,178,5,3,0,0,178,21,1,0,0,0,179,180,5,29,0,0,
-		180,183,3,62,31,0,181,182,5,35,0,0,182,184,3,66,33,0,183,181,1,0,0,0,183,
-		184,1,0,0,0,184,187,1,0,0,0,185,186,5,36,0,0,186,188,3,74,37,0,187,185,
-		1,0,0,0,187,188,1,0,0,0,188,190,1,0,0,0,189,191,3,20,10,0,190,189,1,0,
-		0,0,190,191,1,0,0,0,191,23,1,0,0,0,192,193,5,30,0,0,193,198,3,26,13,0,
-		194,195,5,4,0,0,195,197,3,26,13,0,196,194,1,0,0,0,197,200,1,0,0,0,198,
-		196,1,0,0,0,198,199,1,0,0,0,199,25,1,0,0,0,200,198,1,0,0,0,201,202,3,64,
-		32,0,202,203,5,37,0,0,203,205,3,66,33,0,204,206,3,20,10,0,205,204,1,0,
-		0,0,205,206,1,0,0,0,206,27,1,0,0,0,207,212,5,31,0,0,208,209,5,32,0,0,209,
-		213,3,78,39,0,210,211,5,33,0,0,211,213,5,88,0,0,212,208,1,0,0,0,212,210,
-		1,0,0,0,213,216,1,0,0,0,214,215,5,34,0,0,215,217,3,62,31,0,216,214,1,0,
-		0,0,216,217,1,0,0,0,217,219,1,0,0,0,218,220,3,20,10,0,219,218,1,0,0,0,
-		219,220,1,0,0,0,220,29,1,0,0,0,221,222,5,41,0,0,222,223,5,73,0,0,223,224,
-		5,88,0,0,224,225,5,42,0,0,225,228,5,88,0,0,226,227,5,43,0,0,227,229,5,
-		89,0,0,228,226,1,0,0,0,228,229,1,0,0,0,229,232,1,0,0,0,230,231,5,44,0,
-		0,231,233,7,2,0,0,232,230,1,0,0,0,232,233,1,0,0,0,233,234,1,0,0,0,234,
-		235,5,35,0,0,235,238,3,66,33,0,236,237,5,36,0,0,237,239,3,74,37,0,238,
-		236,1,0,0,0,238,239,1,0,0,0,239,241,1,0,0,0,240,242,3,20,10,0,241,240,
-		1,0,0,0,241,242,1,0,0,0,242,31,1,0,0,0,243,244,5,41,0,0,244,245,5,47,0,
-		0,245,246,5,88,0,0,246,247,5,32,0,0,247,253,3,78,39,0,248,251,5,51,0,0,
-		249,250,5,52,0,0,250,252,5,87,0,0,251,249,1,0,0,0,251,252,1,0,0,0,252,
-		254,1,0,0,0,253,248,1,0,0,0,253,254,1,0,0,0,254,256,1,0,0,0,255,257,5,
-		53,0,0,256,255,1,0,0,0,256,257,1,0,0,0,257,258,1,0,0,0,258,259,5,35,0,
-		0,259,261,3,66,33,0,260,262,3,20,10,0,261,260,1,0,0,0,261,262,1,0,0,0,
-		262,33,1,0,0,0,263,264,5,41,0,0,264,265,5,48,0,0,265,266,5,49,0,0,266,
-		267,5,88,0,0,267,268,5,50,0,0,268,269,5,88,0,0,269,270,5,35,0,0,270,272,
-		3,66,33,0,271,273,3,20,10,0,272,271,1,0,0,0,272,273,1,0,0,0,273,35,1,0,
-		0,0,274,275,5,55,0,0,275,278,5,56,0,0,276,277,5,57,0,0,277,279,3,78,39,
-		0,278,276,1,0,0,0,278,279,1,0,0,0,279,282,1,0,0,0,280,281,5,58,0,0,281,
-		283,5,88,0,0,282,280,1,0,0,0,282,283,1,0,0,0,283,284,1,0,0,0,284,285,5,
-		35,0,0,285,288,3,66,33,0,286,287,5,36,0,0,287,289,3,74,37,0,288,286,1,
-		0,0,0,288,289,1,0,0,0,289,291,1,0,0,0,290,292,3,20,10,0,291,290,1,0,0,
-		0,291,292,1,0,0,0,292,37,1,0,0,0,293,294,5,59,0,0,294,295,5,60,0,0,295,
-		297,3,40,20,0,296,298,3,42,21,0,297,296,1,0,0,0,297,298,1,0,0,0,298,324,
-		1,0,0,0,299,300,5,61,0,0,300,301,5,62,0,0,301,303,3,40,20,0,302,304,3,
-		42,21,0,303,302,1,0,0,0,303,304,1,0,0,0,304,324,1,0,0,0,305,306,5,63,0,
-		0,306,308,3,40,20,0,307,309,3,42,21,0,308,307,1,0,0,0,308,309,1,0,0,0,
-		309,324,1,0,0,0,310,311,5,65,0,0,311,312,3,46,23,0,312,313,5,21,0,0,313,
-		315,3,56,28,0,314,316,3,42,21,0,315,314,1,0,0,0,315,316,1,0,0,0,316,318,
-		1,0,0,0,317,319,3,58,29,0,318,317,1,0,0,0,318,319,1,0,0,0,319,321,1,0,
-		0,0,320,322,3,60,30,0,321,320,1,0,0,0,321,322,1,0,0,0,322,324,1,0,0,0,
-		323,293,1,0,0,0,323,299,1,0,0,0,323,305,1,0,0,0,323,310,1,0,0,0,324,39,
-		1,0,0,0,325,326,5,64,0,0,326,327,5,88,0,0,327,41,1,0,0,0,328,329,5,36,
-		0,0,329,330,3,44,22,0,330,43,1,0,0,0,331,332,6,22,-1,0,332,333,3,54,27,
-		0,333,334,5,64,0,0,334,335,3,78,39,0,335,345,1,0,0,0,336,337,3,54,27,0,
-		337,338,3,76,38,0,338,339,7,3,0,0,339,345,1,0,0,0,340,341,5,2,0,0,341,
-		342,3,44,22,0,342,343,5,3,0,0,343,345,1,0,0,0,344,331,1,0,0,0,344,336,
-		1,0,0,0,344,340,1,0,0,0,345,351,1,0,0,0,346,347,10,1,0,0,347,348,7,4,0,
-		0,348,350,3,44,22,2,349,346,1,0,0,0,350,353,1,0,0,0,351,349,1,0,0,0,351,
-		352,1,0,0,0,352,45,1,0,0,0,353,351,1,0,0,0,354,359,3,48,24,0,355,356,5,
-		4,0,0,356,358,3,48,24,0,357,355,1,0,0,0,358,361,1,0,0,0,359,357,1,0,0,
-		0,359,360,1,0,0,0,360,47,1,0,0,0,361,359,1,0,0,0,362,366,5,8,0,0,363,366,
-		3,50,25,0,364,366,3,54,27,0,365,362,1,0,0,0,365,363,1,0,0,0,365,364,1,
-		0,0,0,366,49,1,0,0,0,367,368,7,5,0,0,368,369,5,2,0,0,369,370,3,52,26,0,
-		370,371,5,3,0,0,371,51,1,0,0,0,372,375,5,8,0,0,373,375,3,54,27,0,374,372,
-		1,0,0,0,374,373,1,0,0,0,375,53,1,0,0,0,376,377,7,6,0,0,377,55,1,0,0,0,
-		378,379,5,87,0,0,379,381,5,9,0,0,380,378,1,0,0,0,380,381,1,0,0,0,381,382,
-		1,0,0,0,382,383,5,87,0,0,383,57,1,0,0,0,384,385,5,43,0,0,385,386,5,66,
-		0,0,386,391,3,54,27,0,387,388,5,4,0,0,388,390,3,54,27,0,389,387,1,0,0,
-		0,390,393,1,0,0,0,391,389,1,0,0,0,391,392,1,0,0,0,392,59,1,0,0,0,393,391,
-		1,0,0,0,394,395,5,67,0,0,395,396,5,89,0,0,396,61,1,0,0,0,397,402,3,64,
-		32,0,398,399,5,4,0,0,399,401,3,64,32,0,400,398,1,0,0,0,401,404,1,0,0,0,
-		402,400,1,0,0,0,402,403,1,0,0,0,403,63,1,0,0,0,404,402,1,0,0,0,405,411,
-		5,87,0,0,406,407,5,73,0,0,407,408,5,2,0,0,408,409,5,88,0,0,409,411,5,3,
-		0,0,410,405,1,0,0,0,410,406,1,0,0,0,411,65,1,0,0,0,412,417,3,68,34,0,413,
-		414,5,2,0,0,414,415,3,70,35,0,415,416,5,3,0,0,416,418,1,0,0,0,417,413,
-		1,0,0,0,417,418,1,0,0,0,418,67,1,0,0,0,419,420,7,7,0,0,420,69,1,0,0,0,
-		421,426,3,72,36,0,422,423,5,4,0,0,423,425,3,72,36,0,424,422,1,0,0,0,425,
-		428,1,0,0,0,426,424,1,0,0,0,426,427,1,0,0,0,427,71,1,0,0,0,428,426,1,0,
-		0,0,429,430,5,87,0,0,430,431,5,5,0,0,431,432,3,14,7,0,432,73,1,0,0,0,433,
-		434,6,37,-1,0,434,435,5,40,0,0,435,436,3,76,38,0,436,437,5,89,0,0,437,
-		443,1,0,0,0,438,439,5,2,0,0,439,440,3,74,37,0,440,441,5,3,0,0,441,443,
-		1,0,0,0,442,433,1,0,0,0,442,438,1,0,0,0,443,449,1,0,0,0,444,445,10,1,0,
-		0,445,446,7,4,0,0,446,448,3,74,37,2,447,444,1,0,0,0,448,451,1,0,0,0,449,
-		447,1,0,0,0,449,450,1,0,0,0,450,75,1,0,0,0,451,449,1,0,0,0,452,453,7,8,
-		0,0,453,77,1,0,0,0,454,455,5,2,0,0,455,460,5,88,0,0,456,457,5,4,0,0,457,
-		459,5,88,0,0,458,456,1,0,0,0,459,462,1,0,0,0,460,458,1,0,0,0,460,461,1,
-		0,0,0,461,463,1,0,0,0,462,460,1,0,0,0,463,464,5,3,0,0,464,79,1,0,0,0,465,
-		466,7,9,0,0,466,81,1,0,0,0,50,87,102,108,136,143,155,167,170,183,187,190,
-		198,205,212,216,219,228,232,238,241,251,253,256,261,272,278,282,288,291,
-		297,303,308,315,318,321,323,344,351,359,365,374,380,391,402,410,417,426,
-		442,449,460
+		18,279,8,18,1,18,1,18,3,18,283,8,18,1,18,1,18,3,18,287,8,18,1,18,1,18,
+		1,18,1,18,3,18,293,8,18,1,18,3,18,296,8,18,1,19,1,19,1,19,1,19,3,19,302,
+		8,19,1,19,1,19,1,19,1,19,3,19,308,8,19,1,19,1,19,1,19,3,19,313,8,19,1,
+		19,1,19,1,19,1,19,1,19,3,19,320,8,19,1,19,3,19,323,8,19,1,19,3,19,326,
+		8,19,3,19,328,8,19,1,20,1,20,1,20,1,21,1,21,1,21,1,22,1,22,1,22,1,22,1,
+		22,1,22,1,22,1,22,1,22,1,22,1,22,1,22,1,22,3,22,349,8,22,1,22,1,22,1,22,
+		5,22,354,8,22,10,22,12,22,357,9,22,1,23,1,23,1,23,5,23,362,8,23,10,23,
+		12,23,365,9,23,1,24,1,24,1,24,3,24,370,8,24,1,25,1,25,1,25,1,25,1,25,1,
+		26,1,26,3,26,379,8,26,1,27,1,27,1,28,1,28,3,28,385,8,28,1,28,1,28,1,29,
+		1,29,1,29,1,29,1,29,5,29,394,8,29,10,29,12,29,397,9,29,1,30,1,30,1,30,
+		1,31,1,31,1,31,5,31,405,8,31,10,31,12,31,408,9,31,1,32,1,32,1,32,1,32,
+		1,32,3,32,415,8,32,1,33,1,33,1,33,1,33,1,33,3,33,422,8,33,1,34,1,34,1,
+		35,1,35,1,35,5,35,429,8,35,10,35,12,35,432,9,35,1,36,1,36,1,36,1,36,1,
+		37,1,37,1,37,1,37,1,37,1,37,1,37,1,37,1,37,3,37,447,8,37,1,37,1,37,1,37,
+		5,37,452,8,37,10,37,12,37,455,9,37,1,38,1,38,1,39,1,39,1,39,1,39,5,39,
+		463,8,39,10,39,12,39,466,9,39,1,39,1,39,1,40,1,40,1,40,0,2,44,74,41,0,
+		2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,
+		52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,0,10,1,0,23,26,1,0,88,89,
+		1,0,45,46,2,0,87,87,89,90,1,0,38,39,1,0,69,73,2,0,40,40,88,88,2,0,29,29,
+		75,86,2,0,5,5,10,13,1,0,87,90,496,0,87,1,0,0,0,2,102,1,0,0,0,4,104,1,0,
+		0,0,6,110,1,0,0,0,8,138,1,0,0,0,10,146,1,0,0,0,12,150,1,0,0,0,14,155,1,
+		0,0,0,16,157,1,0,0,0,18,161,1,0,0,0,20,174,1,0,0,0,22,179,1,0,0,0,24,192,
+		1,0,0,0,26,201,1,0,0,0,28,207,1,0,0,0,30,221,1,0,0,0,32,243,1,0,0,0,34,
+		263,1,0,0,0,36,274,1,0,0,0,38,327,1,0,0,0,40,329,1,0,0,0,42,332,1,0,0,
+		0,44,348,1,0,0,0,46,358,1,0,0,0,48,369,1,0,0,0,50,371,1,0,0,0,52,378,1,
+		0,0,0,54,380,1,0,0,0,56,384,1,0,0,0,58,388,1,0,0,0,60,398,1,0,0,0,62,401,
+		1,0,0,0,64,414,1,0,0,0,66,416,1,0,0,0,68,423,1,0,0,0,70,425,1,0,0,0,72,
+		433,1,0,0,0,74,446,1,0,0,0,76,456,1,0,0,0,78,458,1,0,0,0,80,469,1,0,0,
+		0,82,83,3,2,1,0,83,84,5,1,0,0,84,86,1,0,0,0,85,82,1,0,0,0,86,89,1,0,0,
+		0,87,85,1,0,0,0,87,88,1,0,0,0,88,90,1,0,0,0,89,87,1,0,0,0,90,91,5,0,0,
+		1,91,1,1,0,0,0,92,103,3,4,2,0,93,103,3,6,3,0,94,103,3,22,11,0,95,103,3,
+		24,12,0,96,103,3,28,14,0,97,103,3,30,15,0,98,103,3,32,16,0,99,103,3,34,
+		17,0,100,103,3,36,18,0,101,103,3,38,19,0,102,92,1,0,0,0,102,93,1,0,0,0,
+		102,94,1,0,0,0,102,95,1,0,0,0,102,96,1,0,0,0,102,97,1,0,0,0,102,98,1,0,
+		0,0,102,99,1,0,0,0,102,100,1,0,0,0,102,101,1,0,0,0,103,3,1,0,0,0,104,105,
+		5,14,0,0,105,108,5,88,0,0,106,107,5,15,0,0,107,109,5,89,0,0,108,106,1,
+		0,0,0,108,109,1,0,0,0,109,5,1,0,0,0,110,136,5,16,0,0,111,112,5,17,0,0,
+		112,113,5,19,0,0,113,114,5,21,0,0,114,115,5,22,0,0,115,137,5,89,0,0,116,
+		117,5,18,0,0,117,118,5,19,0,0,118,119,5,21,0,0,119,120,5,22,0,0,120,121,
+		5,89,0,0,121,122,5,20,0,0,122,123,5,21,0,0,123,124,5,22,0,0,124,137,5,
+		89,0,0,125,126,7,0,0,0,126,127,5,2,0,0,127,128,3,8,4,0,128,129,5,3,0,0,
+		129,137,1,0,0,0,130,131,5,27,0,0,131,132,5,28,0,0,132,133,5,2,0,0,133,
+		134,3,8,4,0,134,135,5,3,0,0,135,137,1,0,0,0,136,111,1,0,0,0,136,116,1,
+		0,0,0,136,125,1,0,0,0,136,130,1,0,0,0,137,7,1,0,0,0,138,143,3,10,5,0,139,
+		140,5,4,0,0,140,142,3,10,5,0,141,139,1,0,0,0,142,145,1,0,0,0,143,141,1,
+		0,0,0,143,144,1,0,0,0,144,9,1,0,0,0,145,143,1,0,0,0,146,147,3,12,6,0,147,
+		148,5,5,0,0,148,149,3,14,7,0,149,11,1,0,0,0,150,151,7,1,0,0,151,13,1,0,
+		0,0,152,156,3,80,40,0,153,156,3,16,8,0,154,156,3,18,9,0,155,152,1,0,0,
+		0,155,153,1,0,0,0,155,154,1,0,0,0,156,15,1,0,0,0,157,158,5,2,0,0,158,159,
+		3,8,4,0,159,160,5,3,0,0,160,17,1,0,0,0,161,170,5,6,0,0,162,167,3,14,7,
+		0,163,164,5,4,0,0,164,166,3,14,7,0,165,163,1,0,0,0,166,169,1,0,0,0,167,
+		165,1,0,0,0,167,168,1,0,0,0,168,171,1,0,0,0,169,167,1,0,0,0,170,162,1,
+		0,0,0,170,171,1,0,0,0,171,172,1,0,0,0,172,173,5,7,0,0,173,19,1,0,0,0,174,
+		175,5,54,0,0,175,176,5,2,0,0,176,177,3,8,4,0,177,178,5,3,0,0,178,21,1,
+		0,0,0,179,180,5,29,0,0,180,183,3,62,31,0,181,182,5,35,0,0,182,184,3,66,
+		33,0,183,181,1,0,0,0,183,184,1,0,0,0,184,187,1,0,0,0,185,186,5,36,0,0,
+		186,188,3,74,37,0,187,185,1,0,0,0,187,188,1,0,0,0,188,190,1,0,0,0,189,
+		191,3,20,10,0,190,189,1,0,0,0,190,191,1,0,0,0,191,23,1,0,0,0,192,193,5,
+		30,0,0,193,198,3,26,13,0,194,195,5,4,0,0,195,197,3,26,13,0,196,194,1,0,
+		0,0,197,200,1,0,0,0,198,196,1,0,0,0,198,199,1,0,0,0,199,25,1,0,0,0,200,
+		198,1,0,0,0,201,202,3,64,32,0,202,203,5,37,0,0,203,205,3,66,33,0,204,206,
+		3,20,10,0,205,204,1,0,0,0,205,206,1,0,0,0,206,27,1,0,0,0,207,212,5,31,
+		0,0,208,209,5,32,0,0,209,213,3,78,39,0,210,211,5,33,0,0,211,213,5,89,0,
+		0,212,208,1,0,0,0,212,210,1,0,0,0,213,216,1,0,0,0,214,215,5,34,0,0,215,
+		217,3,62,31,0,216,214,1,0,0,0,216,217,1,0,0,0,217,219,1,0,0,0,218,220,
+		3,20,10,0,219,218,1,0,0,0,219,220,1,0,0,0,220,29,1,0,0,0,221,222,5,41,
+		0,0,222,223,5,74,0,0,223,224,5,89,0,0,224,225,5,42,0,0,225,228,5,89,0,
+		0,226,227,5,43,0,0,227,229,5,90,0,0,228,226,1,0,0,0,228,229,1,0,0,0,229,
+		232,1,0,0,0,230,231,5,44,0,0,231,233,7,2,0,0,232,230,1,0,0,0,232,233,1,
+		0,0,0,233,234,1,0,0,0,234,235,5,35,0,0,235,238,3,66,33,0,236,237,5,36,
+		0,0,237,239,3,74,37,0,238,236,1,0,0,0,238,239,1,0,0,0,239,241,1,0,0,0,
+		240,242,3,20,10,0,241,240,1,0,0,0,241,242,1,0,0,0,242,31,1,0,0,0,243,244,
+		5,41,0,0,244,245,5,47,0,0,245,246,5,89,0,0,246,247,5,32,0,0,247,253,3,
+		78,39,0,248,251,5,51,0,0,249,250,5,52,0,0,250,252,5,88,0,0,251,249,1,0,
+		0,0,251,252,1,0,0,0,252,254,1,0,0,0,253,248,1,0,0,0,253,254,1,0,0,0,254,
+		256,1,0,0,0,255,257,5,53,0,0,256,255,1,0,0,0,256,257,1,0,0,0,257,258,1,
+		0,0,0,258,259,5,35,0,0,259,261,3,66,33,0,260,262,3,20,10,0,261,260,1,0,
+		0,0,261,262,1,0,0,0,262,33,1,0,0,0,263,264,5,41,0,0,264,265,5,48,0,0,265,
+		266,5,49,0,0,266,267,5,89,0,0,267,268,5,50,0,0,268,269,5,89,0,0,269,270,
+		5,35,0,0,270,272,3,66,33,0,271,273,3,20,10,0,272,271,1,0,0,0,272,273,1,
+		0,0,0,273,35,1,0,0,0,274,275,5,55,0,0,275,278,5,56,0,0,276,277,5,57,0,
+		0,277,279,3,78,39,0,278,276,1,0,0,0,278,279,1,0,0,0,279,282,1,0,0,0,280,
+		281,5,58,0,0,281,283,5,89,0,0,282,280,1,0,0,0,282,283,1,0,0,0,283,286,
+		1,0,0,0,284,285,5,59,0,0,285,287,5,89,0,0,286,284,1,0,0,0,286,287,1,0,
+		0,0,287,288,1,0,0,0,288,289,5,35,0,0,289,292,3,66,33,0,290,291,5,36,0,
+		0,291,293,3,74,37,0,292,290,1,0,0,0,292,293,1,0,0,0,293,295,1,0,0,0,294,
+		296,3,20,10,0,295,294,1,0,0,0,295,296,1,0,0,0,296,37,1,0,0,0,297,298,5,
+		60,0,0,298,299,5,61,0,0,299,301,3,40,20,0,300,302,3,42,21,0,301,300,1,
+		0,0,0,301,302,1,0,0,0,302,328,1,0,0,0,303,304,5,62,0,0,304,305,5,63,0,
+		0,305,307,3,40,20,0,306,308,3,42,21,0,307,306,1,0,0,0,307,308,1,0,0,0,
+		308,328,1,0,0,0,309,310,5,64,0,0,310,312,3,40,20,0,311,313,3,42,21,0,312,
+		311,1,0,0,0,312,313,1,0,0,0,313,328,1,0,0,0,314,315,5,66,0,0,315,316,3,
+		46,23,0,316,317,5,21,0,0,317,319,3,56,28,0,318,320,3,42,21,0,319,318,1,
+		0,0,0,319,320,1,0,0,0,320,322,1,0,0,0,321,323,3,58,29,0,322,321,1,0,0,
+		0,322,323,1,0,0,0,323,325,1,0,0,0,324,326,3,60,30,0,325,324,1,0,0,0,325,
+		326,1,0,0,0,326,328,1,0,0,0,327,297,1,0,0,0,327,303,1,0,0,0,327,309,1,
+		0,0,0,327,314,1,0,0,0,328,39,1,0,0,0,329,330,5,65,0,0,330,331,5,89,0,0,
+		331,41,1,0,0,0,332,333,5,36,0,0,333,334,3,44,22,0,334,43,1,0,0,0,335,336,
+		6,22,-1,0,336,337,3,54,27,0,337,338,5,65,0,0,338,339,3,78,39,0,339,349,
+		1,0,0,0,340,341,3,54,27,0,341,342,3,76,38,0,342,343,7,3,0,0,343,349,1,
+		0,0,0,344,345,5,2,0,0,345,346,3,44,22,0,346,347,5,3,0,0,347,349,1,0,0,
+		0,348,335,1,0,0,0,348,340,1,0,0,0,348,344,1,0,0,0,349,355,1,0,0,0,350,
+		351,10,1,0,0,351,352,7,4,0,0,352,354,3,44,22,2,353,350,1,0,0,0,354,357,
+		1,0,0,0,355,353,1,0,0,0,355,356,1,0,0,0,356,45,1,0,0,0,357,355,1,0,0,0,
+		358,363,3,48,24,0,359,360,5,4,0,0,360,362,3,48,24,0,361,359,1,0,0,0,362,
+		365,1,0,0,0,363,361,1,0,0,0,363,364,1,0,0,0,364,47,1,0,0,0,365,363,1,0,
+		0,0,366,370,5,8,0,0,367,370,3,50,25,0,368,370,3,54,27,0,369,366,1,0,0,
+		0,369,367,1,0,0,0,369,368,1,0,0,0,370,49,1,0,0,0,371,372,7,5,0,0,372,373,
+		5,2,0,0,373,374,3,52,26,0,374,375,5,3,0,0,375,51,1,0,0,0,376,379,5,8,0,
+		0,377,379,3,54,27,0,378,376,1,0,0,0,378,377,1,0,0,0,379,53,1,0,0,0,380,
+		381,7,6,0,0,381,55,1,0,0,0,382,383,5,88,0,0,383,385,5,9,0,0,384,382,1,
+		0,0,0,384,385,1,0,0,0,385,386,1,0,0,0,386,387,5,88,0,0,387,57,1,0,0,0,
+		388,389,5,43,0,0,389,390,5,67,0,0,390,395,3,54,27,0,391,392,5,4,0,0,392,
+		394,3,54,27,0,393,391,1,0,0,0,394,397,1,0,0,0,395,393,1,0,0,0,395,396,
+		1,0,0,0,396,59,1,0,0,0,397,395,1,0,0,0,398,399,5,68,0,0,399,400,5,90,0,
+		0,400,61,1,0,0,0,401,406,3,64,32,0,402,403,5,4,0,0,403,405,3,64,32,0,404,
+		402,1,0,0,0,405,408,1,0,0,0,406,404,1,0,0,0,406,407,1,0,0,0,407,63,1,0,
+		0,0,408,406,1,0,0,0,409,415,5,88,0,0,410,411,5,74,0,0,411,412,5,2,0,0,
+		412,413,5,89,0,0,413,415,5,3,0,0,414,409,1,0,0,0,414,410,1,0,0,0,415,65,
+		1,0,0,0,416,421,3,68,34,0,417,418,5,2,0,0,418,419,3,70,35,0,419,420,5,
+		3,0,0,420,422,1,0,0,0,421,417,1,0,0,0,421,422,1,0,0,0,422,67,1,0,0,0,423,
+		424,7,7,0,0,424,69,1,0,0,0,425,430,3,72,36,0,426,427,5,4,0,0,427,429,3,
+		72,36,0,428,426,1,0,0,0,429,432,1,0,0,0,430,428,1,0,0,0,430,431,1,0,0,
+		0,431,71,1,0,0,0,432,430,1,0,0,0,433,434,5,88,0,0,434,435,5,5,0,0,435,
+		436,3,14,7,0,436,73,1,0,0,0,437,438,6,37,-1,0,438,439,5,40,0,0,439,440,
+		3,76,38,0,440,441,5,90,0,0,441,447,1,0,0,0,442,443,5,2,0,0,443,444,3,74,
+		37,0,444,445,5,3,0,0,445,447,1,0,0,0,446,437,1,0,0,0,446,442,1,0,0,0,447,
+		453,1,0,0,0,448,449,10,1,0,0,449,450,7,4,0,0,450,452,3,74,37,2,451,448,
+		1,0,0,0,452,455,1,0,0,0,453,451,1,0,0,0,453,454,1,0,0,0,454,75,1,0,0,0,
+		455,453,1,0,0,0,456,457,7,8,0,0,457,77,1,0,0,0,458,459,5,2,0,0,459,464,
+		5,89,0,0,460,461,5,4,0,0,461,463,5,89,0,0,462,460,1,0,0,0,463,466,1,0,
+		0,0,464,462,1,0,0,0,464,465,1,0,0,0,465,467,1,0,0,0,466,464,1,0,0,0,467,
+		468,5,3,0,0,468,79,1,0,0,0,469,470,7,9,0,0,470,81,1,0,0,0,51,87,102,108,
+		136,143,155,167,170,183,187,190,198,205,212,216,219,228,232,238,241,251,
+		253,256,261,272,278,282,286,292,295,301,307,312,319,322,325,327,348,355,
+		363,369,378,384,395,406,414,421,430,446,453,464
 	};
 
 	public static readonly ATN _ATN =

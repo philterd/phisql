@@ -37,7 +37,7 @@ public static class PolicySchema
     /// targets. Selected at build time by the <c>SchemaVersion</c> MSBuild
     /// property in PhiSql.csproj; keep this constant in sync with it.
     /// </summary>
-    public const string SupportedSchemaVersion = "1.0.0";
+    public const string SupportedSchemaVersion = "1.1.0";
 
     /// <summary>Returns the version of the bundled schema, e.g. <c>"1.0.0"</c>.</summary>
     public static string GetSupportedSchemaVersion() => SupportedSchemaVersion;

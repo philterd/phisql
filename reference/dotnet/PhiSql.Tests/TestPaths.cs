@@ -5,11 +5,17 @@
 
 namespace Philterd.PhiSql.Tests;
 
-/// <summary>Locates the spec example pairs under spec/v1.0/examples relative to the test assembly.</summary>
+/// <summary>Locates the spec example pairs under spec/v1.0/examples and spec/v1.1.0/examples relative to the test assembly.</summary>
 internal static class TestPaths
 {
     /// <summary>spec/v1.0/examples, found by walking up from the test output directory.</summary>
-    public static string ExamplesDir { get; } = FindExamplesDir();
+    public static string ExamplesDir { get; } = FindExamplesDir("v1.0")
+        ?? throw new DirectoryNotFoundException("Could not locate spec/v1.0/examples above " + AppContext.BaseDirectory);
+
+    /// <summary>Every spec-version examples directory the tests scan.</summary>
+    private static readonly string[] AllExamplesDirs =
+        new[] { FindExamplesDir("v1.0"), FindExamplesDir("v1.1.0") }
+            .Where(d => d is not null).Select(d => d!).ToArray();
 
     /// <summary>
     /// Discovery examples parse but do not compile to a Phileas redaction policy;
@@ -21,32 +27,34 @@ internal static class TestPaths
         "18-find-pii-local-filesystem", "19-select-findings-groupby",
     };
 
+    private static IEnumerable<string> AllFiles(string pattern) =>
+        AllExamplesDirs.SelectMany(d => Directory.GetFiles(d, pattern)).OrderBy(f => f);
+
     public static IEnumerable<object[]> PhisqlFiles() =>
-        Directory.GetFiles(ExamplesDir, "*.phisql").OrderBy(f => f).Select(f => new object[] { f });
+        AllFiles("*.phisql").Select(f => new object[] { f });
 
     public static IEnumerable<object[]> JsonFiles() =>
-        Directory.GetFiles(ExamplesDir, "*.json").OrderBy(f => f).Select(f => new object[] { f });
+        AllFiles("*.json").Select(f => new object[] { f });
 
     public static IEnumerable<object[]> RedactionFiles() =>
-        Directory.GetFiles(ExamplesDir, "*.phisql")
+        AllFiles("*.phisql")
             .Where(f => !Discovery.Contains(Path.GetFileNameWithoutExtension(f)))
-            .OrderBy(f => f).Select(f => new object[] { f });
+            .Select(f => new object[] { f });
 
     public static IEnumerable<object[]> DiscoveryFiles() =>
-        Directory.GetFiles(ExamplesDir, "*.phisql")
+        AllFiles("*.phisql")
             .Where(f => Discovery.Contains(Path.GetFileNameWithoutExtension(f)))
-            .OrderBy(f => f).Select(f => new object[] { f });
+            .Select(f => new object[] { f });
 
-    private static string FindExamplesDir()
+    private static string? FindExamplesDir(string version)
     {
         DirectoryInfo? dir = new(AppContext.BaseDirectory);
         while (dir is not null)
         {
-            string candidate = Path.Combine(dir.FullName, "spec", "v1.0", "examples");
+            string candidate = Path.Combine(dir.FullName, "spec", version, "examples");
             if (Directory.Exists(candidate)) return candidate;
             dir = dir.Parent;
         }
-        throw new DirectoryNotFoundException(
-            "Could not locate spec/v1.0/examples above " + AppContext.BaseDirectory);
+        return null;
     }
 }

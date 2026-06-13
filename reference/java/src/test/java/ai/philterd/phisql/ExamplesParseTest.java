@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -35,20 +36,22 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
  */
 class ExamplesParseTest {
 
-    private static final Path EXAMPLES_DIR =
-            Paths.get("..", "..", "spec", "v1.0", "examples").toAbsolutePath().normalize();
+    private static final List<Path> EXAMPLES_DIRS = List.of(
+            Paths.get("..", "..", "spec", "v1.0", "examples").toAbsolutePath().normalize(),
+            Paths.get("..", "..", "spec", "v1.1.0", "examples").toAbsolutePath().normalize());
 
     @TestFactory
     Stream<DynamicTest> everyExampleParses() throws IOException {
-        List<Path> files;
-        try (Stream<Path> entries = Files.list(EXAMPLES_DIR)) {
-            files = entries
-                    .filter(p -> p.getFileName().toString().endsWith(".phisql"))
-                    .sorted()
-                    .toList();
+        List<Path> files = new ArrayList<>();
+        for (Path dir : EXAMPLES_DIRS) {
+            if (!Files.isDirectory(dir)) continue;
+            try (Stream<Path> entries = Files.list(dir)) {
+                entries.filter(p -> p.getFileName().toString().endsWith(".phisql")).forEach(files::add);
+            }
         }
+        files.sort(null);
         if (files.isEmpty()) {
-            throw new IllegalStateException("No example files found at " + EXAMPLES_DIR);
+            throw new IllegalStateException("No example files found in " + EXAMPLES_DIRS);
         }
         return files.stream().map(p -> DynamicTest.dynamicTest(p.getFileName().toString(), () -> {
             String source = Files.readString(p);

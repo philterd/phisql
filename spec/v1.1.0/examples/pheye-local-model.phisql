@@ -1,0 +1,10 @@
+-- Local on-device GLiNER inference. Point PhEye at a local model directory
+-- (the philterd PII GLiNER model exported to ONNX) for fully offline detection,
+-- instead of a remote ENDPOINT. New in spec v1.1. Compiles to pheye-local-model.json.
+
+POLICY pheye_local_model;
+
+DETECT PHEYE
+  LABELS ('person', 'email address', 'phone number')
+  MODEL '/models/ph-eye-pii-base'
+  WITH REDACT;

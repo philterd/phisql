@@ -24,7 +24,7 @@
     <!-- Version of the canonical redaction policy schema bundled into this
          assembly. The Java reference selects this via a Maven property and the
          Python reference via a module constant; keep all three in sync. -->
-    <SchemaVersion>1.0.0</SchemaVersion>
+    <SchemaVersion>1.1.0</SchemaVersion>
   </PropertyGroup>
 
   <ItemGroup>

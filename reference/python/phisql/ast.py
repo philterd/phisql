@@ -182,6 +182,7 @@ class DefineSectionStmt:
 class DetectStmt:
     labels: Optional[List] = None          # list[raw STRING_LITERAL] or None
     endpoint_raw: Optional[str] = None     # raw STRING_LITERAL or None
+    model_raw: Optional[str] = None        # raw STRING_LITERAL (local model path) or None
     strategy: StrategyExpr = None
     predicate: object = None
     options: Optional[List] = None

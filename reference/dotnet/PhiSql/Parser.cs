@@ -261,6 +261,7 @@ public sealed class Parser
             {
                 Labels = ctx.stringList() is { } sl ? V<List<string>>(sl) : null,
                 EndpointRaw = ctx.endpoint?.Text,
+                ModelRaw = ctx.model?.Text,
                 Strategy = V<StrategyExpr>(ctx.strategyExpr()),
                 Predicate = ctx.predicate() is { } p ? V<IPredicate>(p) : null,
                 Options = OptionsOf(ctx.optionsClause()),

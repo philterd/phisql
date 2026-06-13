@@ -334,13 +334,16 @@ class Compiler:
 
         has_labels = ctx.labels is not None
         has_endpoint = ctx.endpoint_raw is not None
-        if has_labels or has_endpoint:
+        has_model = ctx.model_raw is not None
+        if has_labels or has_endpoint or has_model:
             config = {}
             pheye["phEyeConfiguration"] = config
             if has_endpoint:
                 config["endpoint"] = _unquote_string(ctx.endpoint_raw)
             if has_labels:
                 config["labels"] = [_unquote_string(t) for t in ctx.labels]
+            if has_model:
+                config["modelPath"] = _unquote_string(ctx.model_raw)
         self._apply_options(pheye, ctx.options)
 
     # --- Strategy translation ------------------------------------------------

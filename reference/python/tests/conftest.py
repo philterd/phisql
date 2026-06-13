@@ -26,6 +26,8 @@ import pytest  # noqa: E402
 
 #: spec/v1.0/examples, resolved relative to this file (reference/python/tests).
 EXAMPLES_DIR = (_PACKAGE_DIR / ".." / ".." / "spec" / "v1.0" / "examples").resolve()
+EXAMPLES_V11_DIR = (_PACKAGE_DIR / ".." / ".." / "spec" / "v1.1.0" / "examples").resolve()
+EXAMPLES_DIRS = [d for d in (EXAMPLES_DIR, EXAMPLES_V11_DIR) if d.is_dir()]
 
 
 @pytest.fixture(scope="session")
@@ -49,17 +51,17 @@ DISCOVERY_EXAMPLES = {
 
 def example_phisql_files():
     """Returns the sorted list of example .phisql paths (for parametrization)."""
-    files = sorted(EXAMPLES_DIR.glob("*.phisql"))
+    files = sorted(p for d in EXAMPLES_DIRS for p in d.glob("*.phisql"))
     if not files:
-        raise AssertionError(f"No example files found at {EXAMPLES_DIR}")
+        raise AssertionError(f"No example files found in {EXAMPLES_DIRS}")
     return files
 
 
 def example_json_files():
     """Returns the sorted list of example .json paths (for parametrization)."""
-    files = sorted(EXAMPLES_DIR.glob("*.json"))
+    files = sorted(p for d in EXAMPLES_DIRS for p in d.glob("*.json"))
     if not files:
-        raise AssertionError(f"No example .json files found at {EXAMPLES_DIR}")
+        raise AssertionError(f"No example .json files found in {EXAMPLES_DIRS}")
     return files
 
 

@@ -161,6 +161,7 @@ detectStmt
     : DETECT PHEYE
       (LABELS stringList)?
       (ENDPOINT endpoint=STRING_LITERAL)?
+      (MODEL model=STRING_LITERAL)?
       WITH strategyExpr
       (WHERE predicate)?
       optionsClause?
@@ -360,6 +361,7 @@ DETECT          : 'DETECT' ;
 PHEYE           : 'PHEYE' ;
 LABELS          : 'LABELS' ;
 ENDPOINT        : 'ENDPOINT' ;
+MODEL           : 'MODEL' ;
 
 // Discovery keywords.
 FIND            : 'FIND' ;

@@ -207,6 +207,7 @@ class _AstBuilder(PhiSQLVisitor):
         return ast.DetectStmt(
             labels=self.visit(ctx.stringList()) if ctx.stringList() is not None else None,
             endpoint_raw=ctx.endpoint.text if ctx.endpoint is not None else None,
+            model_raw=ctx.model.text if ctx.model is not None else None,
             strategy=self.visit(ctx.strategyExpr()),
             predicate=self.visit(ctx.predicate()) if ctx.predicate() is not None else None,
             options=self._options(ctx),

@@ -98,6 +98,7 @@ define section stmt
 detect stmt      = "DETECT" , "PHEYE"
                  , [ "LABELS" , string list ]
                  , [ "ENDPOINT" , string literal ]
+                 , [ "MODEL" , string literal ]
                  , "WITH" , strategy expr
                  , [ "WHERE" , predicate ]
                  , [ options clause ] ;
