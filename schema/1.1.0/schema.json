@@ -595,7 +595,7 @@
         },
         "maskLength": {
           "description": "Length of the mask. SAME preserves the original length. Can also be a number for fixed-length masking.",
-          "type": "string",
+          "type": ["string", "integer"],
           "default": "SAME"
         },
         "truncateLeaveCharacters": {
@@ -691,7 +691,7 @@
         },
         "maskLength": {
           "description": "Length of the mask. SAME preserves the original length.",
-          "type": "string",
+          "type": ["string", "integer"],
           "default": "SAME"
         },
         "truncateLeaveCharacters": {

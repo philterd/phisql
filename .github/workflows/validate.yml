@@ -20,3 +20,6 @@ jobs:
 
       - name: Validate catalog YAML, schema references, and example JSON
         run: python scripts/validate_spec.py
+
+      - name: Unit-test the spec validator helpers
+        run: pytest scripts/tests -q

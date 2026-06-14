@@ -71,9 +71,11 @@ EXIT_SEMANTIC = 3
 # (or a compiler emitting malformed policy JSON) is caught rather than passing by
 # faithful reproduction. jsonschema is listed in scripts/requirements.txt; if it
 # is not installed the schema checks are skipped so the runner still drives any
-# adapter.
+# adapter. This is the current schema version the reference implementations target
+# (kept in step with SCHEMA_VERSION in scripts/validate_spec.py); released
+# versions such as 1.0.0 are frozen and not edited in place.
 REPO_ROOT = HERE.parent
-SCHEMA_PATH = REPO_ROOT / "schema" / "1.0.0" / "schema.json"
+SCHEMA_PATH = REPO_ROOT / "schema" / "1.1.0" / "schema.json"
 try:
     from jsonschema import Draft202012Validator as _Draft202012Validator
     _SCHEMA_VALIDATOR = _Draft202012Validator(

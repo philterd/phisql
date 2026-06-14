@@ -246,8 +246,46 @@ def check_catalog_references_phileas_schema(schema: dict) -> list[str]:
                     f"(for strategy {entry['name']}, arg {arg['name']}) "
                     f"not on {def_name}"
                 )
+                continue
+            # Type compatibility: the catalog arg's declared type must be representable
+            # by the schema property's type, so catalog/schema type drift (issue #13,
+            # maskLength: catalog integer vs schema string) cannot recur silently.
+            arg_type = arg.get("type")
+            schema_type = strategy_def[field].get("type")
+            if arg_type and schema_type is not None and not _arg_type_compatible(arg_type, schema_type):
+                schema_types = set(schema_type) if isinstance(schema_type, list) else {schema_type}
+                errors.append(
+                    f"strategies.yaml: arg '{arg['name']}' (strategy {entry['name']}) "
+                    f"declares type '{arg_type}' but the schema types "
+                    f"{def_name}.{field} as {sorted(schema_types)}"
+                )
 
     return errors
+
+
+# How a catalog arg `type:` maps onto the JSON Schema `type` of the Phileas field it
+# sets. An arg is compatible when the schema admits at least one of these. Unknown arg
+# types (empty set) are treated as compatible so a new arg kind does not hard-fail the
+# build before this table is taught about it.
+_ARG_TYPE_TO_SCHEMA_TYPES = {
+    "string": {"string"},
+    "integer": {"integer", "number"},
+    "boolean": {"boolean"},
+    "enum": {"string"},
+}
+
+
+def _arg_type_compatible(arg_type: str, schema_type: Any) -> bool:
+    """True if a catalog arg of `arg_type` can set a schema field of `schema_type`.
+
+    `schema_type` is a JSON Schema type: a string, or a list of strings for a union
+    (e.g. maskLength's ["string", "integer"] after issue #13).
+    """
+    schema_types = set(schema_type) if isinstance(schema_type, list) else {schema_type}
+    acceptable = _ARG_TYPE_TO_SCHEMA_TYPES.get(arg_type, set())
+    if not acceptable:
+        return True
+    return bool(acceptable & schema_types)
 
 
 def _schema_strategy_enums(schema: dict) -> set[str]:
