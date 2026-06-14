@@ -1,0 +1,60 @@
+name: Conformance suite
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Runs the cross-implementation conformance suite (compliance/) against every
+# reference implementation. This is the contract the reference jobs do not cover:
+# reference.yml builds and unit-tests each implementation and parses the spec
+# examples, but only compliance/run.py drives the accept/reject/parse-only case
+# corpus through each implementation's CLI and checks that all three compile
+# identical PhiSQL to identical JSON (and reject the same inputs at the same
+# layer). A new implementation gets tested here by adding its adapter below.
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          cache: maven
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # run.py validates each accept-case output against the redaction policy
+      # schema (needs jsonschema, from scripts/requirements.txt). The Python
+      # adapter runs `python -m phisql`, so the package and its runtime deps
+      # (PyYAML, antlr4 runtime) must be importable.
+      - name: Install Python dependencies
+        run: |
+          pip install -r scripts/requirements.txt
+          pip install -e reference/python
+
+      # The Java adapter runs the cli-classified jar, which is built only by the
+      # non-default `cli` profile (mvn verify does not produce it).
+      - name: Build the Java reference CLI
+        working-directory: reference/java
+        run: mvn -B -Pcli -DskipTests package
+
+      - name: Build the .NET reference CLI
+        run: dotnet build reference/dotnet/PhiSql.Cli -c Release
+
+      - name: Conformance suite vs the Java reference
+        run: python compliance/run.py --adapter compliance/adapters/reference.sh
+
+      - name: Conformance suite vs the Python reference
+        run: python compliance/run.py --adapter compliance/adapters/reference-python.sh
+
+      - name: Conformance suite vs the .NET reference
+        run: python compliance/run.py --adapter compliance/adapters/reference-dotnet.sh
