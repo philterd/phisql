@@ -24,10 +24,12 @@ Local, on-device inference for `DETECT PHEYE`. A policy can now point PhEye at a
 
 - The Java, Python, and .NET reference implementations target schema `1.1.0` and recognize the `MODEL` clause. The bundled schema version advances accordingly (`redaction.policy.schema.version`, `SchemaVersion`, and `SUPPORTED_SCHEMA_VERSION`).
 - The reference implementations bundle the new `validators.yaml` catalog alongside the others (the Java and Python builds copy the catalog directory; the .NET project adds it as an embedded resource).
+- **Date-only strategies are now enforced** (RFC #9). The Java, Python, and .NET reference compilers reject `SHIFT`, `TRUNCATE_TO_YEAR`, and `RELATIVE` applied to any target other than the `DATE` entity (another entity, a custom identifier, a dictionary, a section, or PhEye), with a clear semantic error. This is a conformance correction, not a new feature: the catalog already classifies these as `dateFilterStrategy` ("DATE entities only"); the compiler was simply lenient. `REDACT SSN WITH SHIFT(days=30)` previously compiled and now fails. Covered by the `reject/semantic/date-only-strategy` conformance case; the matching "Known underspecified areas" note is removed.
 
 ### Notes
 
 - `threshold` is schema-only in 1.1: there is no PhiSQL clause for it, so a policy relies on the default or filters detections with `WHERE CONFIDENCE`. Only `MODEL` is expressible in the language.
+- The date-only enforcement rejects existing `.phisql` that applied one of these strategies to a non-`DATE` target. Such policies never produced a meaningful redaction (the Phileas runtime would not apply the strategy), so the practical blast radius is small; this is why it lands as a conformance correction in 1.1 rather than a major bump. Existing Phileas JSON policies are unaffected.
 - `validator` has no dedicated PhiSQL clause, but like any identifier-filter property it is expressible through the generic `OPTIONS(...)` passthrough, for example `DEFINE IDENTIFIER '...' MATCHING '...' WITH <strategy> OPTIONS (validator = 'luhn')`, which compiles to the `validator` property. A dedicated clause (for example `VALIDATE WITH`) is optional sugar deferred to a later RFC. An unknown validator name is a policy error and must not be silently ignored.
 
 ## [1.0.0] - 2026-06-01

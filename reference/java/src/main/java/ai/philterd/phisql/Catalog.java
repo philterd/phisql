@@ -103,7 +103,8 @@ public final class Catalog {
                 Strategy s = new Strategy(
                         (String) m.get("name"),
                         (String) m.get("phileas_enum"),
-                        Collections.unmodifiableList(args)
+                        Collections.unmodifiableList(args),
+                        "dateFilterStrategy".equals(m.get("phileas_strategy_def"))
                 );
                 strategies.put(s.name().toUpperCase(Locale.ROOT), s);
             }
@@ -135,11 +136,28 @@ public final class Catalog {
         return strategiesByName.get(name.toUpperCase(Locale.ROOT));
     }
 
+    /** The Phileas strategy enums classified date-only (dateFilterStrategy). */
+    public java.util.Set<String> dateOnlyStrategyEnums() {
+        java.util.Set<String> out = new java.util.HashSet<>();
+        for (Strategy s : strategiesByName.values()) {
+            if (s.dateOnly()) out.add(s.phileasEnum());
+        }
+        return out;
+    }
+
+    /** The PhiSQL entity name for a Phileas identifier field, or null if unknown. */
+    public String entityNameForField(String field) {
+        for (EntityType e : entitiesByName.values()) {
+            if (e.phileasField().equals(field)) return e.name();
+        }
+        return null;
+    }
+
     /** Catalog entry for an entity type. */
     public record EntityType(String name, String phileasField, String phileasStrategiesField) {}
 
-    /** Catalog entry for a filter strategy. */
-    public record Strategy(String name, String phileasEnum, List<StrategyArg> args) {
+    /** Catalog entry for a filter strategy. {@code dateOnly} marks date-only strategies. */
+    public record Strategy(String name, String phileasEnum, List<StrategyArg> args, boolean dateOnly) {
         /** Returns the strategy argument with the given name, or null. */
         public StrategyArg findArg(String argName) {
             if (argName == null) return null;

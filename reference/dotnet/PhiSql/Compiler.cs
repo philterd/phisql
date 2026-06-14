@@ -123,7 +123,50 @@ public sealed class Compiler
         }
 
         string? policyName = ResolvePolicyName(expectedName, declaredName);
+        EnforceDateOnlyStrategies(policyJson);
         return new CompileResult(policyName, description, policyJson);
+    }
+
+    /// <summary>
+    /// Date-only strategies (SHIFT, TRUNCATE_TO_YEAR, RELATIVE) may target only the
+    /// DATE entity. The catalog marks them dateFilterStrategy; reject them on any
+    /// other target (another entity, a custom identifier, a dictionary, a section,
+    /// or PhEye), which the Phileas runtime would not apply meaningfully.
+    /// </summary>
+    private void EnforceDateOnlyStrategies(JsonObject policyJson)
+    {
+        IReadOnlySet<string> dateOnly = _catalog.DateOnlyStrategyEnums();
+        if (dateOnly.Count == 0) return;
+        string dateField = _catalog.GetEntity("DATE")?.PhileasField ?? "date";
+
+        if (policyJson["identifiers"] is not JsonObject identifiers) return;
+        foreach (KeyValuePair<string, JsonNode?> kv in identifiers)
+        {
+            if (kv.Key == dateField || kv.Value is null) continue;
+            IEnumerable<JsonNode> filters = kv.Value is JsonArray arr
+                ? arr.OfType<JsonNode>()
+                : new JsonNode[] { kv.Value! };
+
+            foreach (JsonNode filt in filters)
+            {
+                if (filt is not JsonObject fobj) continue;
+                foreach (KeyValuePair<string, JsonNode?> fkv in fobj)
+                {
+                    if (!fkv.Key.EndsWith("FilterStrategies", StringComparison.Ordinal)
+                        || fkv.Value is not JsonArray strategies) continue;
+                    foreach (JsonNode? strat in strategies)
+                    {
+                        string? enumVal = (strat as JsonObject)?["strategy"]?.GetValue<string>();
+                        if (enumVal is not null && dateOnly.Contains(enumVal))
+                        {
+                            string target = _catalog.EntityNameForField(kv.Key) ?? kv.Key;
+                            throw new CompileException(
+                                $"{enumVal} is a date-only strategy and cannot be applied to {target}");
+                        }
+                    }
+                }
+            }
+        }
     }
 
     // --- CONFIGURE -----------------------------------------------------------

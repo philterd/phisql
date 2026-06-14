@@ -164,12 +164,9 @@ naming rule itself is exercised by the cases under `accept/policy` and
 ## Known underspecified areas
 
 A conformance suite should only assert behavior the spec defines unambiguously.
-Two areas are currently looser in the reference implementation than the catalog
-text suggests, so the suite deliberately does **not** pin them:
+One area is currently looser in the reference implementation than the catalog
+text suggests, so the suite deliberately does **not** pin it:
 
-- **Date-only strategies on non-date entities.** The catalog describes `SHIFT`,
-  `TRUNCATE_TO_YEAR`, and `RELATIVE` as date-only, but the reference compiler
-  accepts them on any entity. The suite neither accepts nor rejects this.
 - **`STATIC_REPLACE` without a `value`.** The catalog marks `value` required, but
   the reference compiler does not enforce it at compile time.
 

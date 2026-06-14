@@ -128,7 +128,52 @@ public final class Compiler {
         }
 
         String policyName = resolvePolicyName(expectedName, declaredName);
+        enforceDateOnlyStrategies(policyJson);
         return new CompileResult(policyName, description, policyJson);
+    }
+
+    /**
+     * Date-only strategies (SHIFT, TRUNCATE_TO_YEAR, RELATIVE) may target only the
+     * DATE entity. The catalog marks them dateFilterStrategy; reject them on any
+     * other target (another entity, a custom identifier, a dictionary, a section,
+     * or PhEye), which the Phileas runtime would not apply meaningfully.
+     */
+    private void enforceDateOnlyStrategies(ObjectNode policyJson) {
+        java.util.Set<String> dateOnly = catalog.dateOnlyStrategyEnums();
+        if (dateOnly.isEmpty()) return;
+        Catalog.EntityType dateEntity = catalog.getEntity("DATE");
+        String dateField = dateEntity != null ? dateEntity.phileasField() : "date";
+
+        JsonNode identifiers = policyJson.get("identifiers");
+        if (identifiers == null) return;
+        java.util.Iterator<java.util.Map.Entry<String, JsonNode>> fields = identifiers.fields();
+        while (fields.hasNext()) {
+            java.util.Map.Entry<String, JsonNode> entry = fields.next();
+            String key = entry.getKey();
+            if (key.equals(dateField)) continue;
+
+            java.util.List<JsonNode> filters = new java.util.ArrayList<>();
+            if (entry.getValue().isArray()) entry.getValue().forEach(filters::add);
+            else filters.add(entry.getValue());
+
+            for (JsonNode filt : filters) {
+                if (!filt.isObject()) continue;
+                java.util.Iterator<java.util.Map.Entry<String, JsonNode>> ff = filt.fields();
+                while (ff.hasNext()) {
+                    java.util.Map.Entry<String, JsonNode> fe = ff.next();
+                    if (!(fe.getKey().endsWith("FilterStrategies") && fe.getValue().isArray())) continue;
+                    for (JsonNode strat : fe.getValue()) {
+                        String enumVal = strat.path("strategy").asText(null);
+                        if (enumVal != null && dateOnly.contains(enumVal)) {
+                            String target = catalog.entityNameForField(key);
+                            if (target == null) target = key;
+                            throw new CompileException(
+                                    enumVal + " is a date-only strategy and cannot be applied to " + target);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /** Backwards-compatible single-arg form (no expected name). */

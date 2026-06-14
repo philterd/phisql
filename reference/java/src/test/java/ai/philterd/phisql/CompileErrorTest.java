@@ -63,4 +63,25 @@ class CompileErrorTest {
                         || ex.getMessage().toLowerCase().contains("invalid"),
                 "Expected error to identify the invalid enum value: " + ex.getMessage());
     }
+
+    @Test
+    void rejectsDateOnlyStrategyOnNonDateEntity() {
+        Compiler compiler = new Compiler();
+        Compiler.CompileException ex = assertThrows(
+                Compiler.CompileException.class,
+                () -> compiler.compile("REDACT SSN WITH SHIFT(days=30);")
+        );
+        assertTrue(ex.getMessage().contains("SHIFT") && ex.getMessage().contains("date-only"),
+                "Expected a date-only strategy error: " + ex.getMessage());
+    }
+
+    @Test
+    void allowsDateOnlyStrategyOnDate() {
+        // Positive control: a date-only strategy on DATE compiles.
+        JsonNode strategy = new Compiler().compile("REDACT DATE WITH SHIFT(days=30);")
+                .policyJson().path("identifiers").path("date")
+                .path("dateFilterStrategies").path(0);
+        assertTrue(strategy.path("strategy").asText().equals("SHIFT"),
+                "DATE + SHIFT should compile: " + strategy);
+    }
 }

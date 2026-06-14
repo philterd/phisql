@@ -20,8 +20,8 @@ namespace Philterd.PhiSql;
 /// <summary>A named argument allowed on a strategy.</summary>
 public sealed record StrategyArg(string Name, string? PhileasField, string? Type, IReadOnlyList<string> EnumValues);
 
-/// <summary>Catalog entry for a filter strategy.</summary>
-public sealed record Strategy(string Name, string PhileasEnum, IReadOnlyList<StrategyArg> Args)
+/// <summary>Catalog entry for a filter strategy. <c>DateOnly</c> marks date-only strategies.</summary>
+public sealed record Strategy(string Name, string PhileasEnum, IReadOnlyList<StrategyArg> Args, bool DateOnly = false)
 {
     /// <summary>Returns the strategy argument with the given (case-insensitive) name, or null.</summary>
     public StrategyArg? FindArg(string? argName)
@@ -83,7 +83,8 @@ public sealed class Catalog
                 args.Add(new StrategyArg(a.Name!, a.PhileasField, a.Type,
                     a.EnumValues ?? new List<string>()));
             }
-            var strategy = new Strategy(s.Name!, s.PhileasEnum!, args);
+            var strategy = new Strategy(s.Name!, s.PhileasEnum!, args,
+                s.PhileasStrategyDef == "dateFilterStrategy");
             strategies[strategy.Name.ToUpperInvariant()] = strategy;
         }
 
@@ -104,6 +105,14 @@ public sealed class Catalog
         return _strategiesByName.TryGetValue(name.ToUpperInvariant(), out Strategy? s) ? s : null;
     }
 
+    /// <summary>The Phileas strategy enums classified date-only (dateFilterStrategy).</summary>
+    public IReadOnlySet<string> DateOnlyStrategyEnums() =>
+        _strategiesByName.Values.Where(s => s.DateOnly).Select(s => s.PhileasEnum).ToHashSet();
+
+    /// <summary>The PhiSQL entity name for a Phileas identifier field, or null.</summary>
+    public string? EntityNameForField(string field) =>
+        _entitiesByName.Values.FirstOrDefault(e => e.PhileasField == field)?.Name;
+
     // --- YAML DTOs (snake_case via UnderscoredNamingConvention) ---------------
 
     private sealed class EntityTypesFile { public List<EntityEntry>? Entities { get; set; } }
@@ -121,6 +130,7 @@ public sealed class Catalog
     {
         public string? Name { get; set; }
         public string? PhileasEnum { get; set; }
+        public string? PhileasStrategyDef { get; set; }
         public List<ArgEntry>? Args { get; set; }
     }
 

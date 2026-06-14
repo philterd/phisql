@@ -48,6 +48,9 @@ class Strategy:
     name: str
     phileas_enum: str
     args: tuple = ()
+    #: True when the catalog marks this strategy date-only
+    #: (``phileas_strategy_def: dateFilterStrategy``); it may target only DATE.
+    date_only: bool = False
 
     def find_arg(self, arg_name: Optional[str]) -> Optional[StrategyArg]:
         """Returns the strategy argument with the given name, or None."""
@@ -113,6 +116,7 @@ class Catalog:
                 name=item["name"],
                 phileas_enum=item["phileas_enum"],
                 args=tuple(args),
+                date_only=item.get("phileas_strategy_def") == "dateFilterStrategy",
             )
             strategies[strategy.name.upper()] = strategy
 
@@ -129,3 +133,14 @@ class Catalog:
         if name is None:
             return None
         return self._strategies_by_name.get(name.upper())
+
+    def date_only_strategy_enums(self) -> set:
+        """The Phileas strategy enums classified date-only (dateFilterStrategy)."""
+        return {s.phileas_enum for s in self._strategies_by_name.values() if s.date_only}
+
+    def entity_name_for_field(self, field: str) -> Optional[str]:
+        """The PhiSQL entity name for a Phileas identifier field, or None."""
+        for entity in self._entities_by_name.values():
+            if entity.phileas_field == field:
+                return entity.name
+        return None

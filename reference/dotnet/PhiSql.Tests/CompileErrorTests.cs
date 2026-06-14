@@ -34,4 +34,22 @@ public class CompileErrorTests
         string m = ex.Message.ToLowerInvariant();
         Assert.True(m.Contains("scope") || m.Contains("invalid"), ex.Message);
     }
+
+    [Fact]
+    public void RejectsDateOnlyStrategyOnNonDateEntity()
+    {
+        var ex = Assert.Throws<CompileException>(
+            () => new Compiler().Compile("REDACT SSN WITH SHIFT(days=30);"));
+        Assert.Contains("SHIFT", ex.Message);
+        Assert.Contains("date-only", ex.Message);
+    }
+
+    [Fact]
+    public void AllowsDateOnlyStrategyOnDate()
+    {
+        // Positive control: a date-only strategy on DATE compiles.
+        JsonNode strategy = new Compiler().Compile("REDACT DATE WITH SHIFT(days=30);")
+            .PolicyJson["identifiers"]!["date"]!["dateFilterStrategies"]![0]!;
+        Assert.Equal("SHIFT", strategy["strategy"]!.GetValue<string>());
+    }
 }

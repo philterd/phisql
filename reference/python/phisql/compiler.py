@@ -140,7 +140,36 @@ class Compiler:
                 pass  # discovery statements are not compiled to Phileas JSON
 
         policy_name = _resolve_policy_name(expected_name, declared_name)
+        self._enforce_date_only_strategies(policy_json)
         return CompileResult(policy_name, description, policy_json)
+
+    def _enforce_date_only_strategies(self, policy_json: dict) -> None:
+        """Date-only strategies (SHIFT, TRUNCATE_TO_YEAR, RELATIVE) may target only
+        the DATE entity. The catalog marks them ``dateFilterStrategy``; reject them
+        on any other target (another entity, a custom identifier, a dictionary, a
+        section, or PhEye), which the Phileas runtime would not apply meaningfully."""
+        date_only = self._catalog.date_only_strategy_enums()
+        if not date_only:
+            return
+        date_entity = self._catalog.get_entity("DATE")
+        date_field = date_entity.phileas_field if date_entity else "date"
+        for key, value in (policy_json.get("identifiers") or {}).items():
+            if key == date_field:
+                continue
+            filters = value if isinstance(value, list) else [value]
+            for filt in filters:
+                if not isinstance(filt, dict):
+                    continue
+                for fkey, fval in filt.items():
+                    if not (fkey.endswith("FilterStrategies") and isinstance(fval, list)):
+                        continue
+                    for strat in fval:
+                        enum = strat.get("strategy") if isinstance(strat, dict) else None
+                        if enum in date_only:
+                            target = self._catalog.entity_name_for_field(key) or key
+                            raise CompileException(
+                                f"{enum} is a date-only strategy and cannot be applied to {target}"
+                            )
 
     # --- CONFIGURE -----------------------------------------------------------
 

@@ -42,3 +42,29 @@ def test_rejects_invalid_enum_value():
         Compiler().compile("REDACT SSN WITH STATIC_REPLACE(value='X', scope=invalid);")
     message = str(exc.value).lower()
     assert "scope" in message or "invalid" in message
+
+
+@pytest.mark.parametrize(
+    "source,strategy",
+    [
+        # Each date-only strategy, on the entity (object-valued) path...
+        ("REDACT SSN WITH SHIFT(days=30);", "SHIFT"),
+        ("REDACT EMAIL_ADDRESS WITH TRUNCATE_TO_YEAR;", "TRUNCATE_TO_YEAR"),
+        # ...and on the array-container path (a custom identifier).
+        ("DEFINE IDENTIFIER 'X' MATCHING '\\d+' WITH RELATIVE;", "RELATIVE"),
+    ],
+)
+def test_rejects_date_only_strategy_on_non_date_target(source, strategy):
+    with pytest.raises(CompileException) as exc:
+        Compiler().compile("POLICY t;\n" + source)
+    message = str(exc.value)
+    assert strategy in message and "date-only" in message
+
+
+def test_allows_date_only_strategy_on_date():
+    # Positive control: a date-only strategy on DATE compiles.
+    strategy = (
+        Compiler().compile("REDACT DATE WITH SHIFT(days=30);")
+        .policy_json()["identifiers"]["date"]["dateFilterStrategies"][0]
+    )
+    assert strategy["strategy"] == "SHIFT"
