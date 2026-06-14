@@ -2,170 +2,170 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/SUMMARY/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/01-ssn-only/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/02-hipaa-safe-harbor/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/03-pci-dss-scope-reduction/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/04-frbp-9037/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/05-support-tickets-with-allowlist/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/06-multi-strategy-on-one-entity/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/07-format-preserving-encryption/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/08-multiple-confidence-thresholds/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/09-ignore-pattern-policy-wide/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/10-mask-with-format-argument/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/11-policy-wide-ignore-terms/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/12-date-shift/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/13-custom-identifier/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/14-pheye-person-detection/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/15-find-pii-s3/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/16-discover-entities-gcs/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/17-scan-azure-blob/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/18-find-pii-local-filesystem/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/19-select-findings-groupby/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/20-crypto-encryption/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/21-date-relative/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/22-custom-dictionary/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/23-section-redaction/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/24-config-settings/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/25-graphical-boundingbox/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/26-filter-options/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/27-strategy-params/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/28-nested-options/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/reference/clauses/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/reference/entity-types/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/reference/findings/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/reference/grammar/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/reference/keywords/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/reference/policy-naming/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/reference/predicates/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/reference/sources/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/reference/strategies/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/reference/type-system/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/reference/verbs/</loc>
-         <lastmod>2026-06-13</lastmod>
+         <lastmod>2026-06-14</lastmod>
     </url>
 </urlset>
