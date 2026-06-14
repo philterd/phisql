@@ -3,6 +3,8 @@
 // Licensed under the Apache License, Version 2.0 (the "License").
 // See ../../../LICENSE.
 
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Nodes;
 using Xunit;
 
@@ -38,5 +40,22 @@ public class PolicySchemaTests
         JsonNode fromJson = PolicySchema.GetSchemaJson();
         JsonNode fromString = JsonNode.Parse(PolicySchema.GetSchema())!;
         Assert.True(JsonNode.DeepEquals(fromJson, fromString));
+    }
+
+    [Fact]
+    public void SchemaExposesIdentifierValidator()
+    {
+        JsonNode root = PolicySchema.GetSchemaJson();
+
+        JsonObject props = root["$defs"]!["filterIdentifier"]!["properties"]!.AsObject();
+        Assert.True(props.ContainsKey("validator"));
+
+        HashSet<string> names = root["$defs"]!["validatorName"]!["enum"]!.AsArray()
+            .Select(n => n!.GetValue<string>()).ToHashSet();
+        Assert.Equal(new HashSet<string>
+        {
+            "luhn", "mod11", "mod97", "mod23-letter", "aba", "verhoeff", "damm",
+            "es-cif", "de-steuerid", "de-personalausweis", "bic-structural",
+        }, names);
     }
 }

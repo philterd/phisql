@@ -14,7 +14,7 @@
 
     <!-- NuGet package metadata. -->
     <PackageId>Philterd.PhiSql</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <Authors>Philterd, LLC</Authors>
     <Description>.NET reference parser and compiler for the PhiSQL specification.</Description>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
@@ -50,6 +50,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="../../../spec/v1.0/catalog/strategies.yaml">
       <LogicalName>PhiSql.Data.catalog.strategies.yaml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../../../spec/v1.0/catalog/validators.yaml">
+      <LogicalName>PhiSql.Data.catalog.validators.yaml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="../../../schema/$(SchemaVersion)/schema.json">
       <LogicalName>PhiSql.Data.schema.$(SchemaVersion).schema.json</LogicalName>

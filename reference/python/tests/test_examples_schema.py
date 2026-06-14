@@ -59,3 +59,28 @@ def test_compiled_example_validates_against_schema(validator, source_path):
 def test_example_json_fixture_validates_against_schema(validator, source_path):
     fixture = json.loads(source_path.with_suffix(".json").read_text(encoding="utf-8"))
     _assert_valid(validator, fixture, f"Fixture {source_path.with_suffix('.json').name}")
+
+
+def _identifier_policy(validator_value):
+    return {
+        "identifiers": {
+            "identifiers": [
+                {"pattern": "\\d{9}", "classification": "TEST", "validator": validator_value}
+            ]
+        }
+    }
+
+
+def test_identifier_validator_accepts_known_names(validator):
+    # String shorthand and the {name, params} object form both validate.
+    _assert_valid(validator, _identifier_policy("luhn"), "identifier with validator 'luhn'")
+    _assert_valid(
+        validator,
+        _identifier_policy({"name": "mod11", "params": {"variant": "cpf"}}),
+        "identifier with validator object and params",
+    )
+
+
+def test_identifier_validator_rejects_unknown_name(validator):
+    errors = list(validator.iter_errors(_identifier_policy("not-a-validator")))
+    assert errors, "an unknown validator name must fail schema validation, not be silently ignored"

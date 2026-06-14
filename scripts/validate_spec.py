@@ -157,6 +157,7 @@ def check_catalog_well_formed() -> list[str]:
         "policy.yaml": ["version", "policy_name", "policy_declaration", "consistency_rule"],
         "findings.yaml": ["version", "table", "columns", "filterable_columns", "groupable_columns"],
         "sources.yaml": ["version", "schemes"],
+        "validators.yaml": ["version", "validators"],
     }
     for name, keys in required.items():
         path = SPEC_DIR / "catalog" / name
@@ -167,6 +168,22 @@ def check_catalog_well_formed() -> list[str]:
         for key in keys:
             if key not in data:
                 errors.append(f"catalog/{name}: missing top-level key '{key}'")
+    return errors
+
+
+def check_validators_match_schema(schema: dict) -> list[str]:
+    """The validators.yaml catalog is the source of truth for the validator
+    vocabulary; the schema's validatorName enum must list exactly the same names,
+    in the same order, so the two cannot drift."""
+    errors = []
+    catalog = load_yaml(SPEC_DIR / "catalog" / "validators.yaml")
+    catalog_names = [v["name"] for v in catalog.get("validators", [])]
+    enum = schema.get("$defs", {}).get("validatorName", {}).get("enum", [])
+    if catalog_names != enum:
+        errors.append(
+            "validators.yaml names do not match schema $defs.validatorName.enum "
+            f"(catalog: {catalog_names}; schema: {enum})"
+        )
     return errors
 
 
@@ -505,6 +522,12 @@ def main() -> int:
         print(f"  ({len(field_deferred)} nested-object fields intentionally deferred:)")
         for name, reason in sorted(field_deferred.items()):
             print(f"    - {name}: {reason}")
+    print()
+
+    section("7. Validator catalog matches schema enum")
+    errors = check_validators_match_schema(schema)
+    print("PASS" if not errors else f"FAIL ({len(errors)})")
+    all_errors.append(("validators", errors))
     print()
 
     has_errors = any(errors for _, errors in all_errors)

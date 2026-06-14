@@ -56,4 +56,21 @@ class PolicySchemaTest {
         assertTrue(root.path("$id").asText().contains("/" + PolicySchema.getSupportedSchemaVersion() + "/"),
                 "schema '$id' should embed the version: " + root.path("$id").asText());
     }
+
+    @Test
+    void schemaExposesIdentifierValidator() throws IOException {
+        JsonNode root = new ObjectMapper().readTree(PolicySchema.getSchema());
+
+        assertTrue(root.path("$defs").path("filterIdentifier").path("properties").has("validator"),
+                "filterIdentifier should expose the 'validator' property");
+
+        JsonNode enumNode = root.path("$defs").path("validatorName").path("enum");
+        assertTrue(enumNode.isArray(), "validatorName should define an enum");
+        java.util.Set<String> names = new java.util.HashSet<>();
+        enumNode.forEach(n -> names.add(n.asText()));
+        assertEquals(java.util.Set.of(
+                        "luhn", "mod11", "mod97", "mod23-letter", "aba", "verhoeff", "damm",
+                        "es-cif", "de-steuerid", "de-personalausweis", "bic-structural"),
+                names, "validatorName enum must match the validators catalog");
+    }
 }

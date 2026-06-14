@@ -1,0 +1,105 @@
+# PhiSQL v1.0 identifier-validator catalog.
+#
+# The source of truth for the named validators the custom `identifier` filter may
+# apply to its regex matches (the `validator` property on filterIdentifier in the
+# redaction policy schema). A match is kept only if the named validator passes,
+# so a generic regex identifier can reject format-valid but checksum-invalid
+# values without a dedicated per-identifier filter and without embedding any
+# executable code in the policy.
+#
+# This catalog is the source of truth for the validator vocabulary; the
+# `validatorName` enum in the policy schema is kept in sync with the `name`
+# values here. An unknown validator name is a policy error, never silently
+# ignored. New validators are added here (additive, a minor version bump).
+#
+# Status: Added in schema 1.1.0 (RFC: phisql#17).
+#
+# Schema:
+#   version    : PhiSQL spec version this catalog targets.
+#   validators : list of validator entries.
+#     name        : the validator identifier used in a policy (matches the schema enum).
+#     kind        : "checksum" or "structural".
+#     shared      : true if it covers many identifiers via params, false if bespoke.
+#     params      : accepted parameter keys (informative); empty if none.
+#     description : human-readable description (informative).
+#     examples    : identifiers it validates (informative).
+
+version: v1.0
+
+validators:
+  - name: luhn
+    kind: checksum
+    shared: true
+    params: []
+    description: Standard mod-10 Luhn checksum over the matched digit string.
+    examples: ["Canadian SIN", "French SIREN", "French SIRET"]
+
+  - name: mod11
+    kind: checksum
+    shared: true
+    params: [weights, variant, check_digits]
+    description: Weighted sum mod 11, producing one or two check digits. A variant or explicit weights select the scheme.
+    examples: ["Brazilian CPF", "Brazilian CNPJ"]
+
+  - name: mod97
+    kind: checksum
+    shared: true
+    params: [variant, substitutions]
+    description: Control derived from the value mod 97 (variant 'nir' uses key = 97 - (n mod 97); 'iban' requires remainder == 1). The substitutions map converts letters to digits first (for example Corsica 2A -> 19, 2B -> 18 in the NIR).
+    examples: ["French INSEE / NIR"]
+
+  - name: mod23-letter
+    kind: checksum
+    shared: true
+    params: [substitutions]
+    description: Control letter from a 23-entry table indexed by the number mod 23. The substitutions map handles a leading-letter prefix (NIE X/Y/Z -> 0/1/2).
+    examples: ["Spanish DNI", "Spanish NIE"]
+
+  - name: aba
+    kind: checksum
+    shared: true
+    params: []
+    description: ABA routing transit number checksum (weights 3-7-1 mod 10).
+    examples: ["US bank routing number"]
+
+  - name: verhoeff
+    kind: checksum
+    shared: true
+    params: []
+    description: Verhoeff check digit (dihedral-group scheme).
+    examples: []
+
+  - name: damm
+    kind: checksum
+    shared: true
+    params: []
+    description: Damm check digit (quasigroup scheme).
+    examples: []
+
+  - name: es-cif
+    kind: checksum
+    shared: false
+    params: []
+    description: Spanish CIF control character. A Luhn-like weighted sum whose control is a digit or a letter depending on the organization-type leading character.
+    examples: ["Spanish CIF"]
+
+  - name: de-steuerid
+    kind: checksum
+    shared: false
+    params: []
+    description: German Steuer-ID (Steuerliche Identifikationsnummer). ISO/IEC 7064-style iterated mod-11/mod-10 check digit, plus the digit-repetition structural rule on the first ten digits.
+    examples: ["German Steuer-ID"]
+
+  - name: de-personalausweis
+    kind: checksum
+    shared: false
+    params: []
+    description: German Personalausweis number. ICAO 9303-style 7-3-1 weighted check digit(s) with letter-to-value mapping.
+    examples: ["German Personalausweis"]
+
+  - name: bic-structural
+    kind: structural
+    shared: false
+    params: []
+    description: SWIFT / BIC has no checksum. Validates the ISO 9362 structure (4 letters bank, 2-letter country, 2 alphanumeric location, optional 3 alphanumeric branch) and that the country segment is a valid ISO 3166 code.
+    examples: ["SWIFT / BIC"]

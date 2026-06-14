@@ -57,3 +57,15 @@ def test_get_schema_dict_parses_to_matching_object():
     assert isinstance(parsed, dict)
     assert parsed == json.loads(get_schema())
     assert parsed["version"] == get_supported_schema_version()
+
+
+def test_schema_exposes_identifier_validator():
+    # The bundled schema carries the identifier `validator` field and the
+    # `validatorName` vocabulary, kept in sync with spec/v1.0/catalog/validators.yaml.
+    schema = get_schema_dict()
+    assert "validator" in schema["$defs"]["filterIdentifier"]["properties"]
+    expected = {
+        "luhn", "mod11", "mod97", "mod23-letter", "aba", "verhoeff", "damm",
+        "es-cif", "de-steuerid", "de-personalausweis", "bic-structural",
+    }
+    assert set(schema["$defs"]["validatorName"]["enum"]) == expected

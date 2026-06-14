@@ -43,6 +43,23 @@
     }
   },
   "$defs": {
+    "validatorName": {
+      "description": "Name of a built-in checksum or structural validator the identifier filter may apply to its matches. The set is the source-of-truth catalog spec/v1.0/catalog/validators.yaml; this enum is kept in sync with it. Most national and financial identifiers reduce to the shared algorithms (luhn, mod11, mod97, mod23-letter); the remainder are specific named validators.",
+      "type": "string",
+      "enum": [
+        "luhn",
+        "mod11",
+        "mod97",
+        "mod23-letter",
+        "aba",
+        "verhoeff",
+        "damm",
+        "es-cif",
+        "de-steuerid",
+        "de-personalausweis",
+        "bic-structural"
+      ]
+    },
     "config": {
       "description": "Global configuration settings for the policy.",
       "type": "object",
@@ -1238,6 +1255,25 @@
           "description": "Classification label assigned to matches from this identifier.",
           "type": "string",
           "default": "custom-identifier"
+        },
+        "validator": {
+          "description": "Optional post-match validation. A regex match is kept only if the named built-in validator passes, so a generic identifier can reject format-valid but checksum-invalid values (for example a SIN that fails the Luhn check). Names a validator from the catalog (spec/v1.0/catalog/validators.yaml); no executable code is carried in the policy. An unknown name is a policy error, never silently ignored.",
+          "oneOf": [
+            { "$ref": "#/$defs/validatorName" },
+            {
+              "type": "object",
+              "properties": {
+                "name": { "$ref": "#/$defs/validatorName" },
+                "params": {
+                  "description": "Validator-specific parameters, for example mod11 weights and variant, mod23-letter prefix substitutions, or mod97 letter substitutions. The accepted keys per validator are documented in the catalog.",
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              },
+              "required": ["name"],
+              "additionalProperties": false
+            }
+          ]
         }
       },
       "additionalProperties": false

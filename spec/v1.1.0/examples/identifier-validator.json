@@ -1,0 +1,31 @@
+{
+  "identifiers": {
+    "identifiers": [
+      {
+        "classification": "CANADA_SIN",
+        "pattern": "\\b\\d{3}-?\\d{3}-?\\d{3}\\b",
+        "identifierFilterStrategies": [
+          {
+            "strategy": "REDACT"
+          }
+        ],
+        "validator": "luhn"
+      },
+      {
+        "classification": "BRAZIL_CPF",
+        "pattern": "\\b\\d{3}\\.?\\d{3}\\.?\\d{3}-?\\d{2}\\b",
+        "identifierFilterStrategies": [
+          {
+            "strategy": "REDACT"
+          }
+        ],
+        "validator": {
+          "name": "mod11",
+          "params": {
+            "variant": "cpf"
+          }
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+-- Identifier checksum validation. A custom identifier can name a built-in
+-- validator (see spec/v1.0/catalog/validators.yaml); a regex match is kept only
+-- if the validator passes, so format-valid but checksum-invalid values are
+-- rejected. New in spec v1.1. Set through the generic OPTIONS passthrough; there
+-- is no dedicated clause. Compiles to identifier-validator.json.
+
+POLICY identifier_validator;
+
+-- Canadian SIN: nine digits, kept only if it passes the Luhn checksum.
+DEFINE IDENTIFIER 'CANADA_SIN' MATCHING '\b\d{3}-?\d{3}-?\d{3}\b'
+  WITH REDACT
+  OPTIONS (validator = 'luhn');
+
+-- Brazilian CPF: the object form, naming the validator and its parameters.
+DEFINE IDENTIFIER 'BRAZIL_CPF' MATCHING '\b\d{3}\.?\d{3}\.?\d{3}-?\d{2}\b'
+  WITH REDACT
+  OPTIONS (validator = (name = 'mod11', params = (variant = 'cpf')));

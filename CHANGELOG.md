@@ -16,14 +16,19 @@ Local, on-device inference for `DETECT PHEYE`. A policy can now point PhEye at a
   - `threshold`: minimum span confidence for the local model to return a detection (number, default `0.5`).
 - **`MODEL` reserved keyword**, added to the grammar, the EBNF, and `spec/v1.0/catalog/keywords.yaml`.
 - **`spec/v1.1.0/examples/pheye-local-model`** example pair (`.phisql` and compiled `.json`), exercised by the Java, Python, and .NET reference test suites.
+- **Identifier checksum and structural validation** (RFC #17). The custom `identifier` filter (`filterIdentifier`) gains an optional `validator` property in schema `1.1.0`: a named built-in validator (a `validatorName` string, or `{name, params}`) that a regex match must pass to be kept. This lets a generic regex identifier reject format-valid but checksum-invalid values (a SIN that fails Luhn, a CPF with bad check digits) without a dedicated per-identifier filter and without embedding executable code in a policy.
+- **`spec/v1.0/catalog/validators.yaml`**: the source-of-truth catalog for the validator vocabulary (`luhn`, `mod11`, `mod97`, `mod23-letter`, `aba`, `verhoeff`, `damm`, `es-cif`, `de-steuerid`, `de-personalausweis`, `bic-structural`). The schema's `validatorName` enum is kept in sync with it.
+- **`spec/v1.1.0/examples/identifier-validator`** example pair (`.phisql` and compiled `.json`), showing both the string and `{name, params}` validator forms set through the `OPTIONS(...)` passthrough, exercised by the Java, Python, and .NET reference test suites.
 
 ### Changed
 
 - The Java, Python, and .NET reference implementations target schema `1.1.0` and recognize the `MODEL` clause. The bundled schema version advances accordingly (`redaction.policy.schema.version`, `SchemaVersion`, and `SUPPORTED_SCHEMA_VERSION`).
+- The reference implementations bundle the new `validators.yaml` catalog alongside the others (the Java and Python builds copy the catalog directory; the .NET project adds it as an embedded resource).
 
 ### Notes
 
 - `threshold` is schema-only in 1.1: there is no PhiSQL clause for it, so a policy relies on the default or filters detections with `WHERE CONFIDENCE`. Only `MODEL` is expressible in the language.
+- `validator` has no dedicated PhiSQL clause, but like any identifier-filter property it is expressible through the generic `OPTIONS(...)` passthrough, for example `DEFINE IDENTIFIER '...' MATCHING '...' WITH <strategy> OPTIONS (validator = 'luhn')`, which compiles to the `validator` property. A dedicated clause (for example `VALIDATE WITH`) is optional sugar deferred to a later RFC. An unknown validator name is a policy error and must not be silently ignored.
 
 ## [1.0.0] - 2026-06-01
 
