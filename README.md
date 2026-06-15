@@ -41,6 +41,7 @@ The reference implementation versions and the schema version are independent. An
 | Schema version | Java jar (`ai.philterd:phisql`) | Python package (`phisql`) | .NET package (`Philterd.PhiSql`) |
 |---|---|---|---|
 | 1.0.0 | 1.0.0 | 1.0.0 | 1.0.0 |
+| 1.1.0 | 1.1.0 | 1.1.0 | 1.1.0 |
 
 ## Relationship to the redaction policy schema
 
