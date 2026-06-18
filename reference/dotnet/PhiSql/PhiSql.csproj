@@ -20,6 +20,13 @@
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/philterd/phisql</PackageProjectUrl>
     <RepositoryUrl>https://github.com/philterd/phisql</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>phisql;pii;phi;redaction;philterd;parser;compiler;policy</PackageTags>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
 
     <!-- Version of the canonical redaction policy schema bundled into this
          assembly. The Java reference selects this via a Maven property and the
@@ -33,6 +40,11 @@
          (regenerated from spec/v1.0/grammar/PhiSQL.g4 by scripts/generate_parser.sh).
          Compatible with the ANTLR tool version pinned in that script. -->
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
+  </ItemGroup>
+
+  <!-- Pack the .NET reference README as the NuGet package readme. -->
+  <ItemGroup>
+    <None Include="../README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <!--
