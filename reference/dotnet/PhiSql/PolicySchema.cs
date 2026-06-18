@@ -25,7 +25,7 @@ namespace Philterd.PhiSql;
 /// <c>phisql.PolicySchema</c>.
 ///
 /// <code>
-/// PolicySchema.GetSupportedSchemaVersion(); // "1.0.0"
+/// PolicySchema.GetSupportedSchemaVersion(); // "1.1.0"
 /// PolicySchema.GetSchema();                  // the schema as a JSON string
 /// PolicySchema.GetSchemaJson();              // the schema parsed to a JsonNode
 /// </code>
@@ -39,7 +39,7 @@ public static class PolicySchema
     /// </summary>
     public const string SupportedSchemaVersion = "1.1.0";
 
-    /// <summary>Returns the version of the bundled schema, e.g. <c>"1.0.0"</c>.</summary>
+    /// <summary>Returns the version of the bundled schema, e.g. <c>"1.1.0"</c>.</summary>
     public static string GetSupportedSchemaVersion() => SupportedSchemaVersion;
 
     /// <summary>Returns the full bundled schema as a JSON string.</summary>

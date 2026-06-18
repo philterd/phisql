@@ -49,14 +49,14 @@ class PolicySchema:
 
         >>> from phisql import PolicySchema
         >>> PolicySchema.get_supported_schema_version()
-        '1.0.0'
+        '1.1.0'
         >>> schema_text = PolicySchema.get_schema()        # raw JSON string
         >>> schema_obj = PolicySchema.get_schema_dict()    # parsed dict
     """
 
     @staticmethod
     def get_supported_schema_version() -> str:
-        """Returns the version of the bundled schema, e.g. ``"1.0.0"``."""
+        """Returns the version of the bundled schema, e.g. ``"1.1.0"``."""
         return SUPPORTED_SCHEMA_VERSION
 
     @staticmethod
@@ -72,7 +72,7 @@ class PolicySchema:
 
 # Module-level aliases, for callers that prefer functions over the class.
 def get_supported_schema_version() -> str:
-    """Returns the version of the bundled schema, e.g. ``"1.0.0"``."""
+    """Returns the version of the bundled schema, e.g. ``"1.1.0"``."""
     return PolicySchema.get_supported_schema_version()
 
 

@@ -44,7 +44,7 @@ public final class PolicySchema {
     private PolicySchema() {
     }
 
-    /** Returns the version of the bundled schema, e.g. {@code "1.0.0"}. */
+    /** Returns the version of the bundled schema, e.g. {@code "1.1.0"}. */
     public static String getSupportedSchemaVersion() {
         return VERSION;
     }

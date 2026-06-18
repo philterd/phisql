@@ -12,7 +12,7 @@ generated C# sources are committed under [`PhiSql/Generated/`](PhiSql/Generated/
 so building and testing the package needs only the .NET SDK (no Java). The
 parser walks its parse tree into the AST the compiler consumes (`PhiSql/Parser.cs`).
 The compiler is driven by the catalog YAML under
-[`spec/v1.0/catalog/`](https://github.com/philterd/phisql/tree/main/spec/v1.0/catalog) —
+[`spec/v1.0/catalog/`](https://github.com/philterd/phisql/tree/main/spec/v1.0/catalog),
 the single source of truth shared by all three implementations.
 
 The grammar in the spec remains the single source of truth.
@@ -26,37 +26,6 @@ grammar and the committed parser fails the build.
 **.NET 10.0** (`net10.0`, the current LTS). Dependencies: `YamlDotNet` (catalog
 parsing) and `Antlr4.Runtime.Standard` (loads the generated parser), plus, for
 the test project only, `xUnit` and `JsonSchema.Net`.
-
-## Layout
-
-| Project | Purpose |
-|---|---|
-| `PhiSql/` | the library — package id `Philterd.PhiSql` |
-| `PhiSql.Cli/` | the `phisql` command-line front end |
-| `PhiSql.Tests/` | the xUnit test suite |
-
-## Build and test
-
-With **Docker only** (no .NET SDK needed on the host) — builds and tests inside
-the official .NET 10 SDK image:
-
-```sh
-cd reference/dotnet
-./build.sh            # or: ./build.sh Debug
-```
-
-Or directly, with the **.NET 10 SDK** installed:
-
-```sh
-cd reference/dotnet
-dotnet test PhiSql.Tests
-```
-
-The suite mirrors the Java and Python reference tests: it parses every `.phisql`
-example, compiles every redaction example and compares it to the sibling `.json`
-fixture, and validates every compiled example **and** every fixture against the
-canonical schema. These are the load-bearing assertions that the implementation
-stays in sync with the spec — any grammar/catalog/schema drift fails the build.
 
 ## How the spec data is bundled
 
@@ -105,11 +74,11 @@ CompileResult result = new Compiler().CompileFile("policies/hipaa-safe-harbor.ph
 ### Retrieve the policy schema
 
 An application can read the canonical redaction policy JSON Schema straight from
-the library — exactly as the Java (`PolicySchema.getSchema()`) and Python
+the library, exactly as the Java (`PolicySchema.getSchema()`) and Python
 (`PolicySchema.get_schema()`) references expose it:
 
 ```csharp
-PolicySchema.GetSupportedSchemaVersion(); // "1.0.0"
+PolicySchema.GetSupportedSchemaVersion(); // "1.1.0"
 PolicySchema.GetSchema();                  // the schema as a JSON string
 PolicySchema.GetSchemaJson();              // the schema as a JsonNode
 ```
@@ -123,14 +92,6 @@ dotnet run --project PhiSql.Cli -- path/to/policy.phisql
 It writes the compiled Phileas JSON to stdout. Exit codes form the conformance
 adapter contract: `0` success, `2` parse error, `3` compile error, `64` usage
 error, `1` other I/O error.
-
-## Scope
-
-Like the Java and Python references, this compiler targets the redaction subset
-of PhiSQL (REDACT, DEIDENTIFY, IGNORE, DEFINE IDENTIFIER, DEFINE DICTIONARY,
-DEFINE SECTION, DETECT PHEYE, and the CONFIGURE forms) and emits Phileas JSON.
-Discovery statements (FIND PII, DISCOVER ENTITIES, SCAN, SELECT FROM findings)
-parse successfully but are not compiled.
 
 ## License
 
