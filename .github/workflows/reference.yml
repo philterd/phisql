@@ -104,3 +104,33 @@ jobs:
       # validated against the schema, as part of the test suite. If the grammar,
       # catalog, or schema drifts from the examples, this job fails. The
       # parser-drift job above checks the committed parser against the grammar.
+
+  publish-snapshot:
+    # Publish the Java reference implementation's -SNAPSHOT to the Maven Central
+    # snapshot repository on every push to main, but only after the Java build
+    # passes. Never runs on pull requests (which keeps the credentials away from
+    # fork builds).
+    needs: java
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: publish-snapshot-${{ github.ref }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          cache: maven
+          server-id: central
+          server-username: MAVEN_CENTRAL_USERNAME
+          server-password: MAVEN_CENTRAL_PASSWORD
+
+      - name: Publish snapshot to Maven Central
+        working-directory: reference/java
+        run: mvn --batch-mode --no-transfer-progress -DskipTests deploy
+        env:
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}

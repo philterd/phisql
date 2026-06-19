@@ -43,6 +43,8 @@ The reference implementation versions and the schema version are independent. An
 | 1.0.0 | 1.0.0 | 1.0.0 | 1.0.0 |
 | 1.1.0 | 1.1.0 | 1.1.0 | 1.1.0 |
 
+Released versions of the Java jar are on Maven Central. The latest development build is published as a `-SNAPSHOT` to the [Maven Central snapshot repository](https://central.sonatype.com/repository/maven-snapshots/) on every push to `main`. To consume it, add that repository to your build and depend on the `-SNAPSHOT` version (snapshots are mutable and periodically pruned, so pin a release version for anything you need to reproduce).
+
 ## Relationship to the redaction policy schema
 
 The [redaction JSON policy schema](https://philterd.ai/schemas/redaction-policy/1.0.0/schema.json) is the **canonical execution contract** for redaction. PhiSQL is a **convenience authoring layer** that compiles to it.
