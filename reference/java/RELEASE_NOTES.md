@@ -1,0 +1,30 @@
+# Release Notes
+
+All notable changes to the PhiSQL Java reference implementation (the `ai.philterd:phisql` artifact on Maven Central) are recorded here. Versions follow [Semantic Versioning](https://semver.org/).
+
+The implementation version is independent of the PhiSQL policy schema version it implements (exposed through `PolicySchema.getSupportedSchemaVersion()`). Specification-level changes (grammar, schema, catalog, examples) are recorded in the repository [release notes](../../RELEASE_NOTES.md). The current development version is `1.2.0-SNAPSHOT`, which has no notable changes over 1.1.0 yet.
+
+## 1.1.0 - 2026-06-17
+
+Targets policy schema 1.1.0. The Java sources moved from `reference/` to `reference/java/` in this release, alongside the new Python and .NET reference implementations.
+
+### Added
+
+- **Support for policy schema 1.1.0**, implementing the PhiSQL 1.1.0 language surface: the `MODEL` clause for local GLiNER inference in `DETECT PHEYE`, identifier `validator` support through the `OPTIONS(...)` passthrough, and the widened `maskLength`. See the repository [release notes](../../RELEASE_NOTES.md) for the specification-level detail.
+- The `validators.yaml` catalog is bundled into the jar as a resource alongside the other catalogs.
+
+### Changed
+
+- `PolicySchema.getSupportedSchemaVersion()` now returns `1.1.0`, and the bundled schema advances accordingly (`redaction.policy.schema.version`).
+- **Date-only strategies are now enforced.** The compiler rejects `SHIFT`, `TRUNCATE_TO_YEAR`, and `RELATIVE` applied to any target other than the `DATE` entity, with a clear semantic error. `REDACT SSN WITH SHIFT(days=30)` previously compiled and now fails.
+
+## 1.0.0 - 2026-06-01
+
+First stable release of the Java reference parser and compiler, targeting policy schema 1.0.0.
+
+### Added
+
+- **`ai.philterd:phisql` published to Maven Central**, with attached sources and javadoc jars and GPG signing via the `sign` profile.
+- **PhiSQL parser and compiler.** Parses PhiSQL (an ANTLR4 grammar generated from `spec/v1.0/grammar/PhiSQL.g4` at build time) and compiles it to Phileas JSON, driven by the specification catalog YAML files, which are bundled inside the jar as resources.
+- **`PolicySchema` API.** Exposes the canonical redaction policy schema bundled in the jar (`getSupportedSchemaVersion()`, `getSchema()`), so dependents read the schema without checking out this repository.
+- **Targets policy schema 1.0.0**, implementing the frozen PhiSQL 1.0 language surface. See the repository [release notes](../../RELEASE_NOTES.md) for the specification-level detail.

@@ -1,4 +1,4 @@
-# Changelog
+# Release Notes
 
 All notable changes to the PhiSQL specification are documented here: the language, grammar, redaction policy schema, catalog, examples, and conformance suite. Release notes for the reference implementations live alongside each one, under `reference/<language>/`.
 

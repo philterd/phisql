@@ -14,7 +14,7 @@
 
     <!-- NuGet package metadata. -->
     <PackageId>Philterd.PhiSql</PackageId>
-    <Version>1.1.1</Version>
+    <Version>1.2.0-preview</Version>
     <Authors>Philterd, LLC</Authors>
     <Description>.NET reference parser and compiler for the PhiSQL specification.</Description>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
