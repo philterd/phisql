@@ -2,6 +2,7 @@
 bin/
 obj/
 *.user
+artifacts/
 
 # Cached ANTLR tool jar fetched by scripts/generate_parser.sh. The generated
 # parser under PhiSql/Generated/ IS committed; only the tool jar is ignored.
