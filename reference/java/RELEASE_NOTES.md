@@ -2,7 +2,15 @@
 
 All notable changes to the PhiSQL Java reference implementation (the `ai.philterd:phisql` artifact on Maven Central) are recorded here. Versions follow [Semantic Versioning](https://semver.org/).
 
-The implementation version is independent of the PhiSQL policy schema version it implements (exposed through `PolicySchema.getSupportedSchemaVersion()`). Specification-level changes (grammar, schema, catalog, examples) are recorded in the repository [release notes](../../RELEASE_NOTES.md). The current development version is `1.2.0-SNAPSHOT`, which has no notable changes over 1.1.0 yet.
+The implementation version is independent of the PhiSQL policy schema version it implements (exposed through `PolicySchema.getSupportedSchemaVersion()`). Specification-level changes (grammar, schema, catalog, examples) are recorded in the repository [release notes](../../RELEASE_NOTES.md).
+
+## 1.2.0 - 2026-06-22
+
+Targets policy schema 1.1.0 (unchanged from 1.1.0).
+
+### Changed
+
+- Lowered the Java baseline from 25 to 17. The `ai.philterd:phisql` artifact now compiles to Java 17 bytecode, so it can be embedded in Java 17 and Java 21 runtimes (for example as a transitive dependency of Phileas inside OpenSearch and Elasticsearch plugins) that could not load the previous Java 25 build. There are no API or language changes; consumers on Java 21 or newer are unaffected.
 
 ## 1.1.0 - 2026-06-17
 
