@@ -68,3 +68,20 @@ def test_allows_date_only_strategy_on_date():
         .policy_json()["identifiers"]["date"]["dateFilterStrategies"][0]
     )
     assert strategy["strategy"] == "SHIFT"
+
+
+def test_rejects_static_replace_without_value():
+    # The catalog marks STATIC_REPLACE's `value` required; omitting it is a
+    # semantic error rather than a malformed strategy.
+    with pytest.raises(CompileException) as exc:
+        Compiler().compile("REDACT SURNAME WITH STATIC_REPLACE(scope=document);")
+    assert "STATIC_REPLACE requires argument 'value'" in str(exc.value)
+
+
+def test_allows_static_replace_with_value():
+    # Positive control: STATIC_REPLACE with a value compiles.
+    strategy = (
+        Compiler().compile("REDACT SURNAME WITH STATIC_REPLACE(value='Customer');")
+        .policy_json()["identifiers"]["surname"]["surnameFilterStrategies"][0]
+    )
+    assert strategy["staticReplacement"] == "Customer"

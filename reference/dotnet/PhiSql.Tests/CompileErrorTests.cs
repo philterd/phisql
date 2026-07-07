@@ -52,4 +52,23 @@ public class CompileErrorTests
             .PolicyJson["identifiers"]!["date"]!["dateFilterStrategies"]![0]!;
         Assert.Equal("SHIFT", strategy["strategy"]!.GetValue<string>());
     }
+
+    [Fact]
+    public void RejectsStaticReplaceWithoutValue()
+    {
+        // The catalog marks STATIC_REPLACE's `value` required; omitting it is a
+        // semantic error rather than a malformed strategy.
+        var ex = Assert.Throws<CompileException>(
+            () => new Compiler().Compile("REDACT SURNAME WITH STATIC_REPLACE(scope=document);"));
+        Assert.Contains("STATIC_REPLACE requires argument 'value'", ex.Message);
+    }
+
+    [Fact]
+    public void AllowsStaticReplaceWithValue()
+    {
+        // Positive control: STATIC_REPLACE with a value compiles.
+        JsonNode strategy = new Compiler().Compile("REDACT SURNAME WITH STATIC_REPLACE(value='Customer');")
+            .PolicyJson["identifiers"]!["surname"]!["surnameFilterStrategies"]![0]!;
+        Assert.Equal("Customer", strategy["staticReplacement"]!.GetValue<string>());
+    }
 }

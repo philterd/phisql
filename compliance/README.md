@@ -161,18 +161,6 @@ the declared name (hyphens and underscores are equivalent, so
 naming rule itself is exercised by the cases under `accept/policy` and
 `reject/semantic/name-mismatch`.
 
-## Known underspecified areas
-
-A conformance suite should only assert behavior the spec defines unambiguously.
-One area is currently looser in the reference implementation than the catalog
-text suggests, so the suite deliberately does **not** pin it:
-
-- **`STATIC_REPLACE` without a `value`.** The catalog marks `value` required, but
-  the reference compiler does not enforce it at compile time.
-
-These are tracked as spec/implementation gaps. When the contract is tightened (an
-RFC plus a reference change), matching cases should be added here.
-
 ## License
 
 Apache License, Version 2.0, the same as the rest of this repository.

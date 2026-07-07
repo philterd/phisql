@@ -1,0 +1,1 @@
+REDACT SURNAME WITH STATIC_REPLACE(scope=document);

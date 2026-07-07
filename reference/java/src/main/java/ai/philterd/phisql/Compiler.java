@@ -614,22 +614,27 @@ public final class Compiler {
         ObjectNode out = MAPPER.createObjectNode();
         out.put("strategy", strategy.phileasEnum());
 
-        if (ctx.strategyArgs() == null) {
-            return out;
+        if (ctx.strategyArgs() != null) {
+            for (PhiSQLParser.NamedArgContext argCtx : ctx.strategyArgs().namedArg()) {
+                String argName = argCtx.argName.getText();
+                Catalog.StrategyArg arg = strategy.findArg(argName);
+                if (arg != null && argCtx.settingValue().literal() != null) {
+                    // Catalogued argument with a scalar value: validate and map it
+                    // (handles aliases like days -> shiftDays and enum checks).
+                    placeArgValue(out, arg, argCtx.settingValue().literal());
+                } else {
+                    // Any other strategy property (salt, condition, truncateDirection,
+                    // anonymizationCandidates, ...) passes through by its schema name.
+                    setOrMerge(out, argName, buildValue(argCtx.settingValue()));
+                }
+            }
         }
 
-        for (PhiSQLParser.NamedArgContext argCtx : ctx.strategyArgs().namedArg()) {
-            String argName = argCtx.argName.getText();
-            Catalog.StrategyArg arg = strategy.findArg(argName);
-            if (arg != null && argCtx.settingValue().literal() != null) {
-                // Catalogued argument with a scalar value: validate and map it
-                // (handles aliases like days -> shiftDays and enum checks).
-                placeArgValue(out, arg, argCtx.settingValue().literal());
-            } else {
-                // Any other strategy property (salt, condition, truncateDirection,
-                // anonymizationCandidates, ...) passes through by its schema name.
-                setOrMerge(out, argName, buildValue(argCtx.settingValue()));
-            }
+        // STATIC_REPLACE has nothing to substitute without a value; the catalog
+        // marks the argument required (strategies.yaml). Reject the omission
+        // rather than emitting a malformed strategy.
+        if ("STATIC_REPLACE".equals(strategy.phileasEnum()) && !out.has("staticReplacement")) {
+            throw new CompileException("STATIC_REPLACE requires argument 'value'");
         }
         return out;
     }

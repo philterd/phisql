@@ -22,6 +22,7 @@ Overlapping split chunks. A splitting policy can now share a window of character
 ### Changed
 
 - The current schema version advances to `1.2.0`. The three reference implementations target it (`redaction.policy.schema.version`, `SUPPORTED_SCHEMA_VERSION`, `PolicySchema.SupportedSchemaVersion`), and `validate_spec.py` validates and coverage-checks against `1.2.0`.
+- **Required strategy arguments are now enforced for `STATIC_REPLACE`** (RFC #8). `spec/v1.0/catalog/strategies.yaml` marks `STATIC_REPLACE`'s `value` argument required, but the reference compiler previously accepted its omission. `REDACT SURNAME WITH STATIC_REPLACE(scope=document)` (no `value`) now fails with a semantic error (`STATIC_REPLACE requires argument 'value'`) instead of compiling a strategy with nothing to substitute. This is a conformance correction, not a new feature; like the 1.1.0 date-only enforcement it is, strictly, a formerly-accepted input now rejected, but such a policy never produced a well-formed redaction. Enforcement is scoped to `STATIC_REPLACE.value` for now (the only catalog argument marked required). The `reject/semantic/static-replace-missing-value` conformance case pins it, and the matching "Known underspecified areas" note is removed from `compliance/README.md`.
 
 ### Notes
 

@@ -84,4 +84,27 @@ class CompileErrorTest {
         assertTrue(strategy.path("strategy").asText().equals("SHIFT"),
                 "DATE + SHIFT should compile: " + strategy);
     }
+
+    @Test
+    void rejectsStaticReplaceWithoutValue() {
+        // The catalog marks STATIC_REPLACE's `value` required; omitting it is a
+        // semantic error rather than a malformed strategy.
+        Compiler compiler = new Compiler();
+        Compiler.CompileException ex = assertThrows(
+                Compiler.CompileException.class,
+                () -> compiler.compile("REDACT SURNAME WITH STATIC_REPLACE(scope=document);")
+        );
+        assertTrue(ex.getMessage().contains("STATIC_REPLACE requires argument 'value'"),
+                "Expected a required-argument error: " + ex.getMessage());
+    }
+
+    @Test
+    void allowsStaticReplaceWithValue() {
+        // Positive control: STATIC_REPLACE with a value compiles.
+        JsonNode strategy = new Compiler().compile("REDACT SURNAME WITH STATIC_REPLACE(value='Customer');")
+                .policyJson().path("identifiers").path("surname")
+                .path("surnameFilterStrategies").path(0);
+        assertTrue(strategy.path("staticReplacement").asText().equals("Customer"),
+                "STATIC_REPLACE with value should compile: " + strategy);
+    }
 }

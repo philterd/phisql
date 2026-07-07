@@ -393,6 +393,12 @@ class Compiler:
             else:
                 # Any other strategy property passes through by its schema name.
                 _set_or_merge(out, arg.arg_name, self._build_value(arg.value))
+
+        # STATIC_REPLACE has nothing to substitute without a value; the catalog
+        # marks the argument required (strategies.yaml). Reject the omission
+        # rather than emitting a malformed strategy.
+        if strategy.phileas_enum == "STATIC_REPLACE" and "staticReplacement" not in out:
+            raise CompileException("STATIC_REPLACE requires argument 'value'")
         return out
 
     def _place_arg_value(self, strategy_obj: dict, arg, literal: ast.Literal):

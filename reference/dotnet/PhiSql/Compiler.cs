@@ -444,6 +444,12 @@ public sealed class Compiler
             else
                 SetOrMerge(output, arg.ArgName, BuildValue(arg.Value));
         }
+
+        // STATIC_REPLACE has nothing to substitute without a value; the catalog
+        // marks the argument required (strategies.yaml). Reject the omission
+        // rather than emitting a malformed strategy.
+        if (strategy.PhileasEnum == "STATIC_REPLACE" && !output.ContainsKey("staticReplacement"))
+            throw new CompileException("STATIC_REPLACE requires argument 'value'");
         return output;
     }
 
