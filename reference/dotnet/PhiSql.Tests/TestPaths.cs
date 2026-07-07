@@ -14,7 +14,7 @@ internal static class TestPaths
 
     /// <summary>Every spec-version examples directory the tests scan.</summary>
     private static readonly string[] AllExamplesDirs =
-        new[] { FindExamplesDir("v1.0"), FindExamplesDir("v1.1.0") }
+        new[] { FindExamplesDir("v1.0"), FindExamplesDir("v1.1.0"), FindExamplesDir("v1.2.0") }
             .Where(d => d is not null).Select(d => d!).ToArray();
 
     /// <summary>

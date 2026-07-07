@@ -37,7 +37,7 @@ from typing import Any
 import yaml
 from jsonschema import Draft202012Validator
 
-SCHEMA_VERSION = "1.1.0"
+SCHEMA_VERSION = "1.2.0"
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SPEC_DIR = REPO_ROOT / "spec" / "v1.0"

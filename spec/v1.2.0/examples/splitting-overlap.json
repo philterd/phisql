@@ -1,0 +1,17 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [
+        { "strategy": "MASK" }
+      ]
+    }
+  },
+  "config": {
+    "splitting": {
+      "enabled": true,
+      "threshold": 10000,
+      "method": "character",
+      "overlap": 200
+    }
+  }
+}

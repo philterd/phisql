@@ -1,0 +1,11 @@
+-- Overlapping split chunks. When a large document is split for filtering, an
+-- entity that straddles a chunk boundary can be seen only partially in each
+-- chunk and missed by both. OVERLAP makes each chunk share a trailing window of
+-- characters with the previous one, so a boundary-spanning entity is seen whole
+-- and de-duplicated. New in spec v1.2. Compiles to splitting-overlap.json.
+
+POLICY splitting_overlap;
+
+REDACT SSN WITH MASK;
+
+CONFIGURE SPLITTING (enabled = TRUE, threshold = 10000, method = 'character', overlap = 200);

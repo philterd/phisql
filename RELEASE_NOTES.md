@@ -4,6 +4,27 @@ All notable changes to the PhiSQL specification are documented here: the languag
 
 As of v1.0.0 this project follows [Semantic Versioning](https://semver.org/): additive, backward-compatible changes bump the minor version, and changes that break existing PhiSQL or Phileas JSON require a new major version.
 
+## [1.2.0] - unreleased
+
+Overlapping split chunks. A splitting policy can now share a window of characters between adjacent chunks so an entity that straddles a chunk boundary is still detected instead of being missed by both chunks. Additive and backward-compatible: every 1.1.0 policy and compiled Phileas JSON remains valid and unchanged in meaning, and the default `overlap` of `0` preserves the existing non-overlapping behavior.
+
+> This version is in development. Further 1.2.0 changes may land before it is finalized and tagged.
+
+### Added
+
+- **`overlap` on `config.splitting`** (RFC #19). A new optional integer property (characters, default `0`) in schema `1.2.0`. When set, each split chunk includes the trailing `overlap` characters of the previous chunk, so a boundary-spanning entity is seen whole within the overlap window; spans detected there are de-duplicated and mapped back to their absolute document offsets. It is expressible in PhiSQL today through the existing `CONFIGURE SPLITTING ( ... )` passthrough, for example `CONFIGURE SPLITTING (enabled = TRUE, method = 'character', threshold = 10000, overlap = 200)`, so no grammar change was required.
+- **Schema `1.2.0`** (`schema/1.2.0/schema.json`). The `splitting` config object gains the optional `overlap` property (integer, minimum `0`, default `0`).
+- **`spec/v1.2.0/examples/splitting-overlap`** example pair (`.phisql` and compiled `.json`).
+
+### Changed
+
+- The current schema version advances to `1.2.0`. The three reference implementations target it (`redaction.policy.schema.version`, `SUPPORTED_SCHEMA_VERSION`, `PolicySchema.SupportedSchemaVersion`), and `validate_spec.py` validates and coverage-checks against `1.2.0`.
+
+### Notes
+
+- `overlap` has no dedicated PhiSQL clause; like the other splitting keys it is set through the generic `CONFIGURE SPLITTING ( ... )` passthrough, with its value type inferred from the literal.
+- Chunk overlap is a Phileas runtime behavior. The schema field declares the intent; emitting overlapping chunks and de-duplicating spans at the seam is implemented in Phileas separately.
+
 ## [1.1.0] - 2026-06-17
 
 Local, on-device inference for `DETECT PHEYE`. A policy can now point PhEye at a local GLiNER model for fully offline redaction, with no remote PhEye service. Additive and backward-compatible: every 1.0.0 policy and compiled Phileas JSON remains valid and unchanged in meaning.
