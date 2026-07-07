@@ -230,7 +230,7 @@ class Compiler:
         if ctx.strategy is not None:
             strategy_json = self._build_strategy_object(ctx.strategy)
             if ctx.predicate is not None:
-                strategy_json["conditions"] = self._compile_predicate(ctx.predicate)
+                strategy_json["condition"] = self._compile_predicate(ctx.predicate)
         for entity in ctx.entities:
             if strategy_json is not None:
                 self._append_strategy(identifiers, entity, copy.deepcopy(strategy_json))
@@ -297,7 +297,7 @@ class Compiler:
 
         strategy_json = self._build_strategy_object(ctx.strategy)
         if ctx.predicate is not None:
-            strategy_json["conditions"] = self._compile_predicate(ctx.predicate)
+            strategy_json["condition"] = self._compile_predicate(ctx.predicate)
 
         identifier_list = _get_or_create_array(identifiers, "identifiers")
         entry = _find_by_classification(identifier_list, classification)
@@ -355,7 +355,7 @@ class Compiler:
     def _compile_detect(self, ctx: ast.DetectStmt, identifiers: dict):
         strategy_json = self._build_strategy_object(ctx.strategy)
         if ctx.predicate is not None:
-            strategy_json["conditions"] = self._compile_predicate(ctx.predicate)
+            strategy_json["condition"] = self._compile_predicate(ctx.predicate)
 
         pheyes = _get_or_create_array(identifiers, "pheyes")
         pheye = {"phEyeFilterStrategies": [strategy_json]}

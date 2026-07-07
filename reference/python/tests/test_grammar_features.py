@@ -92,7 +92,7 @@ def test_decimal_passthrough_argument(compiler):
 def test_equals_comparison_operator(compiler):
     strategy = _strategy(compiler, "REDACT SSN WITH MASK WHERE CONFIDENCE = 0.5;",
                          "ssn", "ssnFilterStrategies")
-    assert strategy["conditions"] == "confidence = 0.5"
+    assert strategy["condition"] == "confidence = 0.5"
 
 
 def test_parenthesised_and_predicate(compiler):
@@ -100,7 +100,7 @@ def test_parenthesised_and_predicate(compiler):
         compiler,
         "REDACT SSN WITH MASK WHERE (CONFIDENCE > 0.5) AND CONFIDENCE < 0.9;",
         "ssn", "ssnFilterStrategies")
-    assert strategy["conditions"] == "( confidence > 0.5 ) and confidence < 0.9"
+    assert strategy["condition"] == "( confidence > 0.5 ) and confidence < 0.9"
 
 
 def test_or_predicate(compiler):
@@ -108,7 +108,7 @@ def test_or_predicate(compiler):
         compiler,
         "REDACT SSN WITH MASK WHERE CONFIDENCE > 0.9 OR CONFIDENCE < 0.1;",
         "ssn", "ssnFilterStrategies")
-    assert strategy["conditions"] == "confidence > 0.9 or confidence < 0.1"
+    assert strategy["condition"] == "confidence > 0.9 or confidence < 0.1"
 
 
 # --- DETECT PHEYE ENDPOINT ---------------------------------------------------
@@ -128,7 +128,7 @@ def test_detect_with_confidence_predicate(compiler):
     pheye = compiler.compile(
         "DETECT PHEYE LABELS ('PER') WITH REDACT WHERE CONFIDENCE > 0.7;"
     ).policy_json()["identifiers"]["pheyes"][0]
-    assert pheye["phEyeFilterStrategies"][0]["conditions"] == "confidence > 0.7"
+    assert pheye["phEyeFilterStrategies"][0]["condition"] == "confidence > 0.7"
 
 
 # --- multi-statement accumulation -------------------------------------------

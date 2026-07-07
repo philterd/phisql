@@ -247,7 +247,7 @@ public sealed class Compiler
         if (ctx.Strategy is not null)
         {
             strategyJson = BuildStrategyObject(ctx.Strategy);
-            if (ctx.Predicate is not null) strategyJson["conditions"] = CompilePredicate(ctx.Predicate);
+            if (ctx.Predicate is not null) strategyJson["condition"] = CompilePredicate(ctx.Predicate);
         }
         foreach (IEntityType entity in ctx.Entities)
         {
@@ -336,7 +336,7 @@ public sealed class Compiler
         string pattern = Unquote(ctx.PatternRaw);
 
         JsonObject strategyJson = BuildStrategyObject(ctx.Strategy);
-        if (ctx.Predicate is not null) strategyJson["conditions"] = CompilePredicate(ctx.Predicate);
+        if (ctx.Predicate is not null) strategyJson["condition"] = CompilePredicate(ctx.Predicate);
 
         JsonArray identifierList = GetOrCreateArray(identifiers, "identifiers");
         JsonObject? entry = FindByClassification(identifierList, classification);
@@ -407,7 +407,7 @@ public sealed class Compiler
     private void CompileDetect(DetectStmt ctx, JsonObject identifiers)
     {
         JsonObject strategyJson = BuildStrategyObject(ctx.Strategy);
-        if (ctx.Predicate is not null) strategyJson["conditions"] = CompilePredicate(ctx.Predicate);
+        if (ctx.Predicate is not null) strategyJson["condition"] = CompilePredicate(ctx.Predicate);
 
         JsonArray pheyes = GetOrCreateArray(identifiers, "pheyes");
         var pheye = new JsonObject { ["phEyeFilterStrategies"] = new JsonArray(strategyJson) };

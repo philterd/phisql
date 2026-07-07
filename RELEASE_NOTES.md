@@ -24,6 +24,10 @@ Overlapping split chunks. A splitting policy can now share a window of character
 - The current schema version advances to `1.2.0`. The three reference implementations target it (`redaction.policy.schema.version`, `SUPPORTED_SCHEMA_VERSION`, `PolicySchema.SupportedSchemaVersion`), and `validate_spec.py` validates and coverage-checks against `1.2.0`.
 - **Required strategy arguments are now enforced for `STATIC_REPLACE`** (RFC #8). `spec/v1.0/catalog/strategies.yaml` marks `STATIC_REPLACE`'s `value` argument required, but the reference compiler previously accepted its omission. `REDACT SURNAME WITH STATIC_REPLACE(scope=document)` (no `value`) now fails with a semantic error (`STATIC_REPLACE requires argument 'value'`) instead of compiling a strategy with nothing to substitute. This is a conformance correction, not a new feature; like the 1.1.0 date-only enforcement it is, strictly, a formerly-accepted input now rejected, but such a policy never produced a well-formed redaction. Enforcement is scoped to `STATIC_REPLACE.value` for now (the only catalog argument marked required). The `reject/semantic/static-replace-missing-value` conformance case pins it, and the matching "Known underspecified areas" note is removed from `compliance/README.md`.
 
+### Fixed
+
+- **A `WHERE` clause now compiles to `condition` (singular), the key Phileas reads** (issue #21). The compiler previously emitted `conditions` (plural), which the schema does not define and the Phileas Java/.NET runtimes ignore, so a `WHERE` clause was silently dropped at runtime. The compiler (all three references), the catalog's `phileas_field`, and every affected example and conformance fixture now use `condition`. (The separate `OR`/parenthesis gaps, and reconciling phileas-python, remain tracked in #21.)
+
 ### Notes
 
 - `overlap` has no dedicated PhiSQL clause; like the other splitting keys it is set through the generic `CONFIGURE SPLITTING ( ... )` passthrough, with its value type inferred from the literal.

@@ -68,7 +68,7 @@ public class GrammarFeaturesTests
     public void EqualsComparisonOperator()
     {
         JsonNode s = Strategy("REDACT SSN WITH MASK WHERE CONFIDENCE = 0.5;", "ssn", "ssnFilterStrategies");
-        Assert.Equal("confidence = 0.5", s["conditions"]!.GetValue<string>());
+        Assert.Equal("confidence = 0.5", s["condition"]!.GetValue<string>());
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public class GrammarFeaturesTests
     {
         JsonNode s = Strategy("REDACT SSN WITH MASK WHERE (CONFIDENCE > 0.5) AND CONFIDENCE < 0.9;",
             "ssn", "ssnFilterStrategies");
-        Assert.Equal("( confidence > 0.5 ) and confidence < 0.9", s["conditions"]!.GetValue<string>());
+        Assert.Equal("( confidence > 0.5 ) and confidence < 0.9", s["condition"]!.GetValue<string>());
     }
 
     [Fact]
@@ -84,7 +84,7 @@ public class GrammarFeaturesTests
     {
         JsonNode s = Strategy("REDACT SSN WITH MASK WHERE CONFIDENCE > 0.9 OR CONFIDENCE < 0.1;",
             "ssn", "ssnFilterStrategies");
-        Assert.Equal("confidence > 0.9 or confidence < 0.1", s["conditions"]!.GetValue<string>());
+        Assert.Equal("confidence > 0.9 or confidence < 0.1", s["condition"]!.GetValue<string>());
     }
 
     [Fact]

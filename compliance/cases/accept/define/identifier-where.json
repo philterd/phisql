@@ -7,7 +7,7 @@
         "identifierFilterStrategies": [
           {
             "strategy": "REDACT",
-            "conditions": "confidence > 0.5"
+            "condition": "confidence > 0.5"
           }
         ]
       }

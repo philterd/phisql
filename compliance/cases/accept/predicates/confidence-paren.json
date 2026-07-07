@@ -4,7 +4,7 @@
       "ssnFilterStrategies": [
         {
           "strategy": "MASK",
-          "conditions": "( confidence > 0.5 and confidence < 0.9 ) or confidence = 1.0"
+          "condition": "( confidence > 0.5 and confidence < 0.9 ) or confidence = 1.0"
         }
       ]
     }

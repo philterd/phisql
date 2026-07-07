@@ -4,11 +4,11 @@
       "creditCardFilterStrategies": [
         {
           "strategy": "LAST_4",
-          "conditions": "confidence >= 0.9"
+          "condition": "confidence >= 0.9"
         },
         {
           "strategy": "REDACT",
-          "conditions": "confidence < 0.9"
+          "condition": "confidence < 0.9"
         }
       ]
     }

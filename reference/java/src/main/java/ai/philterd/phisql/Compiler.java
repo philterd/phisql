@@ -366,7 +366,7 @@ public final class Compiler {
         if (ctx.strategyExpr() != null) {
             strategyJson = buildStrategyObject(ctx.strategyExpr());
             if (ctx.predicate() != null) {
-                strategyJson.put("conditions", compilePredicate(ctx.predicate()));
+                strategyJson.put("condition", compilePredicate(ctx.predicate()));
             }
         }
         for (PhiSQLParser.EntityTypeContext entityCtx : ctx.entityList().entityType()) {
@@ -476,7 +476,7 @@ public final class Compiler {
 
         ObjectNode strategyJson = buildStrategyObject(ctx.strategyExpr());
         if (ctx.predicate() != null) {
-            strategyJson.put("conditions", compilePredicate(ctx.predicate()));
+            strategyJson.put("condition", compilePredicate(ctx.predicate()));
         }
 
         ArrayNode identifierList = identifiers.has("identifiers")
@@ -570,7 +570,7 @@ public final class Compiler {
     private void compileDetect(PhiSQLParser.DetectStmtContext ctx, ObjectNode identifiers) {
         ObjectNode strategyJson = buildStrategyObject(ctx.strategyExpr());
         if (ctx.predicate() != null) {
-            strategyJson.put("conditions", compilePredicate(ctx.predicate()));
+            strategyJson.put("condition", compilePredicate(ctx.predicate()));
         }
 
         ArrayNode pheyes = identifiers.has("pheyes")
