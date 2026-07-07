@@ -1,0 +1,16 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [
+        {
+          "strategy": "REDACT"
+        }
+      ]
+    }
+  },
+  "config": {
+    "analysis": {
+      "spanDisambiguation": false
+    }
+  }
+}

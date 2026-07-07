@@ -1,0 +1,13 @@
+-- Opt out of span disambiguation. The context-vector step that resolves
+-- ambiguously-typed spans (for example SSN vs. phone number) runs on every
+-- filter by default. A lean, high-throughput policy that does not need it can
+-- turn it off per policy through the existing CONFIGURE ANALYSIS passthrough.
+-- Skipping it trades that disambiguation for lower per-document cost. Subject to
+-- the global feature also being enabled. New in spec v1.2. Compiles to
+-- span-disambiguation.json.
+
+POLICY span_disambiguation;
+
+REDACT SSN WITH REDACT;
+
+CONFIGURE ANALYSIS (spanDisambiguation = FALSE);

@@ -195,6 +195,11 @@
           "description": "Enable identification analysis.",
           "type": "boolean",
           "default": true
+        },
+        "spanDisambiguation": {
+          "description": "Enable span disambiguation: the context-vector step that resolves which type an ambiguously-typed span is (for example SSN vs. phone number). Default true (current behavior). When false, this policy skips the disambiguation step. Subject to the global feature also being enabled: a policy can turn disambiguation off but not force it on when it is disabled globally.",
+          "type": "boolean",
+          "default": true
         }
       }
     },
