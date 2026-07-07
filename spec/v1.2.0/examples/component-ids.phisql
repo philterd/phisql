@@ -1,0 +1,15 @@
+-- PII-safe log references. An operator-assigned `id` on a filter or a strategy
+-- lets diagnostic logging name which policy component a line refers to without
+-- printing the component's content, which can itself be PII (a condition
+-- literal, a static replacement). The id is opaque to redaction: it never
+-- changes the output. It is set through the existing passthrough: OPTIONS(...)
+-- for the filter id, a strategy argument for the strategy id; no dedicated
+-- clause is required. New in spec v1.2. Compiles to component-ids.json.
+
+POLICY component_ids;
+
+REDACT SSN WITH MASK(id = 'ssn-mask') OPTIONS (id = 'ssn-filter');
+
+-- The strategy carries a condition (which can embed PII); its id lets a log line
+-- name this rule without printing the condition text.
+REDACT CREDIT_CARD WITH LAST_4(id = 'cc-last4-highconf') WHERE CONFIDENCE >= 0.9;

@@ -15,6 +15,8 @@ Overlapping split chunks. A splitting policy can now share a window of character
 - **`overlap` on `config.splitting`** (RFC #19). A new optional integer property (characters, default `0`) in schema `1.2.0`. When set, each split chunk includes the trailing `overlap` characters of the previous chunk, so a boundary-spanning entity is seen whole within the overlap window; spans detected there are de-duplicated and mapped back to their absolute document offsets. It is expressible in PhiSQL today through the existing `CONFIGURE SPLITTING ( ... )` passthrough, for example `CONFIGURE SPLITTING (enabled = TRUE, method = 'character', threshold = 10000, overlap = 200)`, so no grammar change was required.
 - **Schema `1.2.0`** (`schema/1.2.0/schema.json`). The `splitting` config object gains the optional `overlap` property (integer, minimum `0`, default `0`).
 - **`spec/v1.2.0/examples/splitting-overlap`** example pair (`.phisql` and compiled `.json`).
+- **`id` on filters** (RFC #18). A new optional `id` string on the shared filter base (`abstractFilterProperties`, so every filter type inherits it) so a filter can be referenced by a stable, non-PII label in logs and diagnostics without printing content that may itself be PII. It is opaque to redaction: it never changes how a document is filtered. Expressible today through the existing `OPTIONS ( id = '...' )` passthrough on any filter statement; no grammar change was required. Example `component-ids`.
+- **Strategy `id` is now a plain label** (RFC #18). The `id` on `baseFilterStrategy` and `dateFilterStrategy` already existed but was described as an auto-generated UUID (`format: uuid`). It is redefined as an optional operator-assigned or generated non-PII identifier, so a strategy (and the condition it carries, which can embed PII) can be named in logs without printing its content. It remains a `string`; the `format: uuid` constraint is dropped. It has always been settable through the strategy-argument passthrough (`WITH MASK(id = '...')`); that output is unchanged and still valid.
 
 ### Changed
 
@@ -24,6 +26,7 @@ Overlapping split chunks. A splitting policy can now share a window of character
 
 - `overlap` has no dedicated PhiSQL clause; like the other splitting keys it is set through the generic `CONFIGURE SPLITTING ( ... )` passthrough, with its value type inferred from the literal.
 - Chunk overlap is a Phileas runtime behavior. The schema field declares the intent; emitting overlapping chunks and de-duplicating spans at the seam is implemented in Phileas separately.
+- Neither filter nor strategy `id` has a dedicated PhiSQL clause; both are set through the generic `OPTIONS ( ... )` and strategy-argument passthrough. The PII-safe logging that consumes the `id` (log the id, never the component content), any generation of a stable `id` when omitted, and the guarantee that `id` never affects redaction output are Phileas runtime concerns implemented separately. Policy-wide `id` uniqueness is not enforced by the schema; authors and the runtime are responsible for it. Do not place PII in an `id`.
 
 ## [1.1.0] - 2026-06-17
 

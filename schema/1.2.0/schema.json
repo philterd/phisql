@@ -549,6 +549,10 @@
         "priority": {
           "description": "Priority of this filter relative to others. Higher values take precedence.",
           "type": "integer"
+        },
+        "id": {
+          "description": "Optional identifier for this filter, assigned by the policy author or generated, so the filter can be referenced in logs and diagnostics without printing content that may be PII. Opaque to redaction behavior: it never changes how a document is filtered. Must not itself contain PII.",
+          "type": "string"
         }
       }
     },
@@ -557,9 +561,8 @@
       "type": "object",
       "properties": {
         "id": {
-          "description": "Unique identifier for this strategy instance. Auto-generated if not provided.",
-          "type": "string",
-          "format": "uuid"
+          "description": "Optional identifier for this strategy instance, assigned by the policy author or generated, so the strategy and its condition can be referenced in logs and diagnostics without printing content that may be PII. Opaque to redaction behavior: it never changes how a document is filtered. Must not itself contain PII.",
+          "type": "string"
         },
         "strategy": {
           "description": "The redaction/replacement strategy to apply.",
@@ -651,9 +654,8 @@
       "additionalProperties": false,
       "properties": {
         "id": {
-          "description": "Unique identifier for this strategy instance. Auto-generated if not provided.",
-          "type": "string",
-          "format": "uuid"
+          "description": "Optional identifier for this strategy instance, assigned by the policy author or generated, so the strategy and its condition can be referenced in logs and diagnostics without printing content that may be PII. Opaque to redaction behavior: it never changes how a document is filtered. Must not itself contain PII.",
+          "type": "string"
         },
         "strategy": {
           "description": "The redaction/replacement strategy to apply. Date filters support additional strategies: TRUNCATE_TO_YEAR, SHIFT, and RELATIVE.",
@@ -779,6 +781,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "ageFilterStrategies": {
           "description": "Strategies for handling detected age values.",
           "type": "array",
@@ -802,6 +805,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "bankRoutingNumberFilterStrategies": {
           "description": "Strategies for handling detected bank routing numbers.",
           "type": "array",
@@ -825,6 +829,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "bitcoinFilterStrategies": {
           "description": "Strategies for handling detected Bitcoin addresses.",
           "type": "array",
@@ -848,6 +853,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "cityFilterStrategies": {
           "description": "Strategies for handling detected city names.",
           "type": "array",
@@ -886,6 +892,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "countyFilterStrategies": {
           "description": "Strategies for handling detected county names.",
           "type": "array",
@@ -924,6 +931,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "creditCardFilterStrategies": {
           "description": "Strategies for handling detected credit card numbers.",
           "type": "array",
@@ -962,6 +970,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "currencyFilterStrategies": {
           "description": "Strategies for handling detected currency values.",
           "type": "array",
@@ -985,6 +994,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "customFilterStrategies": {
           "description": "Strategies for handling detected custom dictionary terms.",
           "type": "array",
@@ -1041,6 +1051,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "dateFilterStrategies": {
           "description": "Strategies for handling detected dates. Supports date-specific strategies: TRUNCATE_TO_YEAR, SHIFT, RELATIVE.",
           "type": "array",
@@ -1069,6 +1080,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "driversLicenseFilterStrategies": {
           "description": "Strategies for handling detected driver's license numbers.",
           "type": "array",
@@ -1092,6 +1104,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "emailAddressFilterStrategies": {
           "description": "Strategies for handling detected email addresses.",
           "type": "array",
@@ -1125,6 +1138,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "firstNameFilterStrategies": {
           "description": "Strategies for handling detected first names.",
           "type": "array",
@@ -1163,6 +1177,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "hospitalFilterStrategies": {
           "description": "Strategies for handling detected hospital names.",
           "type": "array",
@@ -1201,6 +1216,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "ibanCodeFilterStrategies": {
           "description": "Strategies for handling detected IBAN codes.",
           "type": "array",
@@ -1234,6 +1250,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "identifierFilterStrategies": {
           "description": "Strategies for handling detected custom identifiers.",
           "type": "array",
@@ -1297,6 +1314,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "ipAddressFilterStrategies": {
           "description": "Strategies for handling detected IP addresses.",
           "type": "array",
@@ -1320,6 +1338,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "macAddressFilterStrategies": {
           "description": "Strategies for handling detected MAC addresses.",
           "type": "array",
@@ -1343,6 +1362,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "medicalConditionFilterStrategies": {
           "description": "Strategies for handling detected medical conditions.",
           "type": "array",
@@ -1384,6 +1404,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "passportNumberFilterStrategies": {
           "description": "Strategies for handling detected passport numbers.",
           "type": "array",
@@ -1407,6 +1428,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "phEyeFilterStrategies": {
           "description": "Strategies for handling entities detected by PhEye.",
           "type": "array",
@@ -1492,6 +1514,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "phoneNumberFilterStrategies": {
           "description": "Strategies for handling detected phone numbers.",
           "type": "array",
@@ -1515,6 +1538,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "phoneNumberExtensionFilterStrategies": {
           "description": "Strategies for handling detected phone number extensions.",
           "type": "array",
@@ -1538,6 +1562,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "physicianNameFilterStrategies": {
           "description": "Strategies for handling detected physician names.",
           "type": "array",
@@ -1561,6 +1586,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "sectionFilterStrategies": {
           "description": "Strategies for handling detected sections.",
           "type": "array",
@@ -1592,6 +1618,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "ssnFilterStrategies": {
           "description": "Strategies for handling detected SSNs.",
           "type": "array",
@@ -1615,6 +1642,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "stateFilterStrategies": {
           "description": "Strategies for handling detected state names.",
           "type": "array",
@@ -1653,6 +1681,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "stateAbbreviationFilterStrategies": {
           "description": "Strategies for handling detected state abbreviations.",
           "type": "array",
@@ -1676,6 +1705,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "streetAddressFilterStrategies": {
           "description": "Strategies for handling detected street addresses.",
           "type": "array",
@@ -1699,6 +1729,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "surnameFilterStrategies": {
           "description": "Strategies for handling detected surnames.",
           "type": "array",
@@ -1737,6 +1768,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "trackingNumberFilterStrategies": {
           "description": "Strategies for handling detected tracking numbers.",
           "type": "array",
@@ -1780,6 +1812,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "urlFilterStrategies": {
           "description": "Strategies for handling detected URLs.",
           "type": "array",
@@ -1808,6 +1841,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "vinFilterStrategies": {
           "description": "Strategies for handling detected VINs.",
           "type": "array",
@@ -1831,6 +1865,7 @@
         "ignoredPatterns": true,
         "windowSize": true,
         "priority": true,
+        "id": true,
         "zipCodeFilterStrategy": {
           "description": "Strategies for handling detected ZIP codes. Note: this property name is singular for backwards compatibility but accepts an array.",
           "type": "array",
