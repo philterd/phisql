@@ -1526,6 +1526,14 @@
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
           }
+        },
+        "region": {
+          "description": "Default region(s), ISO 3166-1 alpha-2 (for example \"US\", \"GB\", \"FR\"), used to interpret phone numbers written without an international \"+\" country code. A string sets a single region; an array enables detection for each listed region (each is scanned and the results are merged). Numbers with a \"+\" prefix are detected regardless of this value. Default \"US\".",
+          "type": ["string", "array"],
+          "items": {
+            "type": "string"
+          },
+          "default": "US"
         }
       },
       "additionalProperties": false

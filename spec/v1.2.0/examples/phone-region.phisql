@@ -1,0 +1,10 @@
+-- Phone number detection for specific locales. The phone filter interprets
+-- numbers written without an international "+" prefix using a default region.
+-- Set `region` to an array of locales so national-format numbers from each are
+-- detected (each region is scanned and the matches merged); numbers with a "+"
+-- prefix are found regardless. Default is 'US'. Set through the existing OPTIONS
+-- passthrough; no grammar change. New in spec v1.2. Compiles to phone-region.json.
+
+POLICY phone_region;
+
+REDACT PHONE_NUMBER WITH REDACT OPTIONS (region = ['US', 'GB', 'FR']);
