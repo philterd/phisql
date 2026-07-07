@@ -62,7 +62,7 @@
         <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <antlr.version>4.13.2</antlr.version>
-        <jackson.version>2.17.2</jackson.version>
+        <jackson.version>2.19.4</jackson.version>
         <junit.version>5.10.2</junit.version>
         <!--
             Version of the canonical redaction policy schema bundled into this
