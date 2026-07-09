@@ -125,6 +125,38 @@
          <lastmod>2026-07-09</lastmod>
     </url>
     <url>
+         <loc>https://philterd.github.io/phisql/v1.0/examples/component-ids/</loc>
+         <lastmod>2026-07-09</lastmod>
+    </url>
+    <url>
+         <loc>https://philterd.github.io/phisql/v1.0/examples/generator-fallback/</loc>
+         <lastmod>2026-07-09</lastmod>
+    </url>
+    <url>
+         <loc>https://philterd.github.io/phisql/v1.0/examples/identifier-validator/</loc>
+         <lastmod>2026-07-09</lastmod>
+    </url>
+    <url>
+         <loc>https://philterd.github.io/phisql/v1.0/examples/map-replace-table/</loc>
+         <lastmod>2026-07-09</lastmod>
+    </url>
+    <url>
+         <loc>https://philterd.github.io/phisql/v1.0/examples/pheye-local-model/</loc>
+         <lastmod>2026-07-09</lastmod>
+    </url>
+    <url>
+         <loc>https://philterd.github.io/phisql/v1.0/examples/phone-region/</loc>
+         <lastmod>2026-07-09</lastmod>
+    </url>
+    <url>
+         <loc>https://philterd.github.io/phisql/v1.0/examples/span-disambiguation/</loc>
+         <lastmod>2026-07-09</lastmod>
+    </url>
+    <url>
+         <loc>https://philterd.github.io/phisql/v1.0/examples/splitting-overlap/</loc>
+         <lastmod>2026-07-09</lastmod>
+    </url>
+    <url>
          <loc>https://philterd.github.io/phisql/v1.0/reference/clauses/</loc>
          <lastmod>2026-07-09</lastmod>
     </url>
