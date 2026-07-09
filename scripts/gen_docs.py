@@ -41,11 +41,29 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 SPEC_DIR = REPO_ROOT / "spec" / SPEC_VERSION
 CATALOG_DIR = SPEC_DIR / "catalog"
 GRAMMAR_DIR = SPEC_DIR / "grammar"
-EXAMPLES_DIR = SPEC_DIR / "examples"
 
 # Link to the grammar and catalog sources on GitHub so readers can jump from
 # a rendered page to the artifact it was generated from.
 SRC_BASE = f"https://github.com/philterd/phisql/blob/main/spec/{SPEC_VERSION}"
+
+
+# Worked examples live under every spec version directory (spec/v<ver>/examples),
+# not just the base grammar/catalog version: a minor version's examples exercise
+# its additive features and belong in the docs too. Grammar and catalogs are
+# edited in place under spec/v1.0, so only the examples span versions.
+def _version_key(name: str) -> tuple[int, ...]:
+    """Sort key for a "v1.2.0" directory name so v1.10 sorts after v1.9."""
+    return tuple(int(p) for p in name.lstrip("v").split(".") if p.isdigit())
+
+
+EXAMPLE_DIRS = sorted(
+    (REPO_ROOT / "spec").glob("v*/examples"),
+    key=lambda p: _version_key(p.parent.name),
+)
+
+
+def _example_src_base(version: str) -> str:
+    return f"https://github.com/philterd/phisql/blob/main/spec/{version}"
 
 
 # --------------------------------------------------------------------------
@@ -134,22 +152,44 @@ def example_title(src: str, stem: str) -> str:
 
 def load_examples() -> list[dict]:
     examples = []
-    for phisql_path in sorted(EXAMPLES_DIR.glob("*.phisql")):
-        stem = phisql_path.stem
-        src = phisql_path.read_text(encoding="utf-8")
-        json_path = phisql_path.with_suffix(".json")
-        examples.append(
-            {
-                "stem": stem,
-                "title": example_title(src, stem),
-                "phisql": src.rstrip() + "\n",
-                "json": json_path.read_text(encoding="utf-8").rstrip() + "\n"
-                if json_path.exists()
-                else None,
-                "verbs": verbs_in_example(src),
-            }
-        )
+    seen: dict[str, str] = {}  # stem -> version, to catch collisions
+    for ex_dir in EXAMPLE_DIRS:
+        version = ex_dir.parent.name  # e.g. "v1.2.0"
+        src_base = _example_src_base(version)
+        for phisql_path in sorted(ex_dir.glob("*.phisql")):
+            stem = phisql_path.stem
+            if stem in seen:
+                raise SystemExit(
+                    f"duplicate example stem '{stem}' in {version} and "
+                    f"{seen[stem]}: example page paths are flat (examples/<stem>.md), "
+                    "so stems must be unique across spec versions."
+                )
+            seen[stem] = version
+            src = phisql_path.read_text(encoding="utf-8")
+            json_path = phisql_path.with_suffix(".json")
+            examples.append(
+                {
+                    "stem": stem,
+                    "version": version,
+                    "src_base": src_base,
+                    "title": example_title(src, stem),
+                    "phisql": src.rstrip() + "\n",
+                    "json": json_path.read_text(encoding="utf-8").rstrip() + "\n"
+                    if json_path.exists()
+                    else None,
+                    "verbs": verbs_in_example(src),
+                }
+            )
     return examples
+
+
+def _example_versions(examples: list[dict]) -> list[str]:
+    """Ordered unique spec versions present, preserving load order (oldest first)."""
+    ordered: list[str] = []
+    for e in examples:
+        if e["version"] not in ordered:
+            ordered.append(e["version"])
+    return ordered
 
 
 # --------------------------------------------------------------------------
@@ -557,7 +597,8 @@ def page_keywords(cat: dict) -> str:
 def page_example(e: dict) -> str:
     out = front(e["title"])
     out += (
-        f"*Source: [`{e['stem']}.phisql`]({SRC_BASE}/examples/{e['stem']}.phisql)*\n\n"
+        f"*Source: [`{e['stem']}.phisql`]({e['src_base']}/examples/{e['stem']}.phisql)*"
+        f" (spec {e['version']})\n\n"
     )
     out += "## PhiSQL\n\n```sql\n" + e["phisql"] + "```\n\n"
     if e["json"] is not None:
@@ -571,11 +612,16 @@ def page_examples_index(examples: list[dict]) -> str:
     out += (
         f"{len(examples)} worked examples, each a PhiSQL source paired with "
         "the redaction policy JSON it compiles to. Every example is parsed by "
-        "the reference implementation's test suite on each build.\n\n"
+        "the reference implementation's test suite on each build. Grouped by the "
+        "spec version that introduced it.\n\n"
     )
-    out += "| Example | Description |\n|---|---|\n"
-    for e in examples:
-        out += f"| [`{e['stem']}`]({e['stem']}.md) | {md_escape(e['title'])} |\n"
+    for version in _example_versions(examples):
+        out += f"## {version}\n\n"
+        out += "| Example | Description |\n|---|---|\n"
+        for e in examples:
+            if e["version"] == version:
+                out += f"| [`{e['stem']}`]({e['stem']}.md) | {md_escape(e['title'])} |\n"
+        out += "\n"
     return out
 
 
@@ -637,8 +683,11 @@ def build_nav(examples: list[dict]) -> str:
         "* Examples",
         "    * [Overview](examples/index.md)",
     ]
-    for e in examples:
-        lines.append(f"    * [{e['stem']}](examples/{e['stem']}.md)")
+    for version in _example_versions(examples):
+        lines.append(f"    * {version}")
+        for e in examples:
+            if e["version"] == version:
+                lines.append(f"        * [{e['stem']}](examples/{e['stem']}.md)")
     return "\n".join(lines) + "\n"
 
 
