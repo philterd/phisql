@@ -523,6 +523,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#define-generator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DEFINE GENERATOR
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#detect-pheye" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1798,6 +1809,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#define-generator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DEFINE GENERATOR
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#detect-pheye" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1849,8 +1871,9 @@
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>                 <span class="p">|</span> <span class="k">define identifier stmt</span>
 <a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>                 <span class="p">|</span> <span class="k">define dictionary stmt</span>
 <a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                 <span class="p">|</span> <span class="k">define section stmt</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>                 <span class="p">|</span> <span class="k">detect stmt</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>                 <span class="p">|</span> <span class="k">discovery stmt </span><span class="p">;</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>                 <span class="p">|</span> <span class="k">define generator stmt</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>                 <span class="p">|</span> <span class="k">detect stmt</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>                 <span class="p">|</span> <span class="k">discovery stmt </span><span class="p">;</span>
 </code></pre></div>
 <h2 id="policy">POLICY<a class="headerlink" href="#policy" title="Permanent link">&para;</a></h2>
 <p>Declares a named policy and, optionally, a human-readable description. The name is optional and, when present, must match the file basename after hyphen/underscore normalization.</p>
@@ -1926,45 +1949,52 @@
 <a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>                 <span class="p">,</span> <span class="p">[</span> <span class="k">options clause </span><span class="p">]</span> <span class="p">;</span>
 </code></pre></div>
 <p><strong>Examples:</strong> <a href="../../examples/23-section-redaction/">23-section-redaction</a></p>
+<h2 id="define-generator">DEFINE GENERATOR<a class="headerlink" href="#define-generator" title="Permanent link">&para;</a></h2>
+<p>Declares a named, reusable replacement generator (a local model endpoint) that the <code>MAP_REPLACE</code> strategy invokes for a detected value absent from its lookup table.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="k">define generator stmt</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>                 <span class="o">=</span> <span class="s2">&quot;DEFINE&quot;</span> <span class="p">,</span> <span class="s2">&quot;GENERATOR&quot;</span> <span class="p">,</span> <span class="k">string literal</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>                 <span class="p">,</span> <span class="s2">&quot;TYPE&quot;</span> <span class="p">,</span> <span class="k">string literal</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>                 <span class="p">,</span> <span class="k">options clause </span><span class="p">;</span>
+</code></pre></div>
 <h2 id="detect-pheye">DETECT PHEYE<a class="headerlink" href="#detect-pheye" title="Permanent link">&para;</a></h2>
 <p>Runs PhEye (AI/NER) detection -- for example, person-name detection -- with optional labels and a custom endpoint.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="k">detect stmt      </span><span class="o">=</span> <span class="s2">&quot;DETECT&quot;</span> <span class="p">,</span> <span class="s2">&quot;PHEYE&quot;</span>
-<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>                 <span class="p">,</span> <span class="p">[</span> <span class="s2">&quot;LABELS&quot;</span> <span class="p">,</span> <span class="k">string list </span><span class="p">]</span>
-<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>                 <span class="p">,</span> <span class="p">[</span> <span class="s2">&quot;ENDPOINT&quot;</span> <span class="p">,</span> <span class="k">string literal </span><span class="p">]</span>
-<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>                 <span class="p">,</span> <span class="p">[</span> <span class="s2">&quot;MODEL&quot;</span> <span class="p">,</span> <span class="k">string literal </span><span class="p">]</span>
-<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>                 <span class="p">,</span> <span class="s2">&quot;WITH&quot;</span> <span class="p">,</span> <span class="k">strategy expr</span>
-<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>                 <span class="p">,</span> <span class="p">[</span> <span class="s2">&quot;WHERE&quot;</span> <span class="p">,</span> <span class="k">predicate </span><span class="p">]</span>
-<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>                 <span class="p">,</span> <span class="p">[</span> <span class="k">options clause </span><span class="p">]</span> <span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="k">detect stmt      </span><span class="o">=</span> <span class="s2">&quot;DETECT&quot;</span> <span class="p">,</span> <span class="s2">&quot;PHEYE&quot;</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>                 <span class="p">,</span> <span class="p">[</span> <span class="s2">&quot;LABELS&quot;</span> <span class="p">,</span> <span class="k">string list </span><span class="p">]</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>                 <span class="p">,</span> <span class="p">[</span> <span class="s2">&quot;ENDPOINT&quot;</span> <span class="p">,</span> <span class="k">string literal </span><span class="p">]</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>                 <span class="p">,</span> <span class="p">[</span> <span class="s2">&quot;MODEL&quot;</span> <span class="p">,</span> <span class="k">string literal </span><span class="p">]</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>                 <span class="p">,</span> <span class="s2">&quot;WITH&quot;</span> <span class="p">,</span> <span class="k">strategy expr</span>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>                 <span class="p">,</span> <span class="p">[</span> <span class="s2">&quot;WHERE&quot;</span> <span class="p">,</span> <span class="k">predicate </span><span class="p">]</span>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>                 <span class="p">,</span> <span class="p">[</span> <span class="k">options clause </span><span class="p">]</span> <span class="p">;</span>
 </code></pre></div>
 <p><strong>Examples:</strong> <a href="../../examples/14-pheye-person-detection/">14-pheye-person-detection</a>, <a href="../../examples/28-nested-options/">28-nested-options</a></p>
 <h2 id="find-pii-discover-entities-scan-select">FIND PII / DISCOVER ENTITIES / SCAN / SELECT<a class="headerlink" href="#find-pii-discover-entities-scan-select" title="Permanent link">&para;</a></h2>
 <p>Discovery and query verbs: scan a source for PII (<code>FIND PII</code>, <code>DISCOVER ENTITIES</code>, <code>SCAN</code>) or query the findings store (<code>SELECT ... FROM findings</code>).</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="k">discovery stmt   </span><span class="o">=</span> <span class="p">(</span> <span class="s2">&quot;FIND&quot;</span> <span class="p">,</span> <span class="s2">&quot;PII&quot;</span> <span class="p">,</span> <span class="k">in clause </span><span class="p">,</span> <span class="p">[</span> <span class="k">where discovery </span><span class="p">]</span> <span class="p">)</span>
-<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>                 <span class="p">|</span> <span class="p">(</span> <span class="s2">&quot;DISCOVER&quot;</span> <span class="p">,</span> <span class="s2">&quot;ENTITIES&quot;</span> <span class="p">,</span> <span class="k">in clause </span><span class="p">,</span> <span class="p">[</span> <span class="k">where discovery </span><span class="p">]</span> <span class="p">)</span>
-<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>                 <span class="p">|</span> <span class="p">(</span> <span class="s2">&quot;SCAN&quot;</span> <span class="p">,</span> <span class="k">in clause </span><span class="p">,</span> <span class="p">[</span> <span class="k">where discovery </span><span class="p">]</span> <span class="p">)</span>
-<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>                 <span class="p">|</span> <span class="p">(</span> <span class="s2">&quot;SELECT&quot;</span> <span class="p">,</span> <span class="k">projection list </span><span class="p">,</span> <span class="s2">&quot;FROM&quot;</span> <span class="p">,</span> <span class="k">findings ref</span>
-<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>                   <span class="p">,</span> <span class="p">[</span> <span class="k">where discovery </span><span class="p">]</span>
-<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>                   <span class="p">,</span> <span class="p">[</span> <span class="k">group by clause </span><span class="p">]</span>
-<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>                   <span class="p">,</span> <span class="p">[</span> <span class="k">limit clause </span><span class="p">]</span> <span class="p">)</span> <span class="p">;</span>
-<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>
-<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="k">in clause        </span><span class="o">=</span> <span class="s2">&quot;IN&quot;</span> <span class="p">,</span> <span class="k">string literal </span><span class="p">;</span>
-<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>
-<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="k">where discovery  </span><span class="o">=</span> <span class="s2">&quot;WHERE&quot;</span> <span class="p">,</span> <span class="k">discovery predicate </span><span class="p">;</span>
-<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>
-<a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="k">discovery predicate</span>
-<a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a>                 <span class="o">=</span> <span class="p">(</span> <span class="k">column ref </span><span class="p">,</span> <span class="s2">&quot;IN&quot;</span> <span class="p">,</span> <span class="k">string list </span><span class="p">)</span>
-<a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a>                 <span class="p">|</span> <span class="p">(</span> <span class="k">column ref </span><span class="p">,</span> <span class="k">compare op </span><span class="p">,</span> <span class="p">(</span> <span class="k">string literal </span><span class="p">|</span> <span class="k">numeric literal </span><span class="p">|</span> <span class="k">boolean literal </span><span class="p">)</span> <span class="p">)</span>
-<a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a>                 <span class="p">|</span> <span class="p">(</span> <span class="s2">&quot;(&quot;</span> <span class="p">,</span> <span class="k">discovery predicate </span><span class="p">,</span> <span class="s2">&quot;)&quot;</span> <span class="p">)</span>
-<a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a>                 <span class="p">|</span> <span class="p">(</span> <span class="k">discovery predicate </span><span class="p">,</span> <span class="p">(</span> <span class="s2">&quot;AND&quot;</span> <span class="p">|</span> <span class="s2">&quot;OR&quot;</span> <span class="p">)</span> <span class="p">,</span> <span class="k">discovery predicate </span><span class="p">)</span> <span class="p">;</span>
-<a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a>
-<a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a><span class="k">projection list  </span><span class="o">=</span> <span class="k">projection </span><span class="p">,</span> <span class="p">{</span> <span class="s2">&quot;,&quot;</span> <span class="p">,</span> <span class="k">projection </span><span class="p">}</span> <span class="p">;</span>
-<a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a>
-<a id="__codelineno-10-21" name="__codelineno-10-21" href="#__codelineno-10-21"></a><span class="k">projection       </span><span class="o">=</span> <span class="s2">&quot;*&quot;</span>
-<a id="__codelineno-10-22" name="__codelineno-10-22" href="#__codelineno-10-22"></a>                 <span class="p">|</span> <span class="k">aggregate</span>
-<a id="__codelineno-10-23" name="__codelineno-10-23" href="#__codelineno-10-23"></a>                 <span class="p">|</span> <span class="k">column ref </span><span class="p">;</span>
-<a id="__codelineno-10-24" name="__codelineno-10-24" href="#__codelineno-10-24"></a>
-<a id="__codelineno-10-25" name="__codelineno-10-25" href="#__codelineno-10-25"></a><span class="k">aggregate        </span><span class="o">=</span> <span class="p">(</span> <span class="s2">&quot;COUNT&quot;</span> <span class="p">|</span> <span class="s2">&quot;AVG&quot;</span> <span class="p">|</span> <span class="s2">&quot;SUM&quot;</span> <span class="p">|</span> <span class="s2">&quot;MIN&quot;</span> <span class="p">|</span> <span class="s2">&quot;MAX&quot;</span> <span class="p">)</span>
-<a id="__codelineno-10-26" name="__codelineno-10-26" href="#__codelineno-10-26"></a>                 <span class="p">,</span> <span class="s2">&quot;(&quot;</span> <span class="p">,</span> <span class="p">(</span> <span class="s2">&quot;*&quot;</span> <span class="p">|</span> <span class="k">column ref </span><span class="p">)</span> <span class="p">,</span> <span class="s2">&quot;)&quot;</span> <span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">discovery stmt   </span><span class="o">=</span> <span class="p">(</span> <span class="s2">&quot;FIND&quot;</span> <span class="p">,</span> <span class="s2">&quot;PII&quot;</span> <span class="p">,</span> <span class="k">in clause </span><span class="p">,</span> <span class="p">[</span> <span class="k">where discovery </span><span class="p">]</span> <span class="p">)</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>                 <span class="p">|</span> <span class="p">(</span> <span class="s2">&quot;DISCOVER&quot;</span> <span class="p">,</span> <span class="s2">&quot;ENTITIES&quot;</span> <span class="p">,</span> <span class="k">in clause </span><span class="p">,</span> <span class="p">[</span> <span class="k">where discovery </span><span class="p">]</span> <span class="p">)</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>                 <span class="p">|</span> <span class="p">(</span> <span class="s2">&quot;SCAN&quot;</span> <span class="p">,</span> <span class="k">in clause </span><span class="p">,</span> <span class="p">[</span> <span class="k">where discovery </span><span class="p">]</span> <span class="p">)</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>                 <span class="p">|</span> <span class="p">(</span> <span class="s2">&quot;SELECT&quot;</span> <span class="p">,</span> <span class="k">projection list </span><span class="p">,</span> <span class="s2">&quot;FROM&quot;</span> <span class="p">,</span> <span class="k">findings ref</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>                   <span class="p">,</span> <span class="p">[</span> <span class="k">where discovery </span><span class="p">]</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>                   <span class="p">,</span> <span class="p">[</span> <span class="k">group by clause </span><span class="p">]</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>                   <span class="p">,</span> <span class="p">[</span> <span class="k">limit clause </span><span class="p">]</span> <span class="p">)</span> <span class="p">;</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="k">in clause        </span><span class="o">=</span> <span class="s2">&quot;IN&quot;</span> <span class="p">,</span> <span class="k">string literal </span><span class="p">;</span>
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>
+<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="k">where discovery  </span><span class="o">=</span> <span class="s2">&quot;WHERE&quot;</span> <span class="p">,</span> <span class="k">discovery predicate </span><span class="p">;</span>
+<a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a>
+<a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="k">discovery predicate</span>
+<a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a>                 <span class="o">=</span> <span class="p">(</span> <span class="k">column ref </span><span class="p">,</span> <span class="s2">&quot;IN&quot;</span> <span class="p">,</span> <span class="k">string list </span><span class="p">)</span>
+<a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a>                 <span class="p">|</span> <span class="p">(</span> <span class="k">column ref </span><span class="p">,</span> <span class="k">compare op </span><span class="p">,</span> <span class="p">(</span> <span class="k">string literal </span><span class="p">|</span> <span class="k">numeric literal </span><span class="p">|</span> <span class="k">boolean literal </span><span class="p">)</span> <span class="p">)</span>
+<a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a>                 <span class="p">|</span> <span class="p">(</span> <span class="s2">&quot;(&quot;</span> <span class="p">,</span> <span class="k">discovery predicate </span><span class="p">,</span> <span class="s2">&quot;)&quot;</span> <span class="p">)</span>
+<a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a>                 <span class="p">|</span> <span class="p">(</span> <span class="k">discovery predicate </span><span class="p">,</span> <span class="p">(</span> <span class="s2">&quot;AND&quot;</span> <span class="p">|</span> <span class="s2">&quot;OR&quot;</span> <span class="p">)</span> <span class="p">,</span> <span class="k">discovery predicate </span><span class="p">)</span> <span class="p">;</span>
+<a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a>
+<a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a><span class="k">projection list  </span><span class="o">=</span> <span class="k">projection </span><span class="p">,</span> <span class="p">{</span> <span class="s2">&quot;,&quot;</span> <span class="p">,</span> <span class="k">projection </span><span class="p">}</span> <span class="p">;</span>
+<a id="__codelineno-11-20" name="__codelineno-11-20" href="#__codelineno-11-20"></a>
+<a id="__codelineno-11-21" name="__codelineno-11-21" href="#__codelineno-11-21"></a><span class="k">projection       </span><span class="o">=</span> <span class="s2">&quot;*&quot;</span>
+<a id="__codelineno-11-22" name="__codelineno-11-22" href="#__codelineno-11-22"></a>                 <span class="p">|</span> <span class="k">aggregate</span>
+<a id="__codelineno-11-23" name="__codelineno-11-23" href="#__codelineno-11-23"></a>                 <span class="p">|</span> <span class="k">column ref </span><span class="p">;</span>
+<a id="__codelineno-11-24" name="__codelineno-11-24" href="#__codelineno-11-24"></a>
+<a id="__codelineno-11-25" name="__codelineno-11-25" href="#__codelineno-11-25"></a><span class="k">aggregate        </span><span class="o">=</span> <span class="p">(</span> <span class="s2">&quot;COUNT&quot;</span> <span class="p">|</span> <span class="s2">&quot;AVG&quot;</span> <span class="p">|</span> <span class="s2">&quot;SUM&quot;</span> <span class="p">|</span> <span class="s2">&quot;MIN&quot;</span> <span class="p">|</span> <span class="s2">&quot;MAX&quot;</span> <span class="p">)</span>
+<a id="__codelineno-11-26" name="__codelineno-11-26" href="#__codelineno-11-26"></a>                 <span class="p">,</span> <span class="s2">&quot;(&quot;</span> <span class="p">,</span> <span class="p">(</span> <span class="s2">&quot;*&quot;</span> <span class="p">|</span> <span class="k">column ref </span><span class="p">)</span> <span class="p">,</span> <span class="s2">&quot;)&quot;</span> <span class="p">;</span>
 </code></pre></div>
 <p><strong>Examples:</strong> <a href="../../examples/15-find-pii-s3/">15-find-pii-s3</a>, <a href="../../examples/16-discover-entities-gcs/">16-discover-entities-gcs</a>, <a href="../../examples/17-scan-azure-blob/">17-scan-azure-blob</a>, <a href="../../examples/18-find-pii-local-filesystem/">18-find-pii-local-filesystem</a>, <a href="../../examples/19-select-findings-groupby/">19-select-findings-groupby</a></p>
 

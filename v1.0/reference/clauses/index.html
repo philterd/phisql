@@ -1789,11 +1789,12 @@
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>                 <span class="p">|</span> <span class="s2">&quot;TRUNCATE_TO_YEAR&quot;</span>
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>                 <span class="p">|</span> <span class="s2">&quot;SHIFT&quot;</span>
 <a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>                 <span class="p">|</span> <span class="s2">&quot;RELATIVE&quot;</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>                 <span class="p">|</span> <span class="s2">&quot;ABBREVIATE&quot;</span> <span class="p">;</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="k">strategy args    </span><span class="o">=</span> <span class="k">named arg </span><span class="p">,</span> <span class="p">{</span> <span class="s2">&quot;,&quot;</span> <span class="p">,</span> <span class="k">named arg </span><span class="p">}</span> <span class="p">;</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>
-<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="k">named arg        </span><span class="o">=</span> <span class="k">id </span><span class="p">,</span> <span class="s2">&quot;=&quot;</span> <span class="p">,</span> <span class="k">setting value </span><span class="p">;</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>                 <span class="p">|</span> <span class="s2">&quot;ABBREVIATE&quot;</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>                 <span class="p">|</span> <span class="s2">&quot;MAP_REPLACE&quot;</span> <span class="p">;</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="k">strategy args    </span><span class="o">=</span> <span class="k">named arg </span><span class="p">,</span> <span class="p">{</span> <span class="s2">&quot;,&quot;</span> <span class="p">,</span> <span class="k">named arg </span><span class="p">}</span> <span class="p">;</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="k">named arg        </span><span class="o">=</span> <span class="p">(</span> <span class="k">id </span><span class="p">|</span> <span class="s2">&quot;GENERATOR&quot;</span> <span class="p">|</span> <span class="s2">&quot;TYPE&quot;</span> <span class="p">)</span> <span class="p">,</span> <span class="s2">&quot;=&quot;</span> <span class="p">,</span> <span class="k">setting value </span><span class="p">;</span>
 </code></pre></div>
 <h2 id="where-redaction-predicate">WHERE (redaction predicate)<a class="headerlink" href="#where-redaction-predicate" title="Permanent link">&para;</a></h2>
 <p>Gates a redaction strategy on a condition. In v1.0 the only predicate is <code>CONFIDENCE</code>; see <a href="../predicates/">Predicates</a>.</p>

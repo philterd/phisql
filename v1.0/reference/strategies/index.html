@@ -689,6 +689,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#map_replace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MAP_REPLACE
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1885,6 +1896,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#map_replace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MAP_REPLACE
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2078,6 +2100,39 @@
 <p>Reduce the detected value to its initials.</p>
 <p>Compiles to Phileas strategy <code>ABBREVIATE</code>.</p>
 <p><em>No arguments.</em></p>
+<h2 id="map_replace">MAP_REPLACE<a class="headerlink" href="#map_replace" title="Permanent link">&para;</a></h2>
+<p>Replace a detected value with a caller-supplied value from a lookup table. The table is carried inline with the "mappings" argument (an object of value = replacement pairs, e.g. mappings = ('John Smith' = 'Bob Jones')) and/or loaded from local files listed in "mappingFiles" (an array of paths). For a value not in the table, an optional "generator" (the name of a top-level DEFINE GENERATOR) produces a replacement; if it is unset or fails, "fallbackStrategy" (default REDACT) applies. The mappings and mappingFiles arguments pass through by name as object/array values.</p>
+<p>Compiles to Phileas strategy <code>MAP_REPLACE</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Type</th>
+<th>Required</th>
+<th>Phileas field</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>caseSensitive</code></td>
+<td>boolean</td>
+<td>no</td>
+<td><code>caseSensitive</code></td>
+</tr>
+<tr>
+<td><code>generator</code></td>
+<td>string</td>
+<td>no</td>
+<td><code>generator</code></td>
+</tr>
+<tr>
+<td><code>fallbackStrategy</code></td>
+<td>string</td>
+<td>no</td>
+<td><code>fallbackStrategy</code></td>
+</tr>
+</tbody>
+</table>
 
 
 
