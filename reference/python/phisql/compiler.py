@@ -132,6 +132,8 @@ class Compiler:
                 self._compile_define_dictionary(stmt, identifiers)
             elif isinstance(stmt, ast.DefineSectionStmt):
                 self._compile_define_section(stmt, identifiers)
+            elif isinstance(stmt, ast.DefineGeneratorStmt):
+                self._compile_define_generator(stmt, policy_json)
             elif isinstance(stmt, ast.DetectStmt):
                 self._compile_detect(stmt, identifiers)
             elif isinstance(stmt, ast.ConfigureStmt):
@@ -349,6 +351,17 @@ class Compiler:
         }
         sections.append(entry)
         self._apply_options(entry, ctx.options)
+
+    # --- DEFINE GENERATOR ----------------------------------------------------
+
+    def _compile_define_generator(self, ctx: ast.DefineGeneratorStmt, policy_json: dict):
+        name = _unquote_string(ctx.name_raw)
+        generators = _get_or_create_object(policy_json, "generators")
+        if name in generators:
+            raise CompileException("Duplicate generator name: '" + name + "'")
+        generator = {"type": _unquote_string(ctx.type_raw)}
+        self._apply_options(generator, ctx.options)
+        generators[name] = generator
 
     # --- DETECT PHEYE --------------------------------------------------------
 

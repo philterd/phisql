@@ -91,6 +91,7 @@ TOPLEVEL_EXPOSED = {
     "ignoredPatterns": "IGNORE PATTERN",
     "config": "CONFIGURE SPLITTING | PDF | POSTFILTERS | ANALYSIS ( ... )",
     "graphical": "CONFIGURE GRAPHICAL BOX ( ... )",
+    "generators": "DEFINE GENERATOR '<name>' TYPE '<type>' OPTIONS ( ... )",
 }
 TOPLEVEL_DEFERRED: dict[str, str] = {}
 
@@ -115,6 +116,9 @@ FIELD_PASSTHROUGH_CONTAINERS = {
     "baseFilterStrategy", "dateFilterStrategy",
     "splitting", "pdf", "postFilters", "analysis", "boundingBox",
     "ignored", "ignoredPattern", "phEyeConfiguration",
+    # A generator's leaves are reachable by name through DEFINE GENERATOR's
+    # OPTIONS ( ... ) passthrough (with `type` also set by the dedicated TYPE clause).
+    "generator",
 }
 
 # Objects with no passthrough: every leaf must be listed here with its mechanism.

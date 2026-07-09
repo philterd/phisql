@@ -1,0 +1,32 @@
+{
+  "identifiers": {
+    "pheyes": [
+      {
+        "phEyeFilterStrategies": [
+          {
+            "strategy": "MAP_REPLACE",
+            "mappings": {
+              "Jon's Ice Cream Shop": "Joe's Ice Cream Shop"
+            },
+            "generator": "business-namer",
+            "fallbackStrategy": "REDACT"
+          }
+        ],
+        "phEyeConfiguration": {
+          "labels": [
+            "ORGANIZATION"
+          ]
+        }
+      }
+    ]
+  },
+  "generators": {
+    "business-namer": {
+      "type": "ollama",
+      "endpoint": "http://localhost:11434",
+      "model": "llama3.1",
+      "prompt": "Rewrite the business name, replacing the person's name but keeping the industry descriptor. Return only the new name. Name: {{token}}",
+      "timeoutMs": 2000
+    }
+  }
+}

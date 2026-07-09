@@ -253,6 +253,18 @@ public partial class PhiSQLBaseListener : IPhiSQLListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitDefineSectionStmt([NotNull] PhiSQLParser.DefineSectionStmtContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="PhiSQLParser.defineGeneratorStmt"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterDefineGeneratorStmt([NotNull] PhiSQLParser.DefineGeneratorStmtContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PhiSQLParser.defineGeneratorStmt"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitDefineGeneratorStmt([NotNull] PhiSQLParser.DefineGeneratorStmtContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="PhiSQLParser.detectStmt"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>

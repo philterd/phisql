@@ -170,6 +170,15 @@ class PhiSQLListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by PhiSQLParser#defineGeneratorStmt.
+    def enterDefineGeneratorStmt(self, ctx:PhiSQLParser.DefineGeneratorStmtContext):
+        pass
+
+    # Exit a parse tree produced by PhiSQLParser#defineGeneratorStmt.
+    def exitDefineGeneratorStmt(self, ctx:PhiSQLParser.DefineGeneratorStmtContext):
+        pass
+
+
     # Enter a parse tree produced by PhiSQLParser#detectStmt.
     def enterDetectStmt(self, ctx:PhiSQLParser.DetectStmtContext):
         pass

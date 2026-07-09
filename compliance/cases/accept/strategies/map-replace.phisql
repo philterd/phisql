@@ -1,0 +1,1 @@
+REDACT SURNAME WITH MAP_REPLACE(mappings = ('Smith' = 'Jones'), caseSensitive = FALSE, fallbackStrategy = 'REDACT');

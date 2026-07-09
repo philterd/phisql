@@ -131,3 +131,25 @@ strategies:
   - name: ABBREVIATE
     phileas_enum: ABBREVIATE
     description: Reduce the detected value to its initials.
+
+  - name: MAP_REPLACE
+    phileas_enum: MAP_REPLACE
+    description: >-
+      Replace a detected value with a caller-supplied value from a lookup table.
+      The table is carried inline with the "mappings" argument (an object of
+      value = replacement pairs, e.g. mappings = ('John Smith' = 'Bob Jones'))
+      and/or loaded from local files listed in "mappingFiles" (an array of
+      paths). For a value not in the table, an optional "generator" (the name of
+      a top-level DEFINE GENERATOR) produces a replacement; if it is unset or
+      fails, "fallbackStrategy" (default REDACT) applies. The mappings and
+      mappingFiles arguments pass through by name as object/array values.
+    args:
+      - name: caseSensitive
+        phileas_field: caseSensitive
+        type: boolean
+      - name: generator
+        phileas_field: generator
+        type: string
+      - name: fallbackStrategy
+        phileas_field: fallbackStrategy
+        type: string

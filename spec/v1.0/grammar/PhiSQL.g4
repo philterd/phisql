@@ -42,6 +42,7 @@ statement
     | defineIdentifierStmt
     | defineDictionaryStmt
     | defineSectionStmt
+    | defineGeneratorStmt
     | detectStmt
     | discoveryStmt
     ;
@@ -156,6 +157,16 @@ defineSectionStmt
       optionsClause?
     ;
 
+// Defines a named, reusable replacement generator at the top level, referenced
+// by name from a MAP_REPLACE strategy's generator argument. TYPE is the backend
+// discriminator ('ollama'); the OPTIONS carry the backend settings (endpoint,
+// model, prompt, timeoutMs) as passthrough keys on the compiled generator object.
+defineGeneratorStmt
+    : DEFINE GENERATOR generatorName=STRING_LITERAL
+      TYPE generatorType=STRING_LITERAL
+      optionsClause
+    ;
+
 // Detects entities with the PhEye AI/NER model and applies a strategy to them.
 detectStmt
     : DETECT PHEYE
@@ -262,14 +273,19 @@ strategyName
     | SHIFT
     | RELATIVE
     | ABBREVIATE
+    | MAP_REPLACE
     ;
 
 strategyArgs
     : namedArg (',' namedArg)*
     ;
 
+// A strategy argument name is normally an identifier, but a few keyword tokens
+// are also valid Phileas strategy property names and must be usable here without
+// quoting (e.g. MAP_REPLACE's "generator", "type"). ANTLR still exposes the
+// matched token's text through the argName label.
 namedArg
-    : argName=ID '=' settingValue
+    : argName=(ID | GENERATOR | TYPE) '=' settingValue
     ;
 
 predicate
@@ -353,6 +369,10 @@ FUZZY           : 'FUZZY' ;
 SENSITIVITY     : 'SENSITIVITY' ;
 CAPITALIZED     : 'CAPITALIZED' ;
 
+// Generator definition keywords.
+GENERATOR       : 'GENERATOR' ;
+TYPE            : 'TYPE' ;
+
 // Generic per-filter options clause.
 OPTIONS         : 'OPTIONS' ;
 
@@ -399,6 +419,7 @@ TRUNCATE        : 'TRUNCATE' ;
 SHIFT           : 'SHIFT' ;
 RELATIVE        : 'RELATIVE' ;
 ABBREVIATE      : 'ABBREVIATE' ;
+MAP_REPLACE     : 'MAP_REPLACE' ;
 
 // Boolean literals (must precede ID)
 BOOLEAN_LITERAL : 'TRUE' | 'FALSE' ;

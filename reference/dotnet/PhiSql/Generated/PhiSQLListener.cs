@@ -212,6 +212,16 @@ public interface IPhiSQLListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitDefineSectionStmt([NotNull] PhiSQLParser.DefineSectionStmtContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="PhiSQLParser.defineGeneratorStmt"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterDefineGeneratorStmt([NotNull] PhiSQLParser.DefineGeneratorStmtContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PhiSQLParser.defineGeneratorStmt"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitDefineGeneratorStmt([NotNull] PhiSQLParser.DefineGeneratorStmtContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="PhiSQLParser.detectStmt"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

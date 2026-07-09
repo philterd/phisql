@@ -120,6 +120,8 @@ public final class Compiler {
                 compileDefineDictionary(stmt.defineDictionaryStmt(), identifiers);
             } else if (stmt.defineSectionStmt() != null) {
                 compileDefineSection(stmt.defineSectionStmt(), identifiers);
+            } else if (stmt.defineGeneratorStmt() != null) {
+                compileDefineGenerator(stmt.defineGeneratorStmt(), policyJson);
             } else if (stmt.detectStmt() != null) {
                 compileDetect(stmt.detectStmt(), identifiers);
             } else if (stmt.configureStmt() != null) {
@@ -561,6 +563,22 @@ public final class Compiler {
         entry.put("endPattern", unquoteString(ctx.endPattern.getText()));
         entry.putArray("sectionFilterStrategies").add(buildStrategyObject(ctx.strategyExpr()));
         applyOptions(entry, ctx.optionsClause());
+    }
+
+    // ------------------------------------------------------------------
+    // DEFINE GENERATOR (named, reusable replacement generator)
+    // ------------------------------------------------------------------
+
+    private void compileDefineGenerator(PhiSQLParser.DefineGeneratorStmtContext ctx,
+                                        ObjectNode policyJson) {
+        ObjectNode generators = getOrCreateObject(policyJson, "generators");
+        String name = unquoteString(ctx.generatorName.getText());
+        if (generators.has(name)) {
+            throw new CompileException("Duplicate generator name: '" + name + "'");
+        }
+        ObjectNode generator = generators.putObject(name);
+        generator.put("type", unquoteString(ctx.generatorType.getText()));
+        applyOptions(generator, ctx.optionsClause());
     }
 
     // ------------------------------------------------------------------

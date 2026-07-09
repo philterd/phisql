@@ -1,0 +1,16 @@
+{
+  "identifiers": {
+    "surname": {
+      "surnameFilterStrategies": [
+        {
+          "strategy": "MAP_REPLACE",
+          "mappings": {
+            "Smith": "Jones"
+          },
+          "caseSensitive": false,
+          "fallbackStrategy": "REDACT"
+        }
+      ]
+    }
+  }
+}

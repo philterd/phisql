@@ -116,6 +116,7 @@ public sealed class Compiler
                 case DefineIdentifierStmt di: CompileDefineIdentifier(di, identifiers); break;
                 case DefineDictionaryStmt dd: CompileDefineDictionary(dd, identifiers); break;
                 case DefineSectionStmt ds: CompileDefineSection(ds, identifiers); break;
+                case DefineGeneratorStmt dg: CompileDefineGenerator(dg, policyJson); break;
                 case DetectStmt det: CompileDetect(det, identifiers); break;
                 case ConfigureStmt c: CompileConfigure(c, policyJson); break;
                 case DiscoveryStmt: break; // not compiled to Phileas JSON
@@ -400,6 +401,19 @@ public sealed class Compiler
         };
         sections.Add(entry);
         ApplyOptions(entry, ctx.Options);
+    }
+
+    // --- DEFINE GENERATOR ----------------------------------------------------
+
+    private void CompileDefineGenerator(DefineGeneratorStmt ctx, JsonObject policyJson)
+    {
+        JsonObject generators = GetOrCreateObject(policyJson, "generators");
+        string name = Unquote(ctx.NameRaw);
+        if (generators.ContainsKey(name))
+            throw new CompileException($"Duplicate generator name: '{name}'");
+        var generator = new JsonObject { ["type"] = Unquote(ctx.TypeRaw) };
+        generators[name] = generator;
+        ApplyOptions(generator, ctx.Options);
     }
 
     // --- DETECT PHEYE --------------------------------------------------------

@@ -1,0 +1,2 @@
+DEFINE GENERATOR 'namer' TYPE 'ollama' OPTIONS (prompt = 'A: {{token}}', timeoutMs = 1000);
+DEFINE GENERATOR 'namer' TYPE 'ollama' OPTIONS (prompt = 'B: {{token}}', timeoutMs = 1000);

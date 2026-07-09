@@ -99,6 +99,11 @@ class PhiSQLVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by PhiSQLParser#defineGeneratorStmt.
+    def visitDefineGeneratorStmt(self, ctx:PhiSQLParser.DefineGeneratorStmtContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by PhiSQLParser#detectStmt.
     def visitDetectStmt(self, ctx:PhiSQLParser.DetectStmtContext):
         return self.visitChildren(ctx)

@@ -1,0 +1,20 @@
+{
+  "identifiers": {
+    "surname": {
+      "surnameFilterStrategies": [
+        {
+          "strategy": "MAP_REPLACE",
+          "mappings": {
+            "Smith": "Jones",
+            "Doe": "Roe"
+          },
+          "mappingFiles": [
+            "/etc/phileas/surnames.tsv"
+          ],
+          "caseSensitive": false,
+          "fallbackStrategy": "REDACT"
+        }
+      ]
+    }
+  }
+}

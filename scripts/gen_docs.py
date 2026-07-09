@@ -92,6 +92,7 @@ _VERB_BY_LEAD = {
     ("DEFINE", "IDENTIFIER"): "define-identifier",
     ("DEFINE", "DICTIONARY"): "define-dictionary",
     ("DEFINE", "SECTION"): "define-section",
+    ("DEFINE", "GENERATOR"): "define-generator",
     ("DETECT",): "detect",
     ("FIND",): "discovery",
     ("DISCOVER",): "discovery",
@@ -238,6 +239,10 @@ def page_verbs(rules: dict[str, str], examples: list[dict]) -> str:
          "redacts them."),
         ("define-section", "DEFINE SECTION", ["define section stmt"],
          "Redacts everything between a start and end regular expression."),
+        ("define-generator", "DEFINE GENERATOR", ["define generator stmt"],
+         "Declares a named, reusable replacement generator (a local model "
+         "endpoint) that the `MAP_REPLACE` strategy invokes for a detected "
+         "value absent from its lookup table."),
         ("detect", "DETECT PHEYE", ["detect stmt"],
          "Runs PhEye (AI/NER) detection -- for example, person-name detection "
          "-- with optional labels and a custom endpoint."),

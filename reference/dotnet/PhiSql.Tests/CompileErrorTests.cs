@@ -71,4 +71,27 @@ public class CompileErrorTests
             .PolicyJson["identifiers"]!["surname"]!["surnameFilterStrategies"]![0]!;
         Assert.Equal("Customer", strategy["staticReplacement"]!.GetValue<string>());
     }
+
+    [Fact]
+    public void RejectsDuplicateGeneratorName()
+    {
+        // Two DEFINE GENERATOR statements with the same name would collide in the
+        // single name-keyed generators object; that is a semantic error.
+        var ex = Assert.Throws<CompileException>(() => new Compiler().Compile(
+            "DEFINE GENERATOR 'g' TYPE 'ollama' OPTIONS (prompt = 'A: {{token}}', timeoutMs = 1000);\n" +
+            "DEFINE GENERATOR 'g' TYPE 'ollama' OPTIONS (prompt = 'B: {{token}}', timeoutMs = 1000);"));
+        Assert.Contains("Duplicate generator name", ex.Message);
+    }
+
+    [Fact]
+    public void AllowsTwoDistinctGenerators()
+    {
+        // Positive control: distinct names both land in the generators block.
+        JsonNode generators = new Compiler().Compile(
+            "DEFINE GENERATOR 'a' TYPE 'ollama' OPTIONS (prompt = '{{token}}', timeoutMs = 1000);\n" +
+            "DEFINE GENERATOR 'b' TYPE 'ollama' OPTIONS (prompt = '{{token}}', timeoutMs = 1000);")
+            .PolicyJson["generators"]!;
+        Assert.NotNull(generators["a"]);
+        Assert.NotNull(generators["b"]);
+    }
 }

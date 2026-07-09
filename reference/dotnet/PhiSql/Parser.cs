@@ -254,6 +254,16 @@ public sealed class Parser
                 Options = OptionsOf(ctx.optionsClause()),
             };
 
+        // --- defineGeneratorStmt ---------------------------------------------
+
+        public override object? VisitDefineGeneratorStmt(PhiSQLParser.DefineGeneratorStmtContext ctx)
+            => new DefineGeneratorStmt
+            {
+                NameRaw = ctx.generatorName.Text,
+                TypeRaw = ctx.generatorType.Text,
+                Options = OptionsOf(ctx.optionsClause()),
+            };
+
         // --- detectStmt ------------------------------------------------------
 
         public override object? VisitDetectStmt(PhiSQLParser.DetectStmtContext ctx)

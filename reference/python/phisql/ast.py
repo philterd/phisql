@@ -179,6 +179,13 @@ class DefineSectionStmt:
 
 
 @dataclass
+class DefineGeneratorStmt:
+    name_raw: str                          # raw STRING_LITERAL (generator name)
+    type_raw: str                          # raw STRING_LITERAL (backend discriminator)
+    options: Optional[List] = None         # OPTIONS settings (endpoint, model, prompt, timeoutMs)
+
+
+@dataclass
 class DetectStmt:
     labels: Optional[List] = None          # list[raw STRING_LITERAL] or None
     endpoint_raw: Optional[str] = None     # raw STRING_LITERAL or None

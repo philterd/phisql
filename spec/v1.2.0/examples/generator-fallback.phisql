@@ -1,0 +1,31 @@
+-- MAP_REPLACE with a local-LLM generator fallback. When a detected value is not
+-- in the lookup table, a named generator produces a structure-preserving
+-- replacement (e.g. rewrite "Jon's Ice Cream Shop" to "Joe's Ice Cream Shop",
+-- keeping the descriptor). A generator is declared once at the top level with
+-- DEFINE GENERATOR and referenced by name from the strategy's `generator`
+-- argument, so several strategies can share it. TYPE is the backend
+-- discriminator ('ollama'); its OPTIONS carry the backend settings. `endpoint`
+-- and `model` are quoted because they are reserved keywords. The generator must
+-- target a local endpoint inside the deployment boundary so detected values are
+-- not sent to a third party; `timeoutMs` bounds the call, and if it fails or
+-- times out the strategy falls back to `fallbackStrategy`. The placeholder
+-- {{token}} in the prompt is replaced with the detected value. New in spec v1.2.
+-- Compiles to generator-fallback.json.
+
+POLICY generator_fallback;
+
+DEFINE GENERATOR 'business-namer'
+  TYPE 'ollama'
+  OPTIONS (
+    'endpoint' = 'http://localhost:11434',
+    'model' = 'llama3.1',
+    prompt = 'Rewrite the business name, replacing the person\'s name but keeping the industry descriptor. Return only the new name. Name: {{token}}',
+    timeoutMs = 2000
+  );
+
+DETECT PHEYE LABELS ('ORGANIZATION')
+  WITH MAP_REPLACE(
+    mappings = ('Jon\'s Ice Cream Shop' = 'Joe\'s Ice Cream Shop'),
+    generator = 'business-namer',
+    fallbackStrategy = 'REDACT'
+  );

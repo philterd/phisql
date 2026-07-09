@@ -85,3 +85,27 @@ def test_allows_static_replace_with_value():
         .policy_json()["identifiers"]["surname"]["surnameFilterStrategies"][0]
     )
     assert strategy["staticReplacement"] == "Customer"
+
+
+def test_rejects_duplicate_generator_name():
+    # Two DEFINE GENERATOR statements with the same name would collide in the
+    # single name-keyed generators object; that is a semantic error.
+    src = (
+        "DEFINE GENERATOR 'g' TYPE 'ollama' OPTIONS (prompt = 'A: {{token}}', timeoutMs = 1000);\n"
+        "DEFINE GENERATOR 'g' TYPE 'ollama' OPTIONS (prompt = 'B: {{token}}', timeoutMs = 1000);"
+    )
+    with pytest.raises(CompileException) as exc:
+        Compiler().compile(src)
+    assert "Duplicate generator name" in str(exc.value)
+
+
+def test_allows_two_distinct_generators():
+    # Positive control: distinct names both land in the generators block.
+    generators = (
+        Compiler().compile(
+            "DEFINE GENERATOR 'a' TYPE 'ollama' OPTIONS (prompt = '{{token}}', timeoutMs = 1000);\n"
+            "DEFINE GENERATOR 'b' TYPE 'ollama' OPTIONS (prompt = '{{token}}', timeoutMs = 1000);"
+        )
+        .policy_json()["generators"]
+    )
+    assert set(generators) == {"a", "b"}

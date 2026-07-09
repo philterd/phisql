@@ -1,0 +1,19 @@
+-- Deterministic, caller-controlled substitution. MAP_REPLACE replaces a
+-- detected value with a specific replacement from a lookup table, so the same
+-- input always yields the same chosen output (consistent pseudonyms across
+-- documents). The table is carried inline with `mappings` (value = replacement
+-- pairs; quote a key that contains spaces) and/or loaded from local TSV files
+-- listed in `mappingFiles`; inline entries win on a collision. `caseSensitive`
+-- controls key matching. A value not in the table falls back to
+-- `fallbackStrategy` (default REDACT), so a detected value is never left in the
+-- clear. Set through the existing strategy-argument passthrough; no dedicated
+-- clause is required. New in spec v1.2. Compiles to map-replace-table.json.
+
+POLICY map_replace_table;
+
+REDACT SURNAME WITH MAP_REPLACE(
+  mappings = ('Smith' = 'Jones', 'Doe' = 'Roe'),
+  mappingFiles = ['/etc/phileas/surnames.tsv'],
+  caseSensitive = FALSE,
+  fallbackStrategy = 'REDACT'
+);

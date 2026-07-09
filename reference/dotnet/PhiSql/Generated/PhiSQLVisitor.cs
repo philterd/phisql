@@ -141,6 +141,12 @@ public interface IPhiSQLVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitDefineSectionStmt([NotNull] PhiSQLParser.DefineSectionStmtContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="PhiSQLParser.defineGeneratorStmt"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDefineGeneratorStmt([NotNull] PhiSQLParser.DefineGeneratorStmtContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="PhiSQLParser.detectStmt"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

@@ -40,6 +40,10 @@
     "graphical": {
       "description": "Graphical redaction settings for image and PDF redaction.",
       "$ref": "#/$defs/graphical"
+    },
+    "generators": {
+      "description": "Named, reusable replacement generators referenced by the MAP_REPLACE strategy's generator property.",
+      "$ref": "#/$defs/generators"
     }
   },
   "$defs": {
@@ -582,7 +586,8 @@
             "LAST_4",
             "MASK",
             "TRUNCATE",
-            "ABBREVIATE"
+            "ABBREVIATE",
+            "MAP_REPLACE"
           ],
           "default": "REDACT"
         },
@@ -650,6 +655,46 @@
           "items": {
             "type": "string"
           }
+        },
+        "mappings": {
+          "description": "MAP_REPLACE lookup table mapping a detected value to its replacement. Inline entries take precedence over any loaded from mappingFiles.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "mappingFiles": {
+          "description": "MAP_REPLACE: local file paths (TSV, one tab-delimited key/value pair per row) merged into the lookup table at policy-load time. Inline mappings override entries loaded from files.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "caseSensitive": {
+          "description": "MAP_REPLACE: whether lookup-table keys are matched case-sensitively.",
+          "type": "boolean",
+          "default": false
+        },
+        "generator": {
+          "description": "MAP_REPLACE: name of a generator declared in the top-level generators block, invoked to produce a replacement for a detected value absent from the lookup table.",
+          "type": "string"
+        },
+        "fallbackStrategy": {
+          "description": "MAP_REPLACE: terminal strategy applied when a detected value is absent from the lookup table and no generator is set, or when the generator fails, times out, or returns invalid output. A detected value is never left in the clear.",
+          "type": "string",
+          "enum": [
+            "REDACT",
+            "RANDOM_REPLACE",
+            "STATIC_REPLACE",
+            "CRYPTO_REPLACE",
+            "FPE_ENCRYPT_REPLACE",
+            "HASH_SHA256_REPLACE",
+            "LAST_4",
+            "MASK",
+            "TRUNCATE",
+            "ABBREVIATE"
+          ],
+          "default": "REDACT"
         }
       }
     },
@@ -772,6 +817,54 @@
           "default": false
         }
       }
+    },
+    "generators": {
+      "description": "Map of generator name to its definition. A MAP_REPLACE strategy references a generator by name to produce a replacement for a detected value absent from its lookup table.",
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/generator"
+      }
+    },
+    "generator": {
+      "description": "A named replacement generator. Targets a local model endpoint inside the deployment boundary so detected values are not sent to a third party.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "description": "Generator backend. 'ollama' calls a local Ollama-compatible generate endpoint.",
+          "type": "string",
+          "enum": ["ollama"]
+        },
+        "endpoint": {
+          "description": "Base URL of the local generator endpoint (e.g. 'http://localhost:11434'). Must resolve inside the deployment boundary.",
+          "type": "string"
+        },
+        "model": {
+          "description": "Model name the endpoint should use (e.g. 'llama3.1').",
+          "type": "string"
+        },
+        "prompt": {
+          "description": "Prompt template. The placeholder {{token}} is replaced with the detected value and {{label}} with its entity label. The model must return only the replacement value.",
+          "type": "string"
+        },
+        "timeoutMs": {
+          "description": "Maximum time in milliseconds to wait for the generator before falling back to the strategy's fallbackStrategy. Required so a generator can never block the pipeline indefinitely.",
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": ["type", "timeoutMs"],
+      "allOf": [
+        {
+          "if": {
+            "properties": { "type": { "const": "ollama" } },
+            "required": ["type"]
+          },
+          "then": {
+            "required": ["endpoint", "model", "prompt"]
+          }
+        }
+      ]
     },
     "filterAge": {
       "description": "Detects age values (e.g. '35 years old', 'age 42').",

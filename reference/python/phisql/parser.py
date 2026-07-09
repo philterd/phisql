@@ -201,6 +201,13 @@ class _AstBuilder(PhiSQLVisitor):
             options=self._options(ctx),
         )
 
+    def visitDefineGeneratorStmt(self, ctx) -> ast.DefineGeneratorStmt:
+        return ast.DefineGeneratorStmt(
+            name_raw=ctx.generatorName.text,
+            type_raw=ctx.generatorType.text,
+            options=self._options(ctx),
+        )
+
     # --- detectStmt ----------------------------------------------------------
 
     def visitDetectStmt(self, ctx) -> ast.DetectStmt:

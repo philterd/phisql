@@ -107,4 +107,30 @@ class CompileErrorTest {
         assertTrue(strategy.path("staticReplacement").asText().equals("Customer"),
                 "STATIC_REPLACE with value should compile: " + strategy);
     }
+
+    @Test
+    void rejectsDuplicateGeneratorName() {
+        // Two DEFINE GENERATOR statements with the same name would collide in the
+        // single name-keyed generators object; that is a semantic error.
+        Compiler compiler = new Compiler();
+        Compiler.CompileException ex = assertThrows(
+                Compiler.CompileException.class,
+                () -> compiler.compile(
+                        "DEFINE GENERATOR 'g' TYPE 'ollama' OPTIONS (prompt = 'A: {{token}}', timeoutMs = 1000);\n"
+                        + "DEFINE GENERATOR 'g' TYPE 'ollama' OPTIONS (prompt = 'B: {{token}}', timeoutMs = 1000);")
+        );
+        assertTrue(ex.getMessage().contains("Duplicate generator name"),
+                "Expected a duplicate-generator error: " + ex.getMessage());
+    }
+
+    @Test
+    void allowsTwoDistinctGenerators() {
+        // Positive control: distinct names both land in the generators block.
+        JsonNode generators = new Compiler().compile(
+                "DEFINE GENERATOR 'a' TYPE 'ollama' OPTIONS (prompt = '{{token}}', timeoutMs = 1000);\n"
+                + "DEFINE GENERATOR 'b' TYPE 'ollama' OPTIONS (prompt = '{{token}}', timeoutMs = 1000);")
+                .policyJson().path("generators");
+        assertTrue(generators.has("a") && generators.has("b"),
+                "Both generators should be present: " + generators);
+    }
 }

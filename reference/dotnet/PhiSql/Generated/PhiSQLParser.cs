@@ -44,36 +44,37 @@ public partial class PhiSQLParser : Parser {
 		IGNORE=31, TERMS=32, PATTERN=33, FOR=34, WITH=35, WHERE=36, AS=37, AND=38, 
 		OR=39, CONFIDENCE=40, DEFINE=41, MATCHING=42, GROUP=43, CASE=44, SENSITIVE=45, 
 		INSENSITIVE=46, DICTIONARY=47, SECTION=48, START=49, END=50, FUZZY=51, 
-		SENSITIVITY=52, CAPITALIZED=53, OPTIONS=54, DETECT=55, PHEYE=56, LABELS=57, 
-		ENDPOINT=58, MODEL=59, FIND=60, PII=61, DISCOVER=62, ENTITIES=63, SCAN=64, 
-		IN=65, SELECT=66, BY=67, LIMIT=68, COUNT=69, AVG=70, SUM=71, MIN=72, MAX=73, 
-		IDENTIFIER_KW=74, MASK=75, ENCRYPT=76, FPE_ENCRYPT=77, HASH_SHA256=78, 
-		RANDOM_REPLACE=79, STATIC_REPLACE=80, LAST_4=81, TRUNCATE_TO_YEAR=82, 
-		TRUNCATE=83, SHIFT=84, RELATIVE=85, ABBREVIATE=86, BOOLEAN_LITERAL=87, 
-		ID=88, STRING_LITERAL=89, NUMERIC_LITERAL=90, LINE_COMMENT=91, BLOCK_COMMENT=92, 
-		WS=93;
+		SENSITIVITY=52, CAPITALIZED=53, GENERATOR=54, TYPE=55, OPTIONS=56, DETECT=57, 
+		PHEYE=58, LABELS=59, ENDPOINT=60, MODEL=61, FIND=62, PII=63, DISCOVER=64, 
+		ENTITIES=65, SCAN=66, IN=67, SELECT=68, BY=69, LIMIT=70, COUNT=71, AVG=72, 
+		SUM=73, MIN=74, MAX=75, IDENTIFIER_KW=76, MASK=77, ENCRYPT=78, FPE_ENCRYPT=79, 
+		HASH_SHA256=80, RANDOM_REPLACE=81, STATIC_REPLACE=82, LAST_4=83, TRUNCATE_TO_YEAR=84, 
+		TRUNCATE=85, SHIFT=86, RELATIVE=87, ABBREVIATE=88, MAP_REPLACE=89, BOOLEAN_LITERAL=90, 
+		ID=91, STRING_LITERAL=92, NUMERIC_LITERAL=93, LINE_COMMENT=94, BLOCK_COMMENT=95, 
+		WS=96;
 	public const int
 		RULE_document = 0, RULE_statement = 1, RULE_policyDecl = 2, RULE_configureStmt = 3, 
 		RULE_settingList = 4, RULE_setting = 5, RULE_settingKey = 6, RULE_settingValue = 7, 
 		RULE_objectValue = 8, RULE_arrayValue = 9, RULE_optionsClause = 10, RULE_redactStmt = 11, 
 		RULE_deidentifyStmt = 12, RULE_entityAssignment = 13, RULE_ignoreStmt = 14, 
 		RULE_defineIdentifierStmt = 15, RULE_defineDictionaryStmt = 16, RULE_defineSectionStmt = 17, 
-		RULE_detectStmt = 18, RULE_discoveryStmt = 19, RULE_inClause = 20, RULE_whereDiscovery = 21, 
-		RULE_discoveryPredicate = 22, RULE_projectionList = 23, RULE_projection = 24, 
-		RULE_aggregate = 25, RULE_aggArg = 26, RULE_columnRef = 27, RULE_findingsRef = 28, 
-		RULE_groupByClause = 29, RULE_limitClause = 30, RULE_entityList = 31, 
-		RULE_entityType = 32, RULE_strategyExpr = 33, RULE_strategyName = 34, 
-		RULE_strategyArgs = 35, RULE_namedArg = 36, RULE_predicate = 37, RULE_compareOp = 38, 
-		RULE_stringList = 39, RULE_literal = 40;
+		RULE_defineGeneratorStmt = 18, RULE_detectStmt = 19, RULE_discoveryStmt = 20, 
+		RULE_inClause = 21, RULE_whereDiscovery = 22, RULE_discoveryPredicate = 23, 
+		RULE_projectionList = 24, RULE_projection = 25, RULE_aggregate = 26, RULE_aggArg = 27, 
+		RULE_columnRef = 28, RULE_findingsRef = 29, RULE_groupByClause = 30, RULE_limitClause = 31, 
+		RULE_entityList = 32, RULE_entityType = 33, RULE_strategyExpr = 34, RULE_strategyName = 35, 
+		RULE_strategyArgs = 36, RULE_namedArg = 37, RULE_predicate = 38, RULE_compareOp = 39, 
+		RULE_stringList = 40, RULE_literal = 41;
 	public static readonly string[] ruleNames = {
 		"document", "statement", "policyDecl", "configureStmt", "settingList", 
 		"setting", "settingKey", "settingValue", "objectValue", "arrayValue", 
 		"optionsClause", "redactStmt", "deidentifyStmt", "entityAssignment", "ignoreStmt", 
-		"defineIdentifierStmt", "defineDictionaryStmt", "defineSectionStmt", "detectStmt", 
-		"discoveryStmt", "inClause", "whereDiscovery", "discoveryPredicate", "projectionList", 
-		"projection", "aggregate", "aggArg", "columnRef", "findingsRef", "groupByClause", 
-		"limitClause", "entityList", "entityType", "strategyExpr", "strategyName", 
-		"strategyArgs", "namedArg", "predicate", "compareOp", "stringList", "literal"
+		"defineIdentifierStmt", "defineDictionaryStmt", "defineSectionStmt", "defineGeneratorStmt", 
+		"detectStmt", "discoveryStmt", "inClause", "whereDiscovery", "discoveryPredicate", 
+		"projectionList", "projection", "aggregate", "aggArg", "columnRef", "findingsRef", 
+		"groupByClause", "limitClause", "entityList", "entityType", "strategyExpr", 
+		"strategyName", "strategyArgs", "namedArg", "predicate", "compareOp", 
+		"stringList", "literal"
 	};
 
 	private static readonly string[] _LiteralNames = {
@@ -84,13 +85,13 @@ public partial class PhiSQLParser : Parser {
 		"'IGNORE'", "'TERMS'", "'PATTERN'", "'FOR'", "'WITH'", "'WHERE'", "'AS'", 
 		"'AND'", "'OR'", "'CONFIDENCE'", "'DEFINE'", "'MATCHING'", "'GROUP'", 
 		"'CASE'", "'SENSITIVE'", "'INSENSITIVE'", "'DICTIONARY'", "'SECTION'", 
-		"'START'", "'END'", "'FUZZY'", "'SENSITIVITY'", "'CAPITALIZED'", "'OPTIONS'", 
-		"'DETECT'", "'PHEYE'", "'LABELS'", "'ENDPOINT'", "'MODEL'", "'FIND'", 
-		"'PII'", "'DISCOVER'", "'ENTITIES'", "'SCAN'", "'IN'", "'SELECT'", "'BY'", 
-		"'LIMIT'", "'COUNT'", "'AVG'", "'SUM'", "'MIN'", "'MAX'", "'IDENTIFIER'", 
-		"'MASK'", "'ENCRYPT'", "'FPE_ENCRYPT'", "'HASH_SHA256'", "'RANDOM_REPLACE'", 
-		"'STATIC_REPLACE'", "'LAST_4'", "'TRUNCATE_TO_YEAR'", "'TRUNCATE'", "'SHIFT'", 
-		"'RELATIVE'", "'ABBREVIATE'"
+		"'START'", "'END'", "'FUZZY'", "'SENSITIVITY'", "'CAPITALIZED'", "'GENERATOR'", 
+		"'TYPE'", "'OPTIONS'", "'DETECT'", "'PHEYE'", "'LABELS'", "'ENDPOINT'", 
+		"'MODEL'", "'FIND'", "'PII'", "'DISCOVER'", "'ENTITIES'", "'SCAN'", "'IN'", 
+		"'SELECT'", "'BY'", "'LIMIT'", "'COUNT'", "'AVG'", "'SUM'", "'MIN'", "'MAX'", 
+		"'IDENTIFIER'", "'MASK'", "'ENCRYPT'", "'FPE_ENCRYPT'", "'HASH_SHA256'", 
+		"'RANDOM_REPLACE'", "'STATIC_REPLACE'", "'LAST_4'", "'TRUNCATE_TO_YEAR'", 
+		"'TRUNCATE'", "'SHIFT'", "'RELATIVE'", "'ABBREVIATE'", "'MAP_REPLACE'"
 	};
 	private static readonly string[] _SymbolicNames = {
 		null, null, null, null, null, null, null, null, null, null, null, null, 
@@ -99,13 +100,14 @@ public partial class PhiSQLParser : Parser {
 		"GRAPHICAL", "BOX", "REDACT", "DEIDENTIFY", "IGNORE", "TERMS", "PATTERN", 
 		"FOR", "WITH", "WHERE", "AS", "AND", "OR", "CONFIDENCE", "DEFINE", "MATCHING", 
 		"GROUP", "CASE", "SENSITIVE", "INSENSITIVE", "DICTIONARY", "SECTION", 
-		"START", "END", "FUZZY", "SENSITIVITY", "CAPITALIZED", "OPTIONS", "DETECT", 
-		"PHEYE", "LABELS", "ENDPOINT", "MODEL", "FIND", "PII", "DISCOVER", "ENTITIES", 
-		"SCAN", "IN", "SELECT", "BY", "LIMIT", "COUNT", "AVG", "SUM", "MIN", "MAX", 
-		"IDENTIFIER_KW", "MASK", "ENCRYPT", "FPE_ENCRYPT", "HASH_SHA256", "RANDOM_REPLACE", 
-		"STATIC_REPLACE", "LAST_4", "TRUNCATE_TO_YEAR", "TRUNCATE", "SHIFT", "RELATIVE", 
-		"ABBREVIATE", "BOOLEAN_LITERAL", "ID", "STRING_LITERAL", "NUMERIC_LITERAL", 
-		"LINE_COMMENT", "BLOCK_COMMENT", "WS"
+		"START", "END", "FUZZY", "SENSITIVITY", "CAPITALIZED", "GENERATOR", "TYPE", 
+		"OPTIONS", "DETECT", "PHEYE", "LABELS", "ENDPOINT", "MODEL", "FIND", "PII", 
+		"DISCOVER", "ENTITIES", "SCAN", "IN", "SELECT", "BY", "LIMIT", "COUNT", 
+		"AVG", "SUM", "MIN", "MAX", "IDENTIFIER_KW", "MASK", "ENCRYPT", "FPE_ENCRYPT", 
+		"HASH_SHA256", "RANDOM_REPLACE", "STATIC_REPLACE", "LAST_4", "TRUNCATE_TO_YEAR", 
+		"TRUNCATE", "SHIFT", "RELATIVE", "ABBREVIATE", "MAP_REPLACE", "BOOLEAN_LITERAL", 
+		"ID", "STRING_LITERAL", "NUMERIC_LITERAL", "LINE_COMMENT", "BLOCK_COMMENT", 
+		"WS"
 	};
 	public static readonly IVocabulary DefaultVocabulary = new Vocabulary(_LiteralNames, _SymbolicNames);
 
@@ -178,23 +180,23 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 87;
+			State = 89;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			while (((((_la - 14)) & ~0x3f) == 0 && ((1L << (_la - 14)) & 5983542412804101L) != 0)) {
+			while (((((_la - 14)) & ~0x3f) == 0 && ((1L << (_la - 14)) & 23934169247875077L) != 0)) {
 				{
 				{
-				State = 82;
+				State = 84;
 				statement();
-				State = 83;
+				State = 85;
 				Match(T__0);
 				}
 				}
-				State = 89;
+				State = 91;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 			}
-			State = 90;
+			State = 92;
 			Match(Eof);
 			}
 		}
@@ -234,6 +236,9 @@ public partial class PhiSQLParser : Parser {
 		[System.Diagnostics.DebuggerNonUserCode] public DefineSectionStmtContext defineSectionStmt() {
 			return GetRuleContext<DefineSectionStmtContext>(0);
 		}
+		[System.Diagnostics.DebuggerNonUserCode] public DefineGeneratorStmtContext defineGeneratorStmt() {
+			return GetRuleContext<DefineGeneratorStmtContext>(0);
+		}
 		[System.Diagnostics.DebuggerNonUserCode] public DetectStmtContext detectStmt() {
 			return GetRuleContext<DetectStmtContext>(0);
 		}
@@ -268,76 +273,83 @@ public partial class PhiSQLParser : Parser {
 		StatementContext _localctx = new StatementContext(Context, State);
 		EnterRule(_localctx, 2, RULE_statement);
 		try {
-			State = 102;
+			State = 105;
 			ErrorHandler.Sync(this);
 			switch ( Interpreter.AdaptivePredict(TokenStream,1,Context) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 92;
+				State = 94;
 				policyDecl();
 				}
 				break;
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 93;
+				State = 95;
 				configureStmt();
 				}
 				break;
 			case 3:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 94;
+				State = 96;
 				redactStmt();
 				}
 				break;
 			case 4:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 95;
+				State = 97;
 				deidentifyStmt();
 				}
 				break;
 			case 5:
 				EnterOuterAlt(_localctx, 5);
 				{
-				State = 96;
+				State = 98;
 				ignoreStmt();
 				}
 				break;
 			case 6:
 				EnterOuterAlt(_localctx, 6);
 				{
-				State = 97;
+				State = 99;
 				defineIdentifierStmt();
 				}
 				break;
 			case 7:
 				EnterOuterAlt(_localctx, 7);
 				{
-				State = 98;
+				State = 100;
 				defineDictionaryStmt();
 				}
 				break;
 			case 8:
 				EnterOuterAlt(_localctx, 8);
 				{
-				State = 99;
+				State = 101;
 				defineSectionStmt();
 				}
 				break;
 			case 9:
 				EnterOuterAlt(_localctx, 9);
 				{
-				State = 100;
-				detectStmt();
+				State = 102;
+				defineGeneratorStmt();
 				}
 				break;
 			case 10:
 				EnterOuterAlt(_localctx, 10);
 				{
-				State = 101;
+				State = 103;
+				detectStmt();
+				}
+				break;
+			case 11:
+				EnterOuterAlt(_localctx, 11);
+				{
+				State = 104;
 				discoveryStmt();
 				}
 				break;
@@ -392,18 +404,18 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 104;
+			State = 107;
 			Match(POLICY);
-			State = 105;
-			_localctx.policyName = Match(ID);
 			State = 108;
+			_localctx.policyName = Match(ID);
+			State = 111;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==DESCRIPTION) {
 				{
-				State = 106;
+				State = 109;
 				Match(DESCRIPTION);
-				State = 107;
+				State = 110;
 				_localctx.description = Match(STRING_LITERAL);
 				}
 			}
@@ -483,44 +495,44 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 110;
+			State = 113;
 			Match(CONFIGURE);
-			State = 136;
+			State = 139;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case CRYPTO:
 				{
-				State = 111;
-				Match(CRYPTO);
-				State = 112;
-				Match(KEY);
-				State = 113;
-				Match(FROM);
 				State = 114;
-				Match(ENV);
+				Match(CRYPTO);
 				State = 115;
+				Match(KEY);
+				State = 116;
+				Match(FROM);
+				State = 117;
+				Match(ENV);
+				State = 118;
 				_localctx.cryptoKeyEnv = Match(STRING_LITERAL);
 				}
 				break;
 			case FPE:
 				{
-				State = 116;
-				Match(FPE);
-				State = 117;
-				Match(KEY);
-				State = 118;
-				Match(FROM);
 				State = 119;
-				Match(ENV);
+				Match(FPE);
 				State = 120;
-				_localctx.fpeKeyEnv = Match(STRING_LITERAL);
+				Match(KEY);
 				State = 121;
-				Match(TWEAK);
-				State = 122;
 				Match(FROM);
-				State = 123;
+				State = 122;
 				Match(ENV);
+				State = 123;
+				_localctx.fpeKeyEnv = Match(STRING_LITERAL);
 				State = 124;
+				Match(TWEAK);
+				State = 125;
+				Match(FROM);
+				State = 126;
+				Match(ENV);
+				State = 127;
 				_localctx.fpeTweakEnv = Match(STRING_LITERAL);
 				}
 				break;
@@ -529,7 +541,7 @@ public partial class PhiSQLParser : Parser {
 			case POSTFILTERS:
 			case ANALYSIS:
 				{
-				State = 125;
+				State = 128;
 				_localctx.configBlock = TokenStream.LT(1);
 				_la = TokenStream.LA(1);
 				if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 125829120L) != 0)) ) {
@@ -539,25 +551,25 @@ public partial class PhiSQLParser : Parser {
 					ErrorHandler.ReportMatch(this);
 				    Consume();
 				}
-				State = 126;
+				State = 129;
 				Match(T__1);
-				State = 127;
+				State = 130;
 				settingList();
-				State = 128;
+				State = 131;
 				Match(T__2);
 				}
 				break;
 			case GRAPHICAL:
 				{
-				State = 130;
-				Match(GRAPHICAL);
-				State = 131;
-				Match(BOX);
-				State = 132;
-				Match(T__1);
 				State = 133;
-				settingList();
+				Match(GRAPHICAL);
 				State = 134;
+				Match(BOX);
+				State = 135;
+				Match(T__1);
+				State = 136;
+				settingList();
+				State = 137;
 				Match(T__2);
 				}
 				break;
@@ -615,21 +627,21 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 138;
+			State = 141;
 			setting();
-			State = 143;
+			State = 146;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			while (_la==T__3) {
 				{
 				{
-				State = 139;
+				State = 142;
 				Match(T__3);
-				State = 140;
+				State = 143;
 				setting();
 				}
 				}
-				State = 145;
+				State = 148;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 			}
@@ -683,11 +695,11 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 146;
+			State = 149;
 			settingKey();
-			State = 147;
+			State = 150;
 			Match(T__4);
-			State = 148;
+			State = 151;
 			settingValue();
 			}
 		}
@@ -736,7 +748,7 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 150;
+			State = 153;
 			_la = TokenStream.LA(1);
 			if ( !(_la==ID || _la==STRING_LITERAL) ) {
 			ErrorHandler.RecoverInline(this);
@@ -796,7 +808,7 @@ public partial class PhiSQLParser : Parser {
 		SettingValueContext _localctx = new SettingValueContext(Context, State);
 		EnterRule(_localctx, 14, RULE_settingValue);
 		try {
-			State = 155;
+			State = 158;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case BOOLEAN_LITERAL:
@@ -805,21 +817,21 @@ public partial class PhiSQLParser : Parser {
 			case NUMERIC_LITERAL:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 152;
+				State = 155;
 				literal();
 				}
 				break;
 			case T__1:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 153;
+				State = 156;
 				objectValue();
 				}
 				break;
 			case T__5:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 154;
+				State = 157;
 				arrayValue();
 				}
 				break;
@@ -872,11 +884,11 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 157;
+			State = 160;
 			Match(T__1);
-			State = 158;
+			State = 161;
 			settingList();
-			State = 159;
+			State = 162;
 			Match(T__2);
 			}
 		}
@@ -929,35 +941,35 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 161;
+			State = 164;
 			Match(T__5);
-			State = 170;
+			State = 173;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
-			if (_la==T__1 || _la==T__5 || ((((_la - 87)) & ~0x3f) == 0 && ((1L << (_la - 87)) & 15L) != 0)) {
+			if (_la==T__1 || _la==T__5 || ((((_la - 90)) & ~0x3f) == 0 && ((1L << (_la - 90)) & 15L) != 0)) {
 				{
-				State = 162;
+				State = 165;
 				settingValue();
-				State = 167;
+				State = 170;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				while (_la==T__3) {
 					{
 					{
-					State = 163;
+					State = 166;
 					Match(T__3);
-					State = 164;
+					State = 167;
 					settingValue();
 					}
 					}
-					State = 169;
+					State = 172;
 					ErrorHandler.Sync(this);
 					_la = TokenStream.LA(1);
 				}
 				}
 			}
 
-			State = 172;
+			State = 175;
 			Match(T__6);
 			}
 		}
@@ -1007,13 +1019,13 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 174;
-			Match(OPTIONS);
-			State = 175;
-			Match(T__1);
-			State = 176;
-			settingList();
 			State = 177;
+			Match(OPTIONS);
+			State = 178;
+			Match(T__1);
+			State = 179;
+			settingList();
+			State = 180;
 			Match(T__2);
 			}
 		}
@@ -1075,40 +1087,40 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 179;
+			State = 182;
 			Match(REDACT);
-			State = 180;
-			entityList();
 			State = 183;
+			entityList();
+			State = 186;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==WITH) {
 				{
-				State = 181;
+				State = 184;
 				Match(WITH);
-				State = 182;
-				strategyExpr();
-				}
-			}
-
-			State = 187;
-			ErrorHandler.Sync(this);
-			_la = TokenStream.LA(1);
-			if (_la==WHERE) {
-				{
 				State = 185;
-				Match(WHERE);
-				State = 186;
-				predicate(0);
+				strategyExpr();
 				}
 			}
 
 			State = 190;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
+			if (_la==WHERE) {
+				{
+				State = 188;
+				Match(WHERE);
+				State = 189;
+				predicate(0);
+				}
+			}
+
+			State = 193;
+			ErrorHandler.Sync(this);
+			_la = TokenStream.LA(1);
 			if (_la==OPTIONS) {
 				{
-				State = 189;
+				State = 192;
 				optionsClause();
 				}
 			}
@@ -1165,23 +1177,23 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 192;
+			State = 195;
 			Match(DEIDENTIFY);
-			State = 193;
+			State = 196;
 			entityAssignment();
-			State = 198;
+			State = 201;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			while (_la==T__3) {
 				{
 				{
-				State = 194;
+				State = 197;
 				Match(T__3);
-				State = 195;
+				State = 198;
 				entityAssignment();
 				}
 				}
-				State = 200;
+				State = 203;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 			}
@@ -1240,18 +1252,18 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 201;
+			State = 204;
 			entityType();
-			State = 202;
-			Match(AS);
-			State = 203;
-			strategyExpr();
 			State = 205;
+			Match(AS);
+			State = 206;
+			strategyExpr();
+			State = 208;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==OPTIONS) {
 				{
-				State = 204;
+				State = 207;
 				optionsClause();
 				}
 			}
@@ -1315,48 +1327,48 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 207;
+			State = 210;
 			Match(IGNORE);
-			State = 212;
+			State = 215;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case TERMS:
 				{
-				State = 208;
+				State = 211;
 				Match(TERMS);
-				State = 209;
+				State = 212;
 				stringList();
 				}
 				break;
 			case PATTERN:
 				{
-				State = 210;
+				State = 213;
 				Match(PATTERN);
-				State = 211;
+				State = 214;
 				Match(STRING_LITERAL);
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
 			}
-			State = 216;
+			State = 219;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==FOR) {
 				{
-				State = 214;
+				State = 217;
 				Match(FOR);
-				State = 215;
+				State = 218;
 				entityList();
 				}
 			}
 
-			State = 219;
+			State = 222;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==OPTIONS) {
 				{
-				State = 218;
+				State = 221;
 				optionsClause();
 				}
 			}
@@ -1433,36 +1445,36 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 221;
-			Match(DEFINE);
-			State = 222;
-			Match(IDENTIFIER_KW);
-			State = 223;
-			_localctx.classification = Match(STRING_LITERAL);
 			State = 224;
-			Match(MATCHING);
+			Match(DEFINE);
 			State = 225;
-			_localctx.pattern = Match(STRING_LITERAL);
+			Match(IDENTIFIER_KW);
+			State = 226;
+			_localctx.classification = Match(STRING_LITERAL);
+			State = 227;
+			Match(MATCHING);
 			State = 228;
+			_localctx.pattern = Match(STRING_LITERAL);
+			State = 231;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==GROUP) {
 				{
-				State = 226;
+				State = 229;
 				Match(GROUP);
-				State = 227;
+				State = 230;
 				_localctx.groupNumber = Match(NUMERIC_LITERAL);
 				}
 			}
 
-			State = 232;
+			State = 235;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==CASE) {
 				{
-				State = 230;
+				State = 233;
 				Match(CASE);
-				State = 231;
+				State = 234;
 				_localctx.sensitivity = TokenStream.LT(1);
 				_la = TokenStream.LA(1);
 				if ( !(_la==SENSITIVE || _la==INSENSITIVE) ) {
@@ -1475,28 +1487,28 @@ public partial class PhiSQLParser : Parser {
 				}
 			}
 
-			State = 234;
+			State = 237;
 			Match(WITH);
-			State = 235;
-			strategyExpr();
 			State = 238;
+			strategyExpr();
+			State = 241;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==WHERE) {
 				{
-				State = 236;
+				State = 239;
 				Match(WHERE);
-				State = 237;
+				State = 240;
 				predicate(0);
 				}
 			}
 
-			State = 241;
+			State = 244;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==OPTIONS) {
 				{
-				State = 240;
+				State = 243;
 				optionsClause();
 				}
 			}
@@ -1567,31 +1579,31 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 243;
-			Match(DEFINE);
-			State = 244;
-			Match(DICTIONARY);
-			State = 245;
-			_localctx.classification = Match(STRING_LITERAL);
 			State = 246;
-			Match(TERMS);
+			Match(DEFINE);
 			State = 247;
+			Match(DICTIONARY);
+			State = 248;
+			_localctx.classification = Match(STRING_LITERAL);
+			State = 249;
+			Match(TERMS);
+			State = 250;
 			stringList();
-			State = 253;
+			State = 256;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==FUZZY) {
 				{
-				State = 248;
-				Match(FUZZY);
 				State = 251;
+				Match(FUZZY);
+				State = 254;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==SENSITIVITY) {
 					{
-					State = 249;
+					State = 252;
 					Match(SENSITIVITY);
-					State = 250;
+					State = 253;
 					_localctx.sensitivity = Match(ID);
 					}
 				}
@@ -1599,26 +1611,26 @@ public partial class PhiSQLParser : Parser {
 				}
 			}
 
-			State = 256;
+			State = 259;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==CAPITALIZED) {
 				{
-				State = 255;
+				State = 258;
 				_localctx.capitalized = Match(CAPITALIZED);
 				}
 			}
 
-			State = 258;
-			Match(WITH);
-			State = 259;
-			strategyExpr();
 			State = 261;
+			Match(WITH);
+			State = 262;
+			strategyExpr();
+			State = 264;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==OPTIONS) {
 				{
-				State = 260;
+				State = 263;
 				optionsClause();
 				}
 			}
@@ -1685,32 +1697,100 @@ public partial class PhiSQLParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 263;
-			Match(DEFINE);
-			State = 264;
-			Match(SECTION);
-			State = 265;
-			Match(START);
 			State = 266;
-			_localctx.startPattern = Match(STRING_LITERAL);
+			Match(DEFINE);
 			State = 267;
-			Match(END);
+			Match(SECTION);
 			State = 268;
-			_localctx.endPattern = Match(STRING_LITERAL);
+			Match(START);
 			State = 269;
-			Match(WITH);
+			_localctx.startPattern = Match(STRING_LITERAL);
 			State = 270;
-			strategyExpr();
+			Match(END);
+			State = 271;
+			_localctx.endPattern = Match(STRING_LITERAL);
 			State = 272;
+			Match(WITH);
+			State = 273;
+			strategyExpr();
+			State = 275;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==OPTIONS) {
 				{
-				State = 271;
+				State = 274;
 				optionsClause();
 				}
 			}
 
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			ErrorHandler.ReportError(this, re);
+			ErrorHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class DefineGeneratorStmtContext : ParserRuleContext {
+		public IToken generatorName;
+		public IToken generatorType;
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode DEFINE() { return GetToken(PhiSQLParser.DEFINE, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode GENERATOR() { return GetToken(PhiSQLParser.GENERATOR, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode TYPE() { return GetToken(PhiSQLParser.TYPE, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public OptionsClauseContext optionsClause() {
+			return GetRuleContext<OptionsClauseContext>(0);
+		}
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode[] STRING_LITERAL() { return GetTokens(PhiSQLParser.STRING_LITERAL); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode STRING_LITERAL(int i) {
+			return GetToken(PhiSQLParser.STRING_LITERAL, i);
+		}
+		public DefineGeneratorStmtContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int RuleIndex { get { return RULE_defineGeneratorStmt; } }
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void EnterRule(IParseTreeListener listener) {
+			IPhiSQLListener typedListener = listener as IPhiSQLListener;
+			if (typedListener != null) typedListener.EnterDefineGeneratorStmt(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override void ExitRule(IParseTreeListener listener) {
+			IPhiSQLListener typedListener = listener as IPhiSQLListener;
+			if (typedListener != null) typedListener.ExitDefineGeneratorStmt(this);
+		}
+		[System.Diagnostics.DebuggerNonUserCode]
+		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
+			IPhiSQLVisitor<TResult> typedVisitor = visitor as IPhiSQLVisitor<TResult>;
+			if (typedVisitor != null) return typedVisitor.VisitDefineGeneratorStmt(this);
+			else return visitor.VisitChildren(this);
+		}
+	}
+
+	[RuleVersion(0)]
+	public DefineGeneratorStmtContext defineGeneratorStmt() {
+		DefineGeneratorStmtContext _localctx = new DefineGeneratorStmtContext(Context, State);
+		EnterRule(_localctx, 36, RULE_defineGeneratorStmt);
+		try {
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 277;
+			Match(DEFINE);
+			State = 278;
+			Match(GENERATOR);
+			State = 279;
+			_localctx.generatorName = Match(STRING_LITERAL);
+			State = 280;
+			Match(TYPE);
+			State = 281;
+			_localctx.generatorType = Match(STRING_LITERAL);
+			State = 282;
+			optionsClause();
 			}
 		}
 		catch (RecognitionException re) {
@@ -1776,73 +1856,73 @@ public partial class PhiSQLParser : Parser {
 	[RuleVersion(0)]
 	public DetectStmtContext detectStmt() {
 		DetectStmtContext _localctx = new DetectStmtContext(Context, State);
-		EnterRule(_localctx, 36, RULE_detectStmt);
+		EnterRule(_localctx, 38, RULE_detectStmt);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 274;
+			State = 284;
 			Match(DETECT);
-			State = 275;
+			State = 285;
 			Match(PHEYE);
-			State = 278;
+			State = 288;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==LABELS) {
 				{
-				State = 276;
+				State = 286;
 				Match(LABELS);
-				State = 277;
+				State = 287;
 				stringList();
 				}
 			}
 
-			State = 282;
+			State = 292;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==ENDPOINT) {
 				{
-				State = 280;
+				State = 290;
 				Match(ENDPOINT);
-				State = 281;
+				State = 291;
 				_localctx.endpoint = Match(STRING_LITERAL);
 				}
 			}
 
-			State = 286;
+			State = 296;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==MODEL) {
 				{
-				State = 284;
+				State = 294;
 				Match(MODEL);
-				State = 285;
+				State = 295;
 				_localctx.model = Match(STRING_LITERAL);
 				}
 			}
 
-			State = 288;
+			State = 298;
 			Match(WITH);
-			State = 289;
+			State = 299;
 			strategyExpr();
-			State = 292;
+			State = 302;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==WHERE) {
 				{
-				State = 290;
+				State = 300;
 				Match(WHERE);
-				State = 291;
+				State = 301;
 				predicate(0);
 				}
 			}
 
-			State = 295;
+			State = 305;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==OPTIONS) {
 				{
-				State = 294;
+				State = 304;
 				optionsClause();
 				}
 			}
@@ -1992,28 +2072,28 @@ public partial class PhiSQLParser : Parser {
 	[RuleVersion(0)]
 	public DiscoveryStmtContext discoveryStmt() {
 		DiscoveryStmtContext _localctx = new DiscoveryStmtContext(Context, State);
-		EnterRule(_localctx, 38, RULE_discoveryStmt);
+		EnterRule(_localctx, 40, RULE_discoveryStmt);
 		int _la;
 		try {
-			State = 327;
+			State = 337;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case FIND:
 				_localctx = new FindPiiStmtContext(_localctx);
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 297;
+				State = 307;
 				Match(FIND);
-				State = 298;
+				State = 308;
 				Match(PII);
-				State = 299;
+				State = 309;
 				inClause();
-				State = 301;
+				State = 311;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==WHERE) {
 					{
-					State = 300;
+					State = 310;
 					whereDiscovery();
 					}
 				}
@@ -2024,18 +2104,18 @@ public partial class PhiSQLParser : Parser {
 				_localctx = new DiscoverEntitiesStmtContext(_localctx);
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 303;
+				State = 313;
 				Match(DISCOVER);
-				State = 304;
+				State = 314;
 				Match(ENTITIES);
-				State = 305;
+				State = 315;
 				inClause();
-				State = 307;
+				State = 317;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==WHERE) {
 					{
-					State = 306;
+					State = 316;
 					whereDiscovery();
 					}
 				}
@@ -2046,16 +2126,16 @@ public partial class PhiSQLParser : Parser {
 				_localctx = new ScanStmtContext(_localctx);
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 309;
+				State = 319;
 				Match(SCAN);
-				State = 310;
+				State = 320;
 				inClause();
-				State = 312;
+				State = 322;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==WHERE) {
 					{
-					State = 311;
+					State = 321;
 					whereDiscovery();
 					}
 				}
@@ -2066,40 +2146,40 @@ public partial class PhiSQLParser : Parser {
 				_localctx = new SelectFindingsStmtContext(_localctx);
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 314;
+				State = 324;
 				Match(SELECT);
-				State = 315;
+				State = 325;
 				projectionList();
-				State = 316;
+				State = 326;
 				Match(FROM);
-				State = 317;
+				State = 327;
 				findingsRef();
-				State = 319;
+				State = 329;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==WHERE) {
 					{
-					State = 318;
+					State = 328;
 					whereDiscovery();
 					}
 				}
 
-				State = 322;
+				State = 332;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==GROUP) {
 					{
-					State = 321;
+					State = 331;
 					groupByClause();
 					}
 				}
 
-				State = 325;
+				State = 335;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 				if (_la==LIMIT) {
 					{
-					State = 324;
+					State = 334;
 					limitClause();
 					}
 				}
@@ -2151,13 +2231,13 @@ public partial class PhiSQLParser : Parser {
 	[RuleVersion(0)]
 	public InClauseContext inClause() {
 		InClauseContext _localctx = new InClauseContext(Context, State);
-		EnterRule(_localctx, 40, RULE_inClause);
+		EnterRule(_localctx, 42, RULE_inClause);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 329;
+			State = 339;
 			Match(IN);
-			State = 330;
+			State = 340;
 			_localctx.uri = Match(STRING_LITERAL);
 			}
 		}
@@ -2203,13 +2283,13 @@ public partial class PhiSQLParser : Parser {
 	[RuleVersion(0)]
 	public WhereDiscoveryContext whereDiscovery() {
 		WhereDiscoveryContext _localctx = new WhereDiscoveryContext(Context, State);
-		EnterRule(_localctx, 42, RULE_whereDiscovery);
+		EnterRule(_localctx, 44, RULE_whereDiscovery);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 332;
+			State = 342;
 			Match(WHERE);
-			State = 333;
+			State = 343;
 			discoveryPredicate(0);
 			}
 		}
@@ -2350,14 +2430,14 @@ public partial class PhiSQLParser : Parser {
 		int _parentState = State;
 		DiscoveryPredicateContext _localctx = new DiscoveryPredicateContext(Context, _parentState);
 		DiscoveryPredicateContext _prevctx = _localctx;
-		int _startState = 44;
-		EnterRecursionRule(_localctx, 44, RULE_discoveryPredicate, _p);
+		int _startState = 46;
+		EnterRecursionRule(_localctx, 46, RULE_discoveryPredicate, _p);
 		int _la;
 		try {
 			int _alt;
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 348;
+			State = 358;
 			ErrorHandler.Sync(this);
 			switch ( Interpreter.AdaptivePredict(TokenStream,37,Context) ) {
 			case 1:
@@ -2366,11 +2446,11 @@ public partial class PhiSQLParser : Parser {
 				Context = _localctx;
 				_prevctx = _localctx;
 
-				State = 336;
+				State = 346;
 				columnRef();
-				State = 337;
+				State = 347;
 				Match(IN);
-				State = 338;
+				State = 348;
 				stringList();
 				}
 				break;
@@ -2379,13 +2459,13 @@ public partial class PhiSQLParser : Parser {
 				_localctx = new CompareDiscoveryPredicateContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 340;
+				State = 350;
 				columnRef();
-				State = 341;
+				State = 351;
 				compareOp();
-				State = 342;
+				State = 352;
 				_la = TokenStream.LA(1);
-				if ( !(((((_la - 87)) & ~0x3f) == 0 && ((1L << (_la - 87)) & 13L) != 0)) ) {
+				if ( !(((((_la - 90)) & ~0x3f) == 0 && ((1L << (_la - 90)) & 13L) != 0)) ) {
 				ErrorHandler.RecoverInline(this);
 				}
 				else {
@@ -2399,17 +2479,17 @@ public partial class PhiSQLParser : Parser {
 				_localctx = new ParenDiscoveryPredicateContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 344;
+				State = 354;
 				Match(T__1);
-				State = 345;
+				State = 355;
 				discoveryPredicate(0);
-				State = 346;
+				State = 356;
 				Match(T__2);
 				}
 				break;
 			}
 			Context.Stop = TokenStream.LT(-1);
-			State = 355;
+			State = 365;
 			ErrorHandler.Sync(this);
 			_alt = Interpreter.AdaptivePredict(TokenStream,38,Context);
 			while ( _alt!=2 && _alt!=global::Antlr4.Runtime.Atn.ATN.INVALID_ALT_NUMBER ) {
@@ -2421,9 +2501,9 @@ public partial class PhiSQLParser : Parser {
 					{
 					_localctx = new LogicalDiscoveryPredicateContext(new DiscoveryPredicateContext(_parentctx, _parentState));
 					PushNewRecursionContext(_localctx, _startState, RULE_discoveryPredicate);
-					State = 350;
+					State = 360;
 					if (!(Precpred(Context, 1))) throw new FailedPredicateException(this, "Precpred(Context, 1)");
-					State = 351;
+					State = 361;
 					_la = TokenStream.LA(1);
 					if ( !(_la==AND || _la==OR) ) {
 					ErrorHandler.RecoverInline(this);
@@ -2432,12 +2512,12 @@ public partial class PhiSQLParser : Parser {
 						ErrorHandler.ReportMatch(this);
 					    Consume();
 					}
-					State = 352;
+					State = 362;
 					discoveryPredicate(2);
 					}
 					} 
 				}
-				State = 357;
+				State = 367;
 				ErrorHandler.Sync(this);
 				_alt = Interpreter.AdaptivePredict(TokenStream,38,Context);
 			}
@@ -2487,26 +2567,26 @@ public partial class PhiSQLParser : Parser {
 	[RuleVersion(0)]
 	public ProjectionListContext projectionList() {
 		ProjectionListContext _localctx = new ProjectionListContext(Context, State);
-		EnterRule(_localctx, 46, RULE_projectionList);
+		EnterRule(_localctx, 48, RULE_projectionList);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 358;
+			State = 368;
 			projection();
-			State = 363;
+			State = 373;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			while (_la==T__3) {
 				{
 				{
-				State = 359;
+				State = 369;
 				Match(T__3);
-				State = 360;
+				State = 370;
 				projection();
 				}
 				}
-				State = 365;
+				State = 375;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 			}
@@ -2602,16 +2682,16 @@ public partial class PhiSQLParser : Parser {
 	[RuleVersion(0)]
 	public ProjectionContext projection() {
 		ProjectionContext _localctx = new ProjectionContext(Context, State);
-		EnterRule(_localctx, 48, RULE_projection);
+		EnterRule(_localctx, 50, RULE_projection);
 		try {
-			State = 369;
+			State = 379;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case T__7:
 				_localctx = new StarProjectionContext(_localctx);
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 366;
+				State = 376;
 				Match(T__7);
 				}
 				break;
@@ -2623,7 +2703,7 @@ public partial class PhiSQLParser : Parser {
 				_localctx = new AggregateProjectionContext(_localctx);
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 367;
+				State = 377;
 				aggregate();
 				}
 				break;
@@ -2632,7 +2712,7 @@ public partial class PhiSQLParser : Parser {
 				_localctx = new ColumnProjectionContext(_localctx);
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 368;
+				State = 378;
 				columnRef();
 				}
 				break;
@@ -2687,26 +2767,26 @@ public partial class PhiSQLParser : Parser {
 	[RuleVersion(0)]
 	public AggregateContext aggregate() {
 		AggregateContext _localctx = new AggregateContext(Context, State);
-		EnterRule(_localctx, 50, RULE_aggregate);
+		EnterRule(_localctx, 52, RULE_aggregate);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 371;
+			State = 381;
 			_localctx.aggFn = TokenStream.LT(1);
 			_la = TokenStream.LA(1);
-			if ( !(((((_la - 69)) & ~0x3f) == 0 && ((1L << (_la - 69)) & 31L) != 0)) ) {
+			if ( !(((((_la - 71)) & ~0x3f) == 0 && ((1L << (_la - 71)) & 31L) != 0)) ) {
 				_localctx.aggFn = ErrorHandler.RecoverInline(this);
 			}
 			else {
 				ErrorHandler.ReportMatch(this);
 			    Consume();
 			}
-			State = 372;
+			State = 382;
 			Match(T__1);
-			State = 373;
+			State = 383;
 			aggArg();
-			State = 374;
+			State = 384;
 			Match(T__2);
 			}
 		}
@@ -2778,16 +2858,16 @@ public partial class PhiSQLParser : Parser {
 	[RuleVersion(0)]
 	public AggArgContext aggArg() {
 		AggArgContext _localctx = new AggArgContext(Context, State);
-		EnterRule(_localctx, 52, RULE_aggArg);
+		EnterRule(_localctx, 54, RULE_aggArg);
 		try {
-			State = 378;
+			State = 388;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case T__7:
 				_localctx = new StarAggArgContext(_localctx);
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 376;
+				State = 386;
 				Match(T__7);
 				}
 				break;
@@ -2796,7 +2876,7 @@ public partial class PhiSQLParser : Parser {
 				_localctx = new ColumnAggArgContext(_localctx);
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 377;
+				State = 387;
 				columnRef();
 				}
 				break;
@@ -2844,12 +2924,12 @@ public partial class PhiSQLParser : Parser {
 	[RuleVersion(0)]
 	public ColumnRefContext columnRef() {
 		ColumnRefContext _localctx = new ColumnRefContext(Context, State);
-		EnterRule(_localctx, 54, RULE_columnRef);
+		EnterRule(_localctx, 56, RULE_columnRef);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 380;
+			State = 390;
 			_la = TokenStream.LA(1);
 			if ( !(_la==CONFIDENCE || _la==ID) ) {
 			ErrorHandler.RecoverInline(this);
@@ -2904,23 +2984,23 @@ public partial class PhiSQLParser : Parser {
 	[RuleVersion(0)]
 	public FindingsRefContext findingsRef() {
 		FindingsRefContext _localctx = new FindingsRefContext(Context, State);
-		EnterRule(_localctx, 56, RULE_findingsRef);
+		EnterRule(_localctx, 58, RULE_findingsRef);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 384;
+			State = 394;
 			ErrorHandler.Sync(this);
 			switch ( Interpreter.AdaptivePredict(TokenStream,42,Context) ) {
 			case 1:
 				{
-				State = 382;
+				State = 392;
 				_localctx.@namespace = Match(ID);
-				State = 383;
+				State = 393;
 				Match(T__8);
 				}
 				break;
 			}
-			State = 386;
+			State = 396;
 			_localctx.table = Match(ID);
 			}
 		}
@@ -2970,30 +3050,30 @@ public partial class PhiSQLParser : Parser {
 	[RuleVersion(0)]
 	public GroupByClauseContext groupByClause() {
 		GroupByClauseContext _localctx = new GroupByClauseContext(Context, State);
-		EnterRule(_localctx, 58, RULE_groupByClause);
+		EnterRule(_localctx, 60, RULE_groupByClause);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 388;
+			State = 398;
 			Match(GROUP);
-			State = 389;
+			State = 399;
 			Match(BY);
-			State = 390;
+			State = 400;
 			columnRef();
-			State = 395;
+			State = 405;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			while (_la==T__3) {
 				{
 				{
-				State = 391;
+				State = 401;
 				Match(T__3);
-				State = 392;
+				State = 402;
 				columnRef();
 				}
 				}
-				State = 397;
+				State = 407;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 			}
@@ -3039,13 +3119,13 @@ public partial class PhiSQLParser : Parser {
 	[RuleVersion(0)]
 	public LimitClauseContext limitClause() {
 		LimitClauseContext _localctx = new LimitClauseContext(Context, State);
-		EnterRule(_localctx, 60, RULE_limitClause);
+		EnterRule(_localctx, 62, RULE_limitClause);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 398;
+			State = 408;
 			Match(LIMIT);
-			State = 399;
+			State = 409;
 			Match(NUMERIC_LITERAL);
 			}
 		}
@@ -3093,26 +3173,26 @@ public partial class PhiSQLParser : Parser {
 	[RuleVersion(0)]
 	public EntityListContext entityList() {
 		EntityListContext _localctx = new EntityListContext(Context, State);
-		EnterRule(_localctx, 62, RULE_entityList);
+		EnterRule(_localctx, 64, RULE_entityList);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 401;
+			State = 411;
 			entityType();
-			State = 406;
+			State = 416;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			while (_la==T__3) {
 				{
 				{
-				State = 402;
+				State = 412;
 				Match(T__3);
-				State = 403;
+				State = 413;
 				entityType();
 				}
 				}
-				State = 408;
+				State = 418;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 			}
@@ -3186,16 +3266,16 @@ public partial class PhiSQLParser : Parser {
 	[RuleVersion(0)]
 	public EntityTypeContext entityType() {
 		EntityTypeContext _localctx = new EntityTypeContext(Context, State);
-		EnterRule(_localctx, 64, RULE_entityType);
+		EnterRule(_localctx, 66, RULE_entityType);
 		try {
-			State = 414;
+			State = 424;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case ID:
 				_localctx = new SimpleEntityTypeContext(_localctx);
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 409;
+				State = 419;
 				Match(ID);
 				}
 				break;
@@ -3203,13 +3283,13 @@ public partial class PhiSQLParser : Parser {
 				_localctx = new CustomIdentifierContext(_localctx);
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 410;
+				State = 420;
 				Match(IDENTIFIER_KW);
-				State = 411;
+				State = 421;
 				Match(T__1);
-				State = 412;
+				State = 422;
 				Match(STRING_LITERAL);
-				State = 413;
+				State = 423;
 				Match(T__2);
 				}
 				break;
@@ -3261,23 +3341,23 @@ public partial class PhiSQLParser : Parser {
 	[RuleVersion(0)]
 	public StrategyExprContext strategyExpr() {
 		StrategyExprContext _localctx = new StrategyExprContext(Context, State);
-		EnterRule(_localctx, 66, RULE_strategyExpr);
+		EnterRule(_localctx, 68, RULE_strategyExpr);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 416;
+			State = 426;
 			strategyName();
-			State = 421;
+			State = 431;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			if (_la==T__1) {
 				{
-				State = 417;
+				State = 427;
 				Match(T__1);
-				State = 418;
+				State = 428;
 				strategyArgs();
-				State = 419;
+				State = 429;
 				Match(T__2);
 				}
 			}
@@ -3309,6 +3389,7 @@ public partial class PhiSQLParser : Parser {
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode SHIFT() { return GetToken(PhiSQLParser.SHIFT, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode RELATIVE() { return GetToken(PhiSQLParser.RELATIVE, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode ABBREVIATE() { return GetToken(PhiSQLParser.ABBREVIATE, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode MAP_REPLACE() { return GetToken(PhiSQLParser.MAP_REPLACE, 0); }
 		public StrategyNameContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -3335,14 +3416,14 @@ public partial class PhiSQLParser : Parser {
 	[RuleVersion(0)]
 	public StrategyNameContext strategyName() {
 		StrategyNameContext _localctx = new StrategyNameContext(Context, State);
-		EnterRule(_localctx, 68, RULE_strategyName);
+		EnterRule(_localctx, 70, RULE_strategyName);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 423;
+			State = 433;
 			_la = TokenStream.LA(1);
-			if ( !(((((_la - 29)) & ~0x3f) == 0 && ((1L << (_la - 29)) & 288160007407534081L) != 0)) ) {
+			if ( !(((((_la - 29)) & ~0x3f) == 0 && ((1L << (_la - 29)) & 2305561534236983297L) != 0)) ) {
 			ErrorHandler.RecoverInline(this);
 			}
 			else {
@@ -3395,26 +3476,26 @@ public partial class PhiSQLParser : Parser {
 	[RuleVersion(0)]
 	public StrategyArgsContext strategyArgs() {
 		StrategyArgsContext _localctx = new StrategyArgsContext(Context, State);
-		EnterRule(_localctx, 70, RULE_strategyArgs);
+		EnterRule(_localctx, 72, RULE_strategyArgs);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 425;
+			State = 435;
 			namedArg();
-			State = 430;
+			State = 440;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			while (_la==T__3) {
 				{
 				{
-				State = 426;
+				State = 436;
 				Match(T__3);
-				State = 427;
+				State = 437;
 				namedArg();
 				}
 				}
-				State = 432;
+				State = 442;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 			}
@@ -3437,6 +3518,8 @@ public partial class PhiSQLParser : Parser {
 			return GetRuleContext<SettingValueContext>(0);
 		}
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode ID() { return GetToken(PhiSQLParser.ID, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode GENERATOR() { return GetToken(PhiSQLParser.GENERATOR, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode TYPE() { return GetToken(PhiSQLParser.TYPE, 0); }
 		public NamedArgContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -3463,15 +3546,24 @@ public partial class PhiSQLParser : Parser {
 	[RuleVersion(0)]
 	public NamedArgContext namedArg() {
 		NamedArgContext _localctx = new NamedArgContext(Context, State);
-		EnterRule(_localctx, 72, RULE_namedArg);
+		EnterRule(_localctx, 74, RULE_namedArg);
+		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 433;
-			_localctx.argName = Match(ID);
-			State = 434;
+			State = 443;
+			_localctx.argName = TokenStream.LT(1);
+			_la = TokenStream.LA(1);
+			if ( !(((((_la - 54)) & ~0x3f) == 0 && ((1L << (_la - 54)) & 137438953475L) != 0)) ) {
+				_localctx.argName = ErrorHandler.RecoverInline(this);
+			}
+			else {
+				ErrorHandler.ReportMatch(this);
+			    Consume();
+			}
+			State = 444;
 			Match(T__4);
-			State = 435;
+			State = 445;
 			settingValue();
 			}
 		}
@@ -3582,14 +3674,14 @@ public partial class PhiSQLParser : Parser {
 		int _parentState = State;
 		PredicateContext _localctx = new PredicateContext(Context, _parentState);
 		PredicateContext _prevctx = _localctx;
-		int _startState = 74;
-		EnterRecursionRule(_localctx, 74, RULE_predicate, _p);
+		int _startState = 76;
+		EnterRecursionRule(_localctx, 76, RULE_predicate, _p);
 		int _la;
 		try {
 			int _alt;
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 446;
+			State = 456;
 			ErrorHandler.Sync(this);
 			switch (TokenStream.LA(1)) {
 			case CONFIDENCE:
@@ -3598,11 +3690,11 @@ public partial class PhiSQLParser : Parser {
 				Context = _localctx;
 				_prevctx = _localctx;
 
-				State = 438;
+				State = 448;
 				Match(CONFIDENCE);
-				State = 439;
+				State = 449;
 				compareOp();
-				State = 440;
+				State = 450;
 				Match(NUMERIC_LITERAL);
 				}
 				break;
@@ -3611,11 +3703,11 @@ public partial class PhiSQLParser : Parser {
 				_localctx = new ParenPredicateContext(_localctx);
 				Context = _localctx;
 				_prevctx = _localctx;
-				State = 442;
+				State = 452;
 				Match(T__1);
-				State = 443;
+				State = 453;
 				predicate(0);
-				State = 444;
+				State = 454;
 				Match(T__2);
 				}
 				break;
@@ -3623,7 +3715,7 @@ public partial class PhiSQLParser : Parser {
 				throw new NoViableAltException(this);
 			}
 			Context.Stop = TokenStream.LT(-1);
-			State = 453;
+			State = 463;
 			ErrorHandler.Sync(this);
 			_alt = Interpreter.AdaptivePredict(TokenStream,49,Context);
 			while ( _alt!=2 && _alt!=global::Antlr4.Runtime.Atn.ATN.INVALID_ALT_NUMBER ) {
@@ -3635,9 +3727,9 @@ public partial class PhiSQLParser : Parser {
 					{
 					_localctx = new LogicalPredicateContext(new PredicateContext(_parentctx, _parentState));
 					PushNewRecursionContext(_localctx, _startState, RULE_predicate);
-					State = 448;
+					State = 458;
 					if (!(Precpred(Context, 1))) throw new FailedPredicateException(this, "Precpred(Context, 1)");
-					State = 449;
+					State = 459;
 					_la = TokenStream.LA(1);
 					if ( !(_la==AND || _la==OR) ) {
 					ErrorHandler.RecoverInline(this);
@@ -3646,12 +3738,12 @@ public partial class PhiSQLParser : Parser {
 						ErrorHandler.ReportMatch(this);
 					    Consume();
 					}
-					State = 450;
+					State = 460;
 					predicate(2);
 					}
 					} 
 				}
-				State = 455;
+				State = 465;
 				ErrorHandler.Sync(this);
 				_alt = Interpreter.AdaptivePredict(TokenStream,49,Context);
 			}
@@ -3695,12 +3787,12 @@ public partial class PhiSQLParser : Parser {
 	[RuleVersion(0)]
 	public CompareOpContext compareOp() {
 		CompareOpContext _localctx = new CompareOpContext(Context, State);
-		EnterRule(_localctx, 76, RULE_compareOp);
+		EnterRule(_localctx, 78, RULE_compareOp);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 456;
+			State = 466;
 			_la = TokenStream.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 15392L) != 0)) ) {
 			ErrorHandler.RecoverInline(this);
@@ -3753,32 +3845,32 @@ public partial class PhiSQLParser : Parser {
 	[RuleVersion(0)]
 	public StringListContext stringList() {
 		StringListContext _localctx = new StringListContext(Context, State);
-		EnterRule(_localctx, 78, RULE_stringList);
+		EnterRule(_localctx, 80, RULE_stringList);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 458;
+			State = 468;
 			Match(T__1);
-			State = 459;
+			State = 469;
 			Match(STRING_LITERAL);
-			State = 464;
+			State = 474;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
 			while (_la==T__3) {
 				{
 				{
-				State = 460;
+				State = 470;
 				Match(T__3);
-				State = 461;
+				State = 471;
 				Match(STRING_LITERAL);
 				}
 				}
-				State = 466;
+				State = 476;
 				ErrorHandler.Sync(this);
 				_la = TokenStream.LA(1);
 			}
-			State = 467;
+			State = 477;
 			Match(T__2);
 			}
 		}
@@ -3824,14 +3916,14 @@ public partial class PhiSQLParser : Parser {
 	[RuleVersion(0)]
 	public LiteralContext literal() {
 		LiteralContext _localctx = new LiteralContext(Context, State);
-		EnterRule(_localctx, 80, RULE_literal);
+		EnterRule(_localctx, 82, RULE_literal);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 469;
+			State = 479;
 			_la = TokenStream.LA(1);
-			if ( !(((((_la - 87)) & ~0x3f) == 0 && ((1L << (_la - 87)) & 15L) != 0)) ) {
+			if ( !(((((_la - 90)) & ~0x3f) == 0 && ((1L << (_la - 90)) & 15L) != 0)) ) {
 			ErrorHandler.RecoverInline(this);
 			}
 			else {
@@ -3853,8 +3945,8 @@ public partial class PhiSQLParser : Parser {
 
 	public override bool Sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
 		switch (ruleIndex) {
-		case 22: return discoveryPredicate_sempred((DiscoveryPredicateContext)_localctx, predIndex);
-		case 37: return predicate_sempred((PredicateContext)_localctx, predIndex);
+		case 23: return discoveryPredicate_sempred((DiscoveryPredicateContext)_localctx, predIndex);
+		case 38: return predicate_sempred((PredicateContext)_localctx, predIndex);
 		}
 		return true;
 	}
@@ -3872,162 +3964,166 @@ public partial class PhiSQLParser : Parser {
 	}
 
 	private static int[] _serializedATN = {
-		4,1,93,472,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,7,
+		4,1,96,482,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,7,
 		7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,2,14,7,14,
 		2,15,7,15,2,16,7,16,2,17,7,17,2,18,7,18,2,19,7,19,2,20,7,20,2,21,7,21,
 		2,22,7,22,2,23,7,23,2,24,7,24,2,25,7,25,2,26,7,26,2,27,7,27,2,28,7,28,
 		2,29,7,29,2,30,7,30,2,31,7,31,2,32,7,32,2,33,7,33,2,34,7,34,2,35,7,35,
-		2,36,7,36,2,37,7,37,2,38,7,38,2,39,7,39,2,40,7,40,1,0,1,0,1,0,5,0,86,8,
-		0,10,0,12,0,89,9,0,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,
-		103,8,1,1,2,1,2,1,2,1,2,3,2,109,8,2,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,
+		2,36,7,36,2,37,7,37,2,38,7,38,2,39,7,39,2,40,7,40,2,41,7,41,1,0,1,0,1,
+		0,5,0,88,8,0,10,0,12,0,91,9,0,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+		1,1,1,1,1,1,3,1,106,8,1,1,2,1,2,1,2,1,2,3,2,112,8,2,1,3,1,3,1,3,1,3,1,
 		3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,
-		3,3,137,8,3,1,4,1,4,1,4,5,4,142,8,4,10,4,12,4,145,9,4,1,5,1,5,1,5,1,5,
-		1,6,1,6,1,7,1,7,1,7,3,7,156,8,7,1,8,1,8,1,8,1,8,1,9,1,9,1,9,1,9,5,9,166,
-		8,9,10,9,12,9,169,9,9,3,9,171,8,9,1,9,1,9,1,10,1,10,1,10,1,10,1,10,1,11,
-		1,11,1,11,1,11,3,11,184,8,11,1,11,1,11,3,11,188,8,11,1,11,3,11,191,8,11,
-		1,12,1,12,1,12,1,12,5,12,197,8,12,10,12,12,12,200,9,12,1,13,1,13,1,13,
-		1,13,3,13,206,8,13,1,14,1,14,1,14,1,14,1,14,3,14,213,8,14,1,14,1,14,3,
-		14,217,8,14,1,14,3,14,220,8,14,1,15,1,15,1,15,1,15,1,15,1,15,1,15,3,15,
-		229,8,15,1,15,1,15,3,15,233,8,15,1,15,1,15,1,15,1,15,3,15,239,8,15,1,15,
-		3,15,242,8,15,1,16,1,16,1,16,1,16,1,16,1,16,1,16,1,16,3,16,252,8,16,3,
-		16,254,8,16,1,16,3,16,257,8,16,1,16,1,16,1,16,3,16,262,8,16,1,17,1,17,
-		1,17,1,17,1,17,1,17,1,17,1,17,1,17,3,17,273,8,17,1,18,1,18,1,18,1,18,3,
-		18,279,8,18,1,18,1,18,3,18,283,8,18,1,18,1,18,3,18,287,8,18,1,18,1,18,
-		1,18,1,18,3,18,293,8,18,1,18,3,18,296,8,18,1,19,1,19,1,19,1,19,3,19,302,
-		8,19,1,19,1,19,1,19,1,19,3,19,308,8,19,1,19,1,19,1,19,3,19,313,8,19,1,
-		19,1,19,1,19,1,19,1,19,3,19,320,8,19,1,19,3,19,323,8,19,1,19,3,19,326,
-		8,19,3,19,328,8,19,1,20,1,20,1,20,1,21,1,21,1,21,1,22,1,22,1,22,1,22,1,
-		22,1,22,1,22,1,22,1,22,1,22,1,22,1,22,1,22,3,22,349,8,22,1,22,1,22,1,22,
-		5,22,354,8,22,10,22,12,22,357,9,22,1,23,1,23,1,23,5,23,362,8,23,10,23,
-		12,23,365,9,23,1,24,1,24,1,24,3,24,370,8,24,1,25,1,25,1,25,1,25,1,25,1,
-		26,1,26,3,26,379,8,26,1,27,1,27,1,28,1,28,3,28,385,8,28,1,28,1,28,1,29,
-		1,29,1,29,1,29,1,29,5,29,394,8,29,10,29,12,29,397,9,29,1,30,1,30,1,30,
-		1,31,1,31,1,31,5,31,405,8,31,10,31,12,31,408,9,31,1,32,1,32,1,32,1,32,
-		1,32,3,32,415,8,32,1,33,1,33,1,33,1,33,1,33,3,33,422,8,33,1,34,1,34,1,
-		35,1,35,1,35,5,35,429,8,35,10,35,12,35,432,9,35,1,36,1,36,1,36,1,36,1,
-		37,1,37,1,37,1,37,1,37,1,37,1,37,1,37,1,37,3,37,447,8,37,1,37,1,37,1,37,
-		5,37,452,8,37,10,37,12,37,455,9,37,1,38,1,38,1,39,1,39,1,39,1,39,5,39,
-		463,8,39,10,39,12,39,466,9,39,1,39,1,39,1,40,1,40,1,40,0,2,44,74,41,0,
-		2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,
-		52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,0,10,1,0,23,26,1,0,88,89,
-		1,0,45,46,2,0,87,87,89,90,1,0,38,39,1,0,69,73,2,0,40,40,88,88,2,0,29,29,
-		75,86,2,0,5,5,10,13,1,0,87,90,496,0,87,1,0,0,0,2,102,1,0,0,0,4,104,1,0,
-		0,0,6,110,1,0,0,0,8,138,1,0,0,0,10,146,1,0,0,0,12,150,1,0,0,0,14,155,1,
-		0,0,0,16,157,1,0,0,0,18,161,1,0,0,0,20,174,1,0,0,0,22,179,1,0,0,0,24,192,
-		1,0,0,0,26,201,1,0,0,0,28,207,1,0,0,0,30,221,1,0,0,0,32,243,1,0,0,0,34,
-		263,1,0,0,0,36,274,1,0,0,0,38,327,1,0,0,0,40,329,1,0,0,0,42,332,1,0,0,
-		0,44,348,1,0,0,0,46,358,1,0,0,0,48,369,1,0,0,0,50,371,1,0,0,0,52,378,1,
-		0,0,0,54,380,1,0,0,0,56,384,1,0,0,0,58,388,1,0,0,0,60,398,1,0,0,0,62,401,
-		1,0,0,0,64,414,1,0,0,0,66,416,1,0,0,0,68,423,1,0,0,0,70,425,1,0,0,0,72,
-		433,1,0,0,0,74,446,1,0,0,0,76,456,1,0,0,0,78,458,1,0,0,0,80,469,1,0,0,
-		0,82,83,3,2,1,0,83,84,5,1,0,0,84,86,1,0,0,0,85,82,1,0,0,0,86,89,1,0,0,
-		0,87,85,1,0,0,0,87,88,1,0,0,0,88,90,1,0,0,0,89,87,1,0,0,0,90,91,5,0,0,
-		1,91,1,1,0,0,0,92,103,3,4,2,0,93,103,3,6,3,0,94,103,3,22,11,0,95,103,3,
-		24,12,0,96,103,3,28,14,0,97,103,3,30,15,0,98,103,3,32,16,0,99,103,3,34,
-		17,0,100,103,3,36,18,0,101,103,3,38,19,0,102,92,1,0,0,0,102,93,1,0,0,0,
-		102,94,1,0,0,0,102,95,1,0,0,0,102,96,1,0,0,0,102,97,1,0,0,0,102,98,1,0,
-		0,0,102,99,1,0,0,0,102,100,1,0,0,0,102,101,1,0,0,0,103,3,1,0,0,0,104,105,
-		5,14,0,0,105,108,5,88,0,0,106,107,5,15,0,0,107,109,5,89,0,0,108,106,1,
-		0,0,0,108,109,1,0,0,0,109,5,1,0,0,0,110,136,5,16,0,0,111,112,5,17,0,0,
-		112,113,5,19,0,0,113,114,5,21,0,0,114,115,5,22,0,0,115,137,5,89,0,0,116,
-		117,5,18,0,0,117,118,5,19,0,0,118,119,5,21,0,0,119,120,5,22,0,0,120,121,
-		5,89,0,0,121,122,5,20,0,0,122,123,5,21,0,0,123,124,5,22,0,0,124,137,5,
-		89,0,0,125,126,7,0,0,0,126,127,5,2,0,0,127,128,3,8,4,0,128,129,5,3,0,0,
-		129,137,1,0,0,0,130,131,5,27,0,0,131,132,5,28,0,0,132,133,5,2,0,0,133,
-		134,3,8,4,0,134,135,5,3,0,0,135,137,1,0,0,0,136,111,1,0,0,0,136,116,1,
-		0,0,0,136,125,1,0,0,0,136,130,1,0,0,0,137,7,1,0,0,0,138,143,3,10,5,0,139,
-		140,5,4,0,0,140,142,3,10,5,0,141,139,1,0,0,0,142,145,1,0,0,0,143,141,1,
-		0,0,0,143,144,1,0,0,0,144,9,1,0,0,0,145,143,1,0,0,0,146,147,3,12,6,0,147,
-		148,5,5,0,0,148,149,3,14,7,0,149,11,1,0,0,0,150,151,7,1,0,0,151,13,1,0,
-		0,0,152,156,3,80,40,0,153,156,3,16,8,0,154,156,3,18,9,0,155,152,1,0,0,
-		0,155,153,1,0,0,0,155,154,1,0,0,0,156,15,1,0,0,0,157,158,5,2,0,0,158,159,
-		3,8,4,0,159,160,5,3,0,0,160,17,1,0,0,0,161,170,5,6,0,0,162,167,3,14,7,
-		0,163,164,5,4,0,0,164,166,3,14,7,0,165,163,1,0,0,0,166,169,1,0,0,0,167,
-		165,1,0,0,0,167,168,1,0,0,0,168,171,1,0,0,0,169,167,1,0,0,0,170,162,1,
-		0,0,0,170,171,1,0,0,0,171,172,1,0,0,0,172,173,5,7,0,0,173,19,1,0,0,0,174,
-		175,5,54,0,0,175,176,5,2,0,0,176,177,3,8,4,0,177,178,5,3,0,0,178,21,1,
-		0,0,0,179,180,5,29,0,0,180,183,3,62,31,0,181,182,5,35,0,0,182,184,3,66,
-		33,0,183,181,1,0,0,0,183,184,1,0,0,0,184,187,1,0,0,0,185,186,5,36,0,0,
-		186,188,3,74,37,0,187,185,1,0,0,0,187,188,1,0,0,0,188,190,1,0,0,0,189,
-		191,3,20,10,0,190,189,1,0,0,0,190,191,1,0,0,0,191,23,1,0,0,0,192,193,5,
-		30,0,0,193,198,3,26,13,0,194,195,5,4,0,0,195,197,3,26,13,0,196,194,1,0,
-		0,0,197,200,1,0,0,0,198,196,1,0,0,0,198,199,1,0,0,0,199,25,1,0,0,0,200,
-		198,1,0,0,0,201,202,3,64,32,0,202,203,5,37,0,0,203,205,3,66,33,0,204,206,
-		3,20,10,0,205,204,1,0,0,0,205,206,1,0,0,0,206,27,1,0,0,0,207,212,5,31,
-		0,0,208,209,5,32,0,0,209,213,3,78,39,0,210,211,5,33,0,0,211,213,5,89,0,
-		0,212,208,1,0,0,0,212,210,1,0,0,0,213,216,1,0,0,0,214,215,5,34,0,0,215,
-		217,3,62,31,0,216,214,1,0,0,0,216,217,1,0,0,0,217,219,1,0,0,0,218,220,
-		3,20,10,0,219,218,1,0,0,0,219,220,1,0,0,0,220,29,1,0,0,0,221,222,5,41,
-		0,0,222,223,5,74,0,0,223,224,5,89,0,0,224,225,5,42,0,0,225,228,5,89,0,
-		0,226,227,5,43,0,0,227,229,5,90,0,0,228,226,1,0,0,0,228,229,1,0,0,0,229,
-		232,1,0,0,0,230,231,5,44,0,0,231,233,7,2,0,0,232,230,1,0,0,0,232,233,1,
-		0,0,0,233,234,1,0,0,0,234,235,5,35,0,0,235,238,3,66,33,0,236,237,5,36,
-		0,0,237,239,3,74,37,0,238,236,1,0,0,0,238,239,1,0,0,0,239,241,1,0,0,0,
-		240,242,3,20,10,0,241,240,1,0,0,0,241,242,1,0,0,0,242,31,1,0,0,0,243,244,
-		5,41,0,0,244,245,5,47,0,0,245,246,5,89,0,0,246,247,5,32,0,0,247,253,3,
-		78,39,0,248,251,5,51,0,0,249,250,5,52,0,0,250,252,5,88,0,0,251,249,1,0,
-		0,0,251,252,1,0,0,0,252,254,1,0,0,0,253,248,1,0,0,0,253,254,1,0,0,0,254,
-		256,1,0,0,0,255,257,5,53,0,0,256,255,1,0,0,0,256,257,1,0,0,0,257,258,1,
-		0,0,0,258,259,5,35,0,0,259,261,3,66,33,0,260,262,3,20,10,0,261,260,1,0,
-		0,0,261,262,1,0,0,0,262,33,1,0,0,0,263,264,5,41,0,0,264,265,5,48,0,0,265,
-		266,5,49,0,0,266,267,5,89,0,0,267,268,5,50,0,0,268,269,5,89,0,0,269,270,
-		5,35,0,0,270,272,3,66,33,0,271,273,3,20,10,0,272,271,1,0,0,0,272,273,1,
-		0,0,0,273,35,1,0,0,0,274,275,5,55,0,0,275,278,5,56,0,0,276,277,5,57,0,
-		0,277,279,3,78,39,0,278,276,1,0,0,0,278,279,1,0,0,0,279,282,1,0,0,0,280,
-		281,5,58,0,0,281,283,5,89,0,0,282,280,1,0,0,0,282,283,1,0,0,0,283,286,
-		1,0,0,0,284,285,5,59,0,0,285,287,5,89,0,0,286,284,1,0,0,0,286,287,1,0,
-		0,0,287,288,1,0,0,0,288,289,5,35,0,0,289,292,3,66,33,0,290,291,5,36,0,
-		0,291,293,3,74,37,0,292,290,1,0,0,0,292,293,1,0,0,0,293,295,1,0,0,0,294,
-		296,3,20,10,0,295,294,1,0,0,0,295,296,1,0,0,0,296,37,1,0,0,0,297,298,5,
-		60,0,0,298,299,5,61,0,0,299,301,3,40,20,0,300,302,3,42,21,0,301,300,1,
-		0,0,0,301,302,1,0,0,0,302,328,1,0,0,0,303,304,5,62,0,0,304,305,5,63,0,
-		0,305,307,3,40,20,0,306,308,3,42,21,0,307,306,1,0,0,0,307,308,1,0,0,0,
-		308,328,1,0,0,0,309,310,5,64,0,0,310,312,3,40,20,0,311,313,3,42,21,0,312,
-		311,1,0,0,0,312,313,1,0,0,0,313,328,1,0,0,0,314,315,5,66,0,0,315,316,3,
-		46,23,0,316,317,5,21,0,0,317,319,3,56,28,0,318,320,3,42,21,0,319,318,1,
-		0,0,0,319,320,1,0,0,0,320,322,1,0,0,0,321,323,3,58,29,0,322,321,1,0,0,
-		0,322,323,1,0,0,0,323,325,1,0,0,0,324,326,3,60,30,0,325,324,1,0,0,0,325,
-		326,1,0,0,0,326,328,1,0,0,0,327,297,1,0,0,0,327,303,1,0,0,0,327,309,1,
-		0,0,0,327,314,1,0,0,0,328,39,1,0,0,0,329,330,5,65,0,0,330,331,5,89,0,0,
-		331,41,1,0,0,0,332,333,5,36,0,0,333,334,3,44,22,0,334,43,1,0,0,0,335,336,
-		6,22,-1,0,336,337,3,54,27,0,337,338,5,65,0,0,338,339,3,78,39,0,339,349,
-		1,0,0,0,340,341,3,54,27,0,341,342,3,76,38,0,342,343,7,3,0,0,343,349,1,
-		0,0,0,344,345,5,2,0,0,345,346,3,44,22,0,346,347,5,3,0,0,347,349,1,0,0,
-		0,348,335,1,0,0,0,348,340,1,0,0,0,348,344,1,0,0,0,349,355,1,0,0,0,350,
-		351,10,1,0,0,351,352,7,4,0,0,352,354,3,44,22,2,353,350,1,0,0,0,354,357,
-		1,0,0,0,355,353,1,0,0,0,355,356,1,0,0,0,356,45,1,0,0,0,357,355,1,0,0,0,
-		358,363,3,48,24,0,359,360,5,4,0,0,360,362,3,48,24,0,361,359,1,0,0,0,362,
-		365,1,0,0,0,363,361,1,0,0,0,363,364,1,0,0,0,364,47,1,0,0,0,365,363,1,0,
-		0,0,366,370,5,8,0,0,367,370,3,50,25,0,368,370,3,54,27,0,369,366,1,0,0,
-		0,369,367,1,0,0,0,369,368,1,0,0,0,370,49,1,0,0,0,371,372,7,5,0,0,372,373,
-		5,2,0,0,373,374,3,52,26,0,374,375,5,3,0,0,375,51,1,0,0,0,376,379,5,8,0,
-		0,377,379,3,54,27,0,378,376,1,0,0,0,378,377,1,0,0,0,379,53,1,0,0,0,380,
-		381,7,6,0,0,381,55,1,0,0,0,382,383,5,88,0,0,383,385,5,9,0,0,384,382,1,
-		0,0,0,384,385,1,0,0,0,385,386,1,0,0,0,386,387,5,88,0,0,387,57,1,0,0,0,
-		388,389,5,43,0,0,389,390,5,67,0,0,390,395,3,54,27,0,391,392,5,4,0,0,392,
-		394,3,54,27,0,393,391,1,0,0,0,394,397,1,0,0,0,395,393,1,0,0,0,395,396,
-		1,0,0,0,396,59,1,0,0,0,397,395,1,0,0,0,398,399,5,68,0,0,399,400,5,90,0,
-		0,400,61,1,0,0,0,401,406,3,64,32,0,402,403,5,4,0,0,403,405,3,64,32,0,404,
-		402,1,0,0,0,405,408,1,0,0,0,406,404,1,0,0,0,406,407,1,0,0,0,407,63,1,0,
-		0,0,408,406,1,0,0,0,409,415,5,88,0,0,410,411,5,74,0,0,411,412,5,2,0,0,
-		412,413,5,89,0,0,413,415,5,3,0,0,414,409,1,0,0,0,414,410,1,0,0,0,415,65,
-		1,0,0,0,416,421,3,68,34,0,417,418,5,2,0,0,418,419,3,70,35,0,419,420,5,
-		3,0,0,420,422,1,0,0,0,421,417,1,0,0,0,421,422,1,0,0,0,422,67,1,0,0,0,423,
-		424,7,7,0,0,424,69,1,0,0,0,425,430,3,72,36,0,426,427,5,4,0,0,427,429,3,
-		72,36,0,428,426,1,0,0,0,429,432,1,0,0,0,430,428,1,0,0,0,430,431,1,0,0,
-		0,431,71,1,0,0,0,432,430,1,0,0,0,433,434,5,88,0,0,434,435,5,5,0,0,435,
-		436,3,14,7,0,436,73,1,0,0,0,437,438,6,37,-1,0,438,439,5,40,0,0,439,440,
-		3,76,38,0,440,441,5,90,0,0,441,447,1,0,0,0,442,443,5,2,0,0,443,444,3,74,
-		37,0,444,445,5,3,0,0,445,447,1,0,0,0,446,437,1,0,0,0,446,442,1,0,0,0,447,
-		453,1,0,0,0,448,449,10,1,0,0,449,450,7,4,0,0,450,452,3,74,37,2,451,448,
-		1,0,0,0,452,455,1,0,0,0,453,451,1,0,0,0,453,454,1,0,0,0,454,75,1,0,0,0,
-		455,453,1,0,0,0,456,457,7,8,0,0,457,77,1,0,0,0,458,459,5,2,0,0,459,464,
-		5,89,0,0,460,461,5,4,0,0,461,463,5,89,0,0,462,460,1,0,0,0,463,466,1,0,
-		0,0,464,462,1,0,0,0,464,465,1,0,0,0,465,467,1,0,0,0,466,464,1,0,0,0,467,
-		468,5,3,0,0,468,79,1,0,0,0,469,470,7,9,0,0,470,81,1,0,0,0,51,87,102,108,
-		136,143,155,167,170,183,187,190,198,205,212,216,219,228,232,238,241,251,
-		253,256,261,272,278,282,286,292,295,301,307,312,319,322,325,327,348,355,
-		363,369,378,384,395,406,414,421,430,446,453,464
+		1,3,1,3,1,3,1,3,3,3,140,8,3,1,4,1,4,1,4,5,4,145,8,4,10,4,12,4,148,9,4,
+		1,5,1,5,1,5,1,5,1,6,1,6,1,7,1,7,1,7,3,7,159,8,7,1,8,1,8,1,8,1,8,1,9,1,
+		9,1,9,1,9,5,9,169,8,9,10,9,12,9,172,9,9,3,9,174,8,9,1,9,1,9,1,10,1,10,
+		1,10,1,10,1,10,1,11,1,11,1,11,1,11,3,11,187,8,11,1,11,1,11,3,11,191,8,
+		11,1,11,3,11,194,8,11,1,12,1,12,1,12,1,12,5,12,200,8,12,10,12,12,12,203,
+		9,12,1,13,1,13,1,13,1,13,3,13,209,8,13,1,14,1,14,1,14,1,14,1,14,3,14,216,
+		8,14,1,14,1,14,3,14,220,8,14,1,14,3,14,223,8,14,1,15,1,15,1,15,1,15,1,
+		15,1,15,1,15,3,15,232,8,15,1,15,1,15,3,15,236,8,15,1,15,1,15,1,15,1,15,
+		3,15,242,8,15,1,15,3,15,245,8,15,1,16,1,16,1,16,1,16,1,16,1,16,1,16,1,
+		16,3,16,255,8,16,3,16,257,8,16,1,16,3,16,260,8,16,1,16,1,16,1,16,3,16,
+		265,8,16,1,17,1,17,1,17,1,17,1,17,1,17,1,17,1,17,1,17,3,17,276,8,17,1,
+		18,1,18,1,18,1,18,1,18,1,18,1,18,1,19,1,19,1,19,1,19,3,19,289,8,19,1,19,
+		1,19,3,19,293,8,19,1,19,1,19,3,19,297,8,19,1,19,1,19,1,19,1,19,3,19,303,
+		8,19,1,19,3,19,306,8,19,1,20,1,20,1,20,1,20,3,20,312,8,20,1,20,1,20,1,
+		20,1,20,3,20,318,8,20,1,20,1,20,1,20,3,20,323,8,20,1,20,1,20,1,20,1,20,
+		1,20,3,20,330,8,20,1,20,3,20,333,8,20,1,20,3,20,336,8,20,3,20,338,8,20,
+		1,21,1,21,1,21,1,22,1,22,1,22,1,23,1,23,1,23,1,23,1,23,1,23,1,23,1,23,
+		1,23,1,23,1,23,1,23,1,23,3,23,359,8,23,1,23,1,23,1,23,5,23,364,8,23,10,
+		23,12,23,367,9,23,1,24,1,24,1,24,5,24,372,8,24,10,24,12,24,375,9,24,1,
+		25,1,25,1,25,3,25,380,8,25,1,26,1,26,1,26,1,26,1,26,1,27,1,27,3,27,389,
+		8,27,1,28,1,28,1,29,1,29,3,29,395,8,29,1,29,1,29,1,30,1,30,1,30,1,30,1,
+		30,5,30,404,8,30,10,30,12,30,407,9,30,1,31,1,31,1,31,1,32,1,32,1,32,5,
+		32,415,8,32,10,32,12,32,418,9,32,1,33,1,33,1,33,1,33,1,33,3,33,425,8,33,
+		1,34,1,34,1,34,1,34,1,34,3,34,432,8,34,1,35,1,35,1,36,1,36,1,36,5,36,439,
+		8,36,10,36,12,36,442,9,36,1,37,1,37,1,37,1,37,1,38,1,38,1,38,1,38,1,38,
+		1,38,1,38,1,38,1,38,3,38,457,8,38,1,38,1,38,1,38,5,38,462,8,38,10,38,12,
+		38,465,9,38,1,39,1,39,1,40,1,40,1,40,1,40,5,40,473,8,40,10,40,12,40,476,
+		9,40,1,40,1,40,1,41,1,41,1,41,0,2,46,76,42,0,2,4,6,8,10,12,14,16,18,20,
+		22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,
+		70,72,74,76,78,80,82,0,11,1,0,23,26,1,0,91,92,1,0,45,46,2,0,90,90,92,93,
+		1,0,38,39,1,0,71,75,2,0,40,40,91,91,2,0,29,29,77,89,2,0,54,55,91,91,2,
+		0,5,5,10,13,1,0,90,93,506,0,89,1,0,0,0,2,105,1,0,0,0,4,107,1,0,0,0,6,113,
+		1,0,0,0,8,141,1,0,0,0,10,149,1,0,0,0,12,153,1,0,0,0,14,158,1,0,0,0,16,
+		160,1,0,0,0,18,164,1,0,0,0,20,177,1,0,0,0,22,182,1,0,0,0,24,195,1,0,0,
+		0,26,204,1,0,0,0,28,210,1,0,0,0,30,224,1,0,0,0,32,246,1,0,0,0,34,266,1,
+		0,0,0,36,277,1,0,0,0,38,284,1,0,0,0,40,337,1,0,0,0,42,339,1,0,0,0,44,342,
+		1,0,0,0,46,358,1,0,0,0,48,368,1,0,0,0,50,379,1,0,0,0,52,381,1,0,0,0,54,
+		388,1,0,0,0,56,390,1,0,0,0,58,394,1,0,0,0,60,398,1,0,0,0,62,408,1,0,0,
+		0,64,411,1,0,0,0,66,424,1,0,0,0,68,426,1,0,0,0,70,433,1,0,0,0,72,435,1,
+		0,0,0,74,443,1,0,0,0,76,456,1,0,0,0,78,466,1,0,0,0,80,468,1,0,0,0,82,479,
+		1,0,0,0,84,85,3,2,1,0,85,86,5,1,0,0,86,88,1,0,0,0,87,84,1,0,0,0,88,91,
+		1,0,0,0,89,87,1,0,0,0,89,90,1,0,0,0,90,92,1,0,0,0,91,89,1,0,0,0,92,93,
+		5,0,0,1,93,1,1,0,0,0,94,106,3,4,2,0,95,106,3,6,3,0,96,106,3,22,11,0,97,
+		106,3,24,12,0,98,106,3,28,14,0,99,106,3,30,15,0,100,106,3,32,16,0,101,
+		106,3,34,17,0,102,106,3,36,18,0,103,106,3,38,19,0,104,106,3,40,20,0,105,
+		94,1,0,0,0,105,95,1,0,0,0,105,96,1,0,0,0,105,97,1,0,0,0,105,98,1,0,0,0,
+		105,99,1,0,0,0,105,100,1,0,0,0,105,101,1,0,0,0,105,102,1,0,0,0,105,103,
+		1,0,0,0,105,104,1,0,0,0,106,3,1,0,0,0,107,108,5,14,0,0,108,111,5,91,0,
+		0,109,110,5,15,0,0,110,112,5,92,0,0,111,109,1,0,0,0,111,112,1,0,0,0,112,
+		5,1,0,0,0,113,139,5,16,0,0,114,115,5,17,0,0,115,116,5,19,0,0,116,117,5,
+		21,0,0,117,118,5,22,0,0,118,140,5,92,0,0,119,120,5,18,0,0,120,121,5,19,
+		0,0,121,122,5,21,0,0,122,123,5,22,0,0,123,124,5,92,0,0,124,125,5,20,0,
+		0,125,126,5,21,0,0,126,127,5,22,0,0,127,140,5,92,0,0,128,129,7,0,0,0,129,
+		130,5,2,0,0,130,131,3,8,4,0,131,132,5,3,0,0,132,140,1,0,0,0,133,134,5,
+		27,0,0,134,135,5,28,0,0,135,136,5,2,0,0,136,137,3,8,4,0,137,138,5,3,0,
+		0,138,140,1,0,0,0,139,114,1,0,0,0,139,119,1,0,0,0,139,128,1,0,0,0,139,
+		133,1,0,0,0,140,7,1,0,0,0,141,146,3,10,5,0,142,143,5,4,0,0,143,145,3,10,
+		5,0,144,142,1,0,0,0,145,148,1,0,0,0,146,144,1,0,0,0,146,147,1,0,0,0,147,
+		9,1,0,0,0,148,146,1,0,0,0,149,150,3,12,6,0,150,151,5,5,0,0,151,152,3,14,
+		7,0,152,11,1,0,0,0,153,154,7,1,0,0,154,13,1,0,0,0,155,159,3,82,41,0,156,
+		159,3,16,8,0,157,159,3,18,9,0,158,155,1,0,0,0,158,156,1,0,0,0,158,157,
+		1,0,0,0,159,15,1,0,0,0,160,161,5,2,0,0,161,162,3,8,4,0,162,163,5,3,0,0,
+		163,17,1,0,0,0,164,173,5,6,0,0,165,170,3,14,7,0,166,167,5,4,0,0,167,169,
+		3,14,7,0,168,166,1,0,0,0,169,172,1,0,0,0,170,168,1,0,0,0,170,171,1,0,0,
+		0,171,174,1,0,0,0,172,170,1,0,0,0,173,165,1,0,0,0,173,174,1,0,0,0,174,
+		175,1,0,0,0,175,176,5,7,0,0,176,19,1,0,0,0,177,178,5,56,0,0,178,179,5,
+		2,0,0,179,180,3,8,4,0,180,181,5,3,0,0,181,21,1,0,0,0,182,183,5,29,0,0,
+		183,186,3,64,32,0,184,185,5,35,0,0,185,187,3,68,34,0,186,184,1,0,0,0,186,
+		187,1,0,0,0,187,190,1,0,0,0,188,189,5,36,0,0,189,191,3,76,38,0,190,188,
+		1,0,0,0,190,191,1,0,0,0,191,193,1,0,0,0,192,194,3,20,10,0,193,192,1,0,
+		0,0,193,194,1,0,0,0,194,23,1,0,0,0,195,196,5,30,0,0,196,201,3,26,13,0,
+		197,198,5,4,0,0,198,200,3,26,13,0,199,197,1,0,0,0,200,203,1,0,0,0,201,
+		199,1,0,0,0,201,202,1,0,0,0,202,25,1,0,0,0,203,201,1,0,0,0,204,205,3,66,
+		33,0,205,206,5,37,0,0,206,208,3,68,34,0,207,209,3,20,10,0,208,207,1,0,
+		0,0,208,209,1,0,0,0,209,27,1,0,0,0,210,215,5,31,0,0,211,212,5,32,0,0,212,
+		216,3,80,40,0,213,214,5,33,0,0,214,216,5,92,0,0,215,211,1,0,0,0,215,213,
+		1,0,0,0,216,219,1,0,0,0,217,218,5,34,0,0,218,220,3,64,32,0,219,217,1,0,
+		0,0,219,220,1,0,0,0,220,222,1,0,0,0,221,223,3,20,10,0,222,221,1,0,0,0,
+		222,223,1,0,0,0,223,29,1,0,0,0,224,225,5,41,0,0,225,226,5,76,0,0,226,227,
+		5,92,0,0,227,228,5,42,0,0,228,231,5,92,0,0,229,230,5,43,0,0,230,232,5,
+		93,0,0,231,229,1,0,0,0,231,232,1,0,0,0,232,235,1,0,0,0,233,234,5,44,0,
+		0,234,236,7,2,0,0,235,233,1,0,0,0,235,236,1,0,0,0,236,237,1,0,0,0,237,
+		238,5,35,0,0,238,241,3,68,34,0,239,240,5,36,0,0,240,242,3,76,38,0,241,
+		239,1,0,0,0,241,242,1,0,0,0,242,244,1,0,0,0,243,245,3,20,10,0,244,243,
+		1,0,0,0,244,245,1,0,0,0,245,31,1,0,0,0,246,247,5,41,0,0,247,248,5,47,0,
+		0,248,249,5,92,0,0,249,250,5,32,0,0,250,256,3,80,40,0,251,254,5,51,0,0,
+		252,253,5,52,0,0,253,255,5,91,0,0,254,252,1,0,0,0,254,255,1,0,0,0,255,
+		257,1,0,0,0,256,251,1,0,0,0,256,257,1,0,0,0,257,259,1,0,0,0,258,260,5,
+		53,0,0,259,258,1,0,0,0,259,260,1,0,0,0,260,261,1,0,0,0,261,262,5,35,0,
+		0,262,264,3,68,34,0,263,265,3,20,10,0,264,263,1,0,0,0,264,265,1,0,0,0,
+		265,33,1,0,0,0,266,267,5,41,0,0,267,268,5,48,0,0,268,269,5,49,0,0,269,
+		270,5,92,0,0,270,271,5,50,0,0,271,272,5,92,0,0,272,273,5,35,0,0,273,275,
+		3,68,34,0,274,276,3,20,10,0,275,274,1,0,0,0,275,276,1,0,0,0,276,35,1,0,
+		0,0,277,278,5,41,0,0,278,279,5,54,0,0,279,280,5,92,0,0,280,281,5,55,0,
+		0,281,282,5,92,0,0,282,283,3,20,10,0,283,37,1,0,0,0,284,285,5,57,0,0,285,
+		288,5,58,0,0,286,287,5,59,0,0,287,289,3,80,40,0,288,286,1,0,0,0,288,289,
+		1,0,0,0,289,292,1,0,0,0,290,291,5,60,0,0,291,293,5,92,0,0,292,290,1,0,
+		0,0,292,293,1,0,0,0,293,296,1,0,0,0,294,295,5,61,0,0,295,297,5,92,0,0,
+		296,294,1,0,0,0,296,297,1,0,0,0,297,298,1,0,0,0,298,299,5,35,0,0,299,302,
+		3,68,34,0,300,301,5,36,0,0,301,303,3,76,38,0,302,300,1,0,0,0,302,303,1,
+		0,0,0,303,305,1,0,0,0,304,306,3,20,10,0,305,304,1,0,0,0,305,306,1,0,0,
+		0,306,39,1,0,0,0,307,308,5,62,0,0,308,309,5,63,0,0,309,311,3,42,21,0,310,
+		312,3,44,22,0,311,310,1,0,0,0,311,312,1,0,0,0,312,338,1,0,0,0,313,314,
+		5,64,0,0,314,315,5,65,0,0,315,317,3,42,21,0,316,318,3,44,22,0,317,316,
+		1,0,0,0,317,318,1,0,0,0,318,338,1,0,0,0,319,320,5,66,0,0,320,322,3,42,
+		21,0,321,323,3,44,22,0,322,321,1,0,0,0,322,323,1,0,0,0,323,338,1,0,0,0,
+		324,325,5,68,0,0,325,326,3,48,24,0,326,327,5,21,0,0,327,329,3,58,29,0,
+		328,330,3,44,22,0,329,328,1,0,0,0,329,330,1,0,0,0,330,332,1,0,0,0,331,
+		333,3,60,30,0,332,331,1,0,0,0,332,333,1,0,0,0,333,335,1,0,0,0,334,336,
+		3,62,31,0,335,334,1,0,0,0,335,336,1,0,0,0,336,338,1,0,0,0,337,307,1,0,
+		0,0,337,313,1,0,0,0,337,319,1,0,0,0,337,324,1,0,0,0,338,41,1,0,0,0,339,
+		340,5,67,0,0,340,341,5,92,0,0,341,43,1,0,0,0,342,343,5,36,0,0,343,344,
+		3,46,23,0,344,45,1,0,0,0,345,346,6,23,-1,0,346,347,3,56,28,0,347,348,5,
+		67,0,0,348,349,3,80,40,0,349,359,1,0,0,0,350,351,3,56,28,0,351,352,3,78,
+		39,0,352,353,7,3,0,0,353,359,1,0,0,0,354,355,5,2,0,0,355,356,3,46,23,0,
+		356,357,5,3,0,0,357,359,1,0,0,0,358,345,1,0,0,0,358,350,1,0,0,0,358,354,
+		1,0,0,0,359,365,1,0,0,0,360,361,10,1,0,0,361,362,7,4,0,0,362,364,3,46,
+		23,2,363,360,1,0,0,0,364,367,1,0,0,0,365,363,1,0,0,0,365,366,1,0,0,0,366,
+		47,1,0,0,0,367,365,1,0,0,0,368,373,3,50,25,0,369,370,5,4,0,0,370,372,3,
+		50,25,0,371,369,1,0,0,0,372,375,1,0,0,0,373,371,1,0,0,0,373,374,1,0,0,
+		0,374,49,1,0,0,0,375,373,1,0,0,0,376,380,5,8,0,0,377,380,3,52,26,0,378,
+		380,3,56,28,0,379,376,1,0,0,0,379,377,1,0,0,0,379,378,1,0,0,0,380,51,1,
+		0,0,0,381,382,7,5,0,0,382,383,5,2,0,0,383,384,3,54,27,0,384,385,5,3,0,
+		0,385,53,1,0,0,0,386,389,5,8,0,0,387,389,3,56,28,0,388,386,1,0,0,0,388,
+		387,1,0,0,0,389,55,1,0,0,0,390,391,7,6,0,0,391,57,1,0,0,0,392,393,5,91,
+		0,0,393,395,5,9,0,0,394,392,1,0,0,0,394,395,1,0,0,0,395,396,1,0,0,0,396,
+		397,5,91,0,0,397,59,1,0,0,0,398,399,5,43,0,0,399,400,5,69,0,0,400,405,
+		3,56,28,0,401,402,5,4,0,0,402,404,3,56,28,0,403,401,1,0,0,0,404,407,1,
+		0,0,0,405,403,1,0,0,0,405,406,1,0,0,0,406,61,1,0,0,0,407,405,1,0,0,0,408,
+		409,5,70,0,0,409,410,5,93,0,0,410,63,1,0,0,0,411,416,3,66,33,0,412,413,
+		5,4,0,0,413,415,3,66,33,0,414,412,1,0,0,0,415,418,1,0,0,0,416,414,1,0,
+		0,0,416,417,1,0,0,0,417,65,1,0,0,0,418,416,1,0,0,0,419,425,5,91,0,0,420,
+		421,5,76,0,0,421,422,5,2,0,0,422,423,5,92,0,0,423,425,5,3,0,0,424,419,
+		1,0,0,0,424,420,1,0,0,0,425,67,1,0,0,0,426,431,3,70,35,0,427,428,5,2,0,
+		0,428,429,3,72,36,0,429,430,5,3,0,0,430,432,1,0,0,0,431,427,1,0,0,0,431,
+		432,1,0,0,0,432,69,1,0,0,0,433,434,7,7,0,0,434,71,1,0,0,0,435,440,3,74,
+		37,0,436,437,5,4,0,0,437,439,3,74,37,0,438,436,1,0,0,0,439,442,1,0,0,0,
+		440,438,1,0,0,0,440,441,1,0,0,0,441,73,1,0,0,0,442,440,1,0,0,0,443,444,
+		7,8,0,0,444,445,5,5,0,0,445,446,3,14,7,0,446,75,1,0,0,0,447,448,6,38,-1,
+		0,448,449,5,40,0,0,449,450,3,78,39,0,450,451,5,93,0,0,451,457,1,0,0,0,
+		452,453,5,2,0,0,453,454,3,76,38,0,454,455,5,3,0,0,455,457,1,0,0,0,456,
+		447,1,0,0,0,456,452,1,0,0,0,457,463,1,0,0,0,458,459,10,1,0,0,459,460,7,
+		4,0,0,460,462,3,76,38,2,461,458,1,0,0,0,462,465,1,0,0,0,463,461,1,0,0,
+		0,463,464,1,0,0,0,464,77,1,0,0,0,465,463,1,0,0,0,466,467,7,9,0,0,467,79,
+		1,0,0,0,468,469,5,2,0,0,469,474,5,92,0,0,470,471,5,4,0,0,471,473,5,92,
+		0,0,472,470,1,0,0,0,473,476,1,0,0,0,474,472,1,0,0,0,474,475,1,0,0,0,475,
+		477,1,0,0,0,476,474,1,0,0,0,477,478,5,3,0,0,478,81,1,0,0,0,479,480,7,10,
+		0,0,480,83,1,0,0,0,51,89,105,111,139,146,158,170,173,186,190,193,201,208,
+		215,219,222,231,235,241,244,254,256,259,264,275,288,292,296,302,305,311,
+		317,322,329,332,335,337,358,365,373,379,388,394,405,416,424,431,440,456,
+		463,474
 	};
 
 	public static readonly ATN _ATN =

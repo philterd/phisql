@@ -45,6 +45,7 @@ keywords:
   - FPE_ENCRYPT
   - FROM
   - FUZZY
+  - GENERATOR
   - GRAPHICAL
   - GROUP
   - HASH_SHA256
@@ -56,6 +57,7 @@ keywords:
   - LABELS
   - LAST_4
   - LIMIT
+  - MAP_REPLACE
   - MASK
   - MATCHING
   - MAX
@@ -87,5 +89,6 @@ keywords:
   - TRUNCATE
   - TRUNCATE_TO_YEAR
   - TWEAK
+  - TYPE
   - WHERE
   - WITH

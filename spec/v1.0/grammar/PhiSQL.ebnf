@@ -28,6 +28,7 @@ statement        = policy decl
                  | define identifier stmt
                  | define dictionary stmt
                  | define section stmt
+                 | define generator stmt
                  | detect stmt
                  | discovery stmt ;
 
@@ -95,6 +96,11 @@ define section stmt
                  , "WITH" , strategy expr
                  , [ options clause ] ;
 
+define generator stmt
+                 = "DEFINE" , "GENERATOR" , string literal
+                 , "TYPE" , string literal
+                 , options clause ;
+
 detect stmt      = "DETECT" , "PHEYE"
                  , [ "LABELS" , string list ]
                  , [ "ENDPOINT" , string literal ]
@@ -159,11 +165,14 @@ strategy name    = "MASK"
                  | "TRUNCATE_TO_YEAR"
                  | "SHIFT"
                  | "RELATIVE"
-                 | "ABBREVIATE" ;
+                 | "ABBREVIATE"
+                 | "MAP_REPLACE" ;
 
 strategy args    = named arg , { "," , named arg } ;
 
-named arg        = id , "=" , setting value ;
+(* A few keyword tokens (GENERATOR, TYPE) are also valid Phileas strategy
+   property names and are accepted here as argument names without quoting. *)
+named arg        = ( id | "GENERATOR" | "TYPE" ) , "=" , setting value ;
 
 predicate        = confidence predicate
                  | "(" , predicate , ")"

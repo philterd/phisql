@@ -173,6 +173,13 @@ public sealed class DefineSectionStmt : IStatement
     public List<Setting>? Options { get; init; }
 }
 
+public sealed class DefineGeneratorStmt : IStatement
+{
+    public required string NameRaw { get; init; }   // raw STRING_LITERAL (generator name)
+    public required string TypeRaw { get; init; }   // raw STRING_LITERAL (backend discriminator)
+    public List<Setting>? Options { get; init; }    // OPTIONS settings (endpoint, model, prompt, timeoutMs)
+}
+
 public sealed class DetectStmt : IStatement
 {
     public List<string>? Labels { get; init; }   // raw STRING_LITERALs or null

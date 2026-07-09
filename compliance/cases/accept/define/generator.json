@@ -1,0 +1,22 @@
+{
+  "identifiers": {
+    "surname": {
+      "surnameFilterStrategies": [
+        {
+          "strategy": "MAP_REPLACE",
+          "generator": "namer",
+          "fallbackStrategy": "REDACT"
+        }
+      ]
+    }
+  },
+  "generators": {
+    "namer": {
+      "type": "ollama",
+      "endpoint": "http://localhost:11434",
+      "model": "llama3.1",
+      "prompt": "Rewrite: {{token}}",
+      "timeoutMs": 2000
+    }
+  }
+}

@@ -1,0 +1,2 @@
+DEFINE GENERATOR 'namer' TYPE 'ollama' OPTIONS ('endpoint' = 'http://localhost:11434', 'model' = 'llama3.1', prompt = 'Rewrite: {{token}}', timeoutMs = 2000);
+REDACT SURNAME WITH MAP_REPLACE(generator = 'namer', fallbackStrategy = 'REDACT');
