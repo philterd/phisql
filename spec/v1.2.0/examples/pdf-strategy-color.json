@@ -1,0 +1,39 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [
+        {
+          "strategy": "REDACT",
+          "color": "red"
+        }
+      ]
+    },
+    "phoneNumber": {
+      "phoneNumberFilterStrategies": [
+        {
+          "strategy": "REDACT",
+          "color": "blue"
+        }
+      ]
+    },
+    "creditCard": {
+      "creditCardFilterStrategies": [
+        {
+          "strategy": "REDACT",
+          "color": "green",
+          "condition": "confidence >= 0.9"
+        },
+        {
+          "strategy": "REDACT",
+          "color": "orange",
+          "condition": "confidence < 0.9"
+        }
+      ]
+    }
+  },
+  "config": {
+    "pdf": {
+      "redactionColor": "black"
+    }
+  }
+}
