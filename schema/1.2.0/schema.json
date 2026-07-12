@@ -121,7 +121,7 @@
       "additionalProperties": false,
       "properties": {
         "redactionColor": {
-          "description": "Color of the redaction box drawn over redacted text in PDFs.",
+          "description": "Policy-wide color of the redaction box drawn over redacted text in PDFs, used for any span whose strategy does not set its own color. Accepts a named color (black, white, red, orange, yellow, green, blue, gray) or a 6-digit hex string matching ^#[0-9A-Fa-f]{6}$; an unrecognized or malformed value renders as black.",
           "type": "string",
           "default": "black"
         },
@@ -300,7 +300,7 @@
       "additionalProperties": false,
       "properties": {
         "color": {
-          "description": "Fill color for the redaction box.",
+          "description": "Fill color for the redaction box. Accepts a named color (black, white, red, orange, yellow, green, blue, gray) or a 6-digit hex string matching ^#[0-9A-Fa-f]{6}$; an unrecognized or malformed value renders as black.",
           "type": "string"
         },
         "x": {
@@ -695,6 +695,10 @@
             "ABBREVIATE"
           ],
           "default": "REDACT"
+        },
+        "color": {
+          "description": "Optional color of the bar drawn over a span redacted by this strategy when rendering a PDF or image. Overrides the policy-wide config.pdf.redactionColor for spans this strategy redacts; when unset, the policy-wide color (default black) applies. Accepts a named color (black, white, red, orange, yellow, green, blue, gray) or a 6-digit hex string matching ^#[0-9A-Fa-f]{6}$ (e.g. '#ff8800'); an unrecognized or malformed value renders as black. Has no effect on text redaction.",
+          "type": "string"
         }
       }
     },
@@ -815,6 +819,10 @@
           "description": "Whether shifted dates may land in the future (SHIFT strategy).",
           "type": "boolean",
           "default": false
+        },
+        "color": {
+          "description": "Optional color of the bar drawn over a span redacted by this strategy when rendering a PDF or image. Overrides the policy-wide config.pdf.redactionColor for spans this strategy redacts; when unset, the policy-wide color (default black) applies. Accepts a named color (black, white, red, orange, yellow, green, blue, gray) or a 6-digit hex string matching ^#[0-9A-Fa-f]{6}$ (e.g. '#ff8800'); an unrecognized or malformed value renders as black. Has no effect on text redaction.",
+          "type": "string"
         }
       }
     },

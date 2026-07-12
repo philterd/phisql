@@ -1,0 +1,20 @@
+-- Per-strategy PDF bar color. An optional `color` on a strategy sets the color
+-- of the bar drawn over the spans it redacts when rendering a PDF or image, so a
+-- single policy can color redactions by entity type (SSN red, phone blue) and
+-- even by condition (confident vs. needs-review). Unset strategies fall back to
+-- the policy-wide CONFIGURE PDF redactionColor, then to black. Named colors are
+-- black, white, red, orange, yellow, green, blue, gray; a 6-digit #RRGGBB hex is
+-- also accepted, and any unrecognized value renders black. `color` has no effect
+-- on text redaction. New in schema 1.2.0. Compiles to pdf-strategy-color.json.
+
+POLICY pdf_strategy_color;
+
+REDACT SSN          WITH REDACT(color = 'red');
+REDACT PHONE_NUMBER WITH REDACT(color = 'blue');
+
+-- Same entity, two colors by confidence band.
+REDACT CREDIT_CARD WITH REDACT(color = 'green')  WHERE CONFIDENCE >= 0.9;
+REDACT CREDIT_CARD WITH REDACT(color = 'orange') WHERE CONFIDENCE < 0.9;
+
+-- Policy-wide fallback bar color for any strategy without its own color.
+CONFIGURE PDF (redactionColor = 'black');
