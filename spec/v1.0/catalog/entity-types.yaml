@@ -69,6 +69,11 @@ entities:
     phileas_strategies_field: driversLicenseFilterStrategies
     description: Driver's license numbers.
 
+  - name: EIN
+    phileas_field: ein
+    phileas_strategies_field: einFilterStrategies
+    description: U.S. Employer Identification Numbers (federal tax ID, format NN-NNNNNNN).
+
   - name: EMAIL_ADDRESS
     phileas_field: emailAddress
     phileas_strategies_field: emailAddressFilterStrategies
