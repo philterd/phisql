@@ -2,7 +2,7 @@
 
 All notable changes to the PhiSQL .NET reference implementation (the `Philterd.PhiSql` NuGet package) are recorded here. Versions follow [Semantic Versioning](https://semver.org/).
 
-The implementation version is independent of the PhiSQL policy schema version it implements (exposed through the `PolicySchema` API). The .NET reference implementation was introduced alongside the PhiSQL 1.1.0 cycle, so its release history starts at 1.1.0 (there is no 1.0.0 .NET release). Specification-level changes (grammar, schema, catalog, examples) are recorded in the repository [release notes](../../RELEASE_NOTES.md).
+The implementation version is independent of the PhiSQL policy schema version it implements (exposed through the `PolicySchema` API). The .NET reference implementation was introduced alongside the PhiSQL 1.1.0 cycle, so its release history starts at 1.1.0 (there is no 1.0.0 .NET release). Specification-level changes (grammar, schema, catalog, examples) are recorded in the repository [release notes](../../RELEASE_NOTES.md). The current development version is `1.3.0-preview`.
 
 ## 1.2.0 - 2026-07-13
 

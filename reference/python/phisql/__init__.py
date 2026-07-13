@@ -40,7 +40,7 @@ from .policy_schema import (
     get_supported_schema_version,
 )
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 
 __all__ = [
     "Catalog",
