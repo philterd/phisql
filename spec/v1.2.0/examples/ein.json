@@ -1,0 +1,19 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    },
+    "ein": {
+      "einFilterStrategies": [
+        {
+          "strategy": "REDACT"
+        }
+      ],
+      "onlyValidPrefixes": true
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "ein": {
+      "einFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,13 @@
+-- EIN (Employer Identification Number) filter. A first-class entity type for the
+-- U.S. federal business tax ID, format NN-NNNNNNN (e.g. 12-3456789), the business
+-- counterpart to SSN. It is distinct from SSN (different format and semantics), so
+-- a policy can handle the two independently. The optional onlyValidPrefixes flag
+-- (default FALSE) restricts matches to EINs whose two-digit prefix is one the IRS
+-- issues, cutting false positives on format-valid but non-issued numbers; it is
+-- set through the filter OPTIONS passthrough, like creditCard's
+-- onlyValidCreditCardNumbers. New in schema 1.2.0. Compiles to ein.json.
+
+POLICY ein;
+
+REDACT SSN WITH MASK;
+REDACT EIN WITH REDACT OPTIONS (onlyValidPrefixes = TRUE);
