@@ -4,11 +4,9 @@ All notable changes to the PhiSQL specification are documented here: the languag
 
 As of v1.0.0 this project follows [Semantic Versioning](https://semver.org/): additive, backward-compatible changes bump the minor version, and changes that break existing PhiSQL or Phileas JSON require a new major version.
 
-## [1.2.0] - unreleased
+## [1.2.0] - 2026-07-13
 
 Overlapping split chunks. A splitting policy can now share a window of characters between adjacent chunks so an entity that straddles a chunk boundary is still detected instead of being missed by both chunks. Additive and backward-compatible: every 1.1.0 policy and compiled Phileas JSON remains valid and unchanged in meaning, and the default `overlap` of `0` preserves the existing non-overlapping behavior.
-
-> This version is in development. Further 1.2.0 changes may land before it is finalized and tagged.
 
 ### Added
 
