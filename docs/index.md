@@ -27,7 +27,7 @@ REDACT SSN WITH MASK;
 
 ## How this site is built
 
-The spec is a set of **machine-readable artifacts** — the
+The spec is a set of **machine-readable artifacts**: the
 [grammar](reference/grammar.md), the catalog YAML files, and the
 [worked examples](examples/index.md). There is no separate prose spec
 document; the artifacts are the spec. Every page under **Reference** and
@@ -36,15 +36,17 @@ reference cannot drift from the catalogs it describes.
 
 ## Where to start
 
-- **[Grammar](reference/grammar.md)** — the full EBNF and production rules.
-- **[Verbs](reference/verbs.md)** — the statements: `REDACT`, `DEIDENTIFY`,
+- **[Grammar](reference/grammar.md)**. The full EBNF and production rules.
+- **[Verbs](reference/verbs.md)**. The statements: `REDACT`, `DEIDENTIFY`,
   `IGNORE`, `DEFINE`, `DETECT`, and the discovery verbs.
-- **[Clauses](reference/clauses.md)** — `WITH`, `WHERE`, `OPTIONS`, `IN`,
+- **[Clauses](reference/clauses.md)**. `WITH`, `WHERE`, `OPTIONS`, `IN`,
   `GROUP BY`, `LIMIT`.
-- **[Type system](reference/type-system.md)** — entity types, strategies,
+- **[Type system](reference/type-system.md)**. Entity types, strategies,
   predicates, and literal value types.
-- **[Examples](examples/index.md)** — every worked example, paired with the
+- **[Examples](examples/index.md)**. Every worked example, paired with the
   policy JSON it compiles to.
+- **[Using PhiSQL](using.md)**. Compiling a PhiSQL document into a policy with
+  one of the reference implementations.
 
 ## Status
 

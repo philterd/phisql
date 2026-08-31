@@ -668,6 +668,7 @@ def build_nav(examples: list[dict]) -> str:
     """A literate-nav SUMMARY.md defining the sidebar."""
     lines = [
         "* [Home](index.md)",
+        "* [Using PhiSQL](using.md)",
         "* Reference",
         "    * [Grammar](reference/grammar.md)",
         "    * [Verbs](reference/verbs.md)",
