@@ -54,6 +54,7 @@ The reference implementation versions and the schema version are independent. An
 | 1.0.0 | 1.0.0 | 1.0.0 | 1.0.0 |
 | 1.1.0 | 1.1.0 | 1.1.0 | 1.1.0 |
 | 1.2.0 | 1.3.0 | 1.2.0 | 1.2.0 |
+| 1.3.0 | 1.4.0 | 1.3.0 | 1.3.0 |
 
 Released versions of the Java jar are on Maven Central. The latest development build is published as a `-SNAPSHOT` to the [Maven Central snapshot repository](https://central.sonatype.com/repository/maven-snapshots/) on every push to `main`. To consume it, add that repository to your build and depend on the `-SNAPSHOT` version (snapshots are mutable and periodically pruned, so pin a release version for anything you need to reproduce).
 
@@ -71,11 +72,11 @@ The governance posture:
 - **The runtime does not change.** Phileas continues to execute against the JSON schema it already understands.
 - **The policy library stays in JSON.** [`philterd/pii-redaction-policies`](https://github.com/philterd/pii-redaction-policies) remains the source of truth for distributable policies.
 - **No proprietary extensions.** PhiSQL must not introduce constructs that have no Phileas JSON equivalent.
-- **Backward compatible forever.** Existing JSON policies remain canonical. There is no migration; PhiSQL is additive.
+- **Backward compatible by default.** Existing JSON policies remain canonical and PhiSQL is additive; the exception is an accepted RFC that removes a construct no runtime can honor, which ships with a migration note in the [release notes](RELEASE_NOTES.md).
 
 The Phileas JSON schema has no top-level `name` or `description` fields; policy identity comes from the JSON filename, and human-readable description lives in a sibling Markdown file. PhiSQL `POLICY <name>` is optional; when present, its name must match the file basename after hyphen/underscore normalization (the filename can be `hipaa-safe-harbor.phisql` while the PhiSQL identifier is `hipaa_safe_harbor`). The full rule is documented in [`spec/v1.0/catalog/policy.yaml`](spec/v1.0/catalog/policy.yaml). `DESCRIPTION '<text>'` compiles to a sibling `<basename>.md` file.
 
-`PERSON` is deferred to a later spec version. The Phileas schema replaced `person` with a `pheyes` block whose configuration surface is not yet settled; PhiSQL v1.0 exposes `FIRST_NAME`, `SURNAME`, and `PHYSICIAN_NAME` instead.
+`PERSON` is deferred to a later spec version. The Phileas schema replaced `person` with a `pheyes` block whose configuration surface is not yet settled; PhiSQL exposes `FIRST_NAME` and `SURNAME` instead, and `DETECT PHEYE` for model-based name detection. `PHYSICIAN_NAME` was removed in 1.3.0 (RFC #35) and is likewise covered by `DETECT PHEYE`.
 
 ## Validation
 

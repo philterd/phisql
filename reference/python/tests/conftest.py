@@ -28,7 +28,12 @@ import pytest  # noqa: E402
 EXAMPLES_DIR = (_PACKAGE_DIR / ".." / ".." / "spec" / "v1.0" / "examples").resolve()
 EXAMPLES_V11_DIR = (_PACKAGE_DIR / ".." / ".." / "spec" / "v1.1.0" / "examples").resolve()
 EXAMPLES_V12_DIR = (_PACKAGE_DIR / ".." / ".." / "spec" / "v1.2.0" / "examples").resolve()
-EXAMPLES_DIRS = [d for d in (EXAMPLES_DIR, EXAMPLES_V11_DIR, EXAMPLES_V12_DIR) if d.is_dir()]
+EXAMPLES_V13_DIR = (_PACKAGE_DIR / ".." / ".." / "spec" / "v1.3.0" / "examples").resolve()
+EXAMPLES_DIRS = [
+    d
+    for d in (EXAMPLES_DIR, EXAMPLES_V11_DIR, EXAMPLES_V12_DIR, EXAMPLES_V13_DIR)
+    if d.is_dir()
+]
 
 
 @pytest.fixture(scope="session")

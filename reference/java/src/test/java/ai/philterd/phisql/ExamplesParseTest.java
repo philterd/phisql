@@ -39,7 +39,8 @@ class ExamplesParseTest {
     private static final List<Path> EXAMPLES_DIRS = List.of(
             Paths.get("..", "..", "spec", "v1.0", "examples").toAbsolutePath().normalize(),
             Paths.get("..", "..", "spec", "v1.1.0", "examples").toAbsolutePath().normalize(),
-            Paths.get("..", "..", "spec", "v1.2.0", "examples").toAbsolutePath().normalize());
+            Paths.get("..", "..", "spec", "v1.2.0", "examples").toAbsolutePath().normalize(),
+            Paths.get("..", "..", "spec", "v1.3.0", "examples").toAbsolutePath().normalize());
 
     @TestFactory
     Stream<DynamicTest> everyExampleParses() throws IOException {
