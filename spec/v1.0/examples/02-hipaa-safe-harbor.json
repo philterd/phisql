@@ -1,8 +1,5 @@
 {
   "identifiers": {
-    "physicianName": {
-      "physicianNameFilterStrategies": [{ "strategy": "RANDOM_REPLACE" }]
-    },
     "hospital": {
       "hospitalFilterStrategies": [{ "strategy": "RANDOM_REPLACE" }]
     },
@@ -32,6 +29,14 @@
     },
     "zipCode": {
       "zipCodeFilterStrategy": [{ "strategy": "REDACT" }]
-    }
+    },
+    "pheyes": [
+      {
+        "phEyeFilterStrategies": [{ "strategy": "RANDOM_REPLACE" }],
+        "phEyeConfiguration": {
+          "labels": ["physician name"]
+        }
+      }
+    ]
   }
 }

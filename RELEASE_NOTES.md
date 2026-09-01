@@ -8,6 +8,39 @@ As of v1.0.0 this project follows [Semantic Versioning](https://semver.org/): ad
 
 > This version is in development. Changes will be listed here as they land.
 
+Removal of the `PHYSICIAN_NAME` entity type. **This breaks existing input**: a `.phisql` file using `REDACT PHYSICIAN_NAME ...` no longer compiles, and a Phileas JSON policy containing `identifiers.physicianName` no longer validates against schema `1.3.0` (`$defs.identifiers` sets `"additionalProperties": false`, so the key is rejected rather than ignored). Read the migration note below before upgrading.
+
+### Removed
+
+- **`PHYSICIAN_NAME` entity type** (RFC #35). Removed from the catalog (`spec/v1.0/catalog/entity-types.yaml`), and `physicianName` / `filterPhysicianName` (with `physicianNameFilterStrategies`) removed from schema `1.3.0`. It was the one rules-based entity no conforming implementation could be held to: Java Phileas implemented it as a heuristic (an n-gram scan keyed on pre-nominals such as `Dr.` and post-nominals such as `MD`, with a letter-ratio check), phileas-python had no reference to it, and phileas-dotnet carried only an unused `FilterType` entry. There was no specified detection behavior to conform to, so a policy author writing `REDACT PHYSICIAN_NAME WITH MASK;` got redaction on one runtime and silence on the others, with no error to say so. The accept case `accept/entities/physician-name` is replaced by `reject/semantic/physician-name-removed`, which pins the compile-time rejection.
+
+### Changed
+
+- **Schema version advances to `1.3.0`.** The three references target it (`redaction.policy.schema.version`, `SUPPORTED_SCHEMA_VERSION`, `PolicySchema.SupportedSchemaVersion`), and `validate_spec.py` and the conformance accept-case check (`compliance/run.py`) validate against it. Schema `1.2.0` stays published, so existing policies keep validating against the version they were written for.
+- **`02-hipaa-safe-harbor` no longer uses `PHYSICIAN_NAME`.** Its physician-name clause is now `DETECT PHEYE LABELS ('physician name') WITH RANDOM_REPLACE;`.
+
+### Migration
+
+Physician-name detection is not lost — it moves to PhEye (AI/NER), the same path `PERSON` was deferred to in v1.0. Replace
+
+```sql
+REDACT PHYSICIAN_NAME WITH REDACT;
+```
+
+with
+
+```sql
+DETECT PHEYE LABELS ('physician name') WITH REDACT;
+```
+
+See the new example `pheye-physician-name` (`spec/v1.3.0/examples/`).
+
+### Notes
+
+- **Breaking change in a minor version.** Under the versioning policy in [`CONTRIBUTING.md`](CONTRIBUTING.md) a removal is a major bump; this removal ships on the `1.x` line by maintainer decision, on the grounds that the removed entity was never honored by two of the three runtimes and so had no portable behavior to break.
+- **Phileas degrades silently, not loudly.** Policy JSON is deserialized with Gson, which ignores unknown keys, and Phileas does not schema-validate at load time. A policy still naming `physicianName` therefore loads and simply stops redacting physician names rather than erroring — the main risk in this change, and the reason it is called out here and in the Phileas release notes (philterd/phileas#339).
+- **Downstream.** philterd/phileas removes `PhysicianNameFilter`, `PhysicianNameFilterStrategy`, the `PhysicianName` policy class, the `Identifiers.physicianName` field, and the `FilterType` entry once it targets schema `1.3.0`; phileas-dotnet drops its unused `FilterType` entry.
+
 ## [1.2.0] - 2026-07-13
 
 Overlapping split chunks. A splitting policy can now share a window of characters between adjacent chunks so an entity that straddles a chunk boundary is still detected instead of being missed by both chunks. Additive and backward-compatible: every 1.1.0 policy and compiled Phileas JSON remains valid and unchanged in meaning, and the default `overlap` of `0` preserves the existing non-overlapping behavior.

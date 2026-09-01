@@ -1,0 +1,10 @@
+-- Physician-name detection after the removal of PHYSICIAN_NAME. The
+-- rules-based PHYSICIAN_NAME entity type was removed in spec v1.3; physician
+-- names are detected with PhEye (AI/NER) by asking for the label directly,
+-- which is both more accurate and portable across conforming runtimes.
+-- Replaces `REDACT PHYSICIAN_NAME WITH REDACT;`.
+-- Compiles to pheye-physician-name.json.
+
+POLICY pheye_physician_name;
+
+DETECT PHEYE LABELS ('physician name') WITH REDACT;

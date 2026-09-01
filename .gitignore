@@ -6,3 +6,6 @@ __pycache__/
 
 # MkDocs build output
 site/
+
+# Maven build output (reference/java/target is ignored by reference/java/.gitignore)
+reference/target/

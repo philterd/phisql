@@ -429,6 +429,17 @@ def page_entity_types(cat: dict) -> str:
         out += "\n## Deferred to a later version\n\n"
         for d in deferred:
             out += f"### `{d['name']}`\n\n{d['rationale'].strip()}\n\n"
+    removed = cat.get("removed")
+    if removed:
+        out += (
+            "\n## Removed\n\n"
+            "These entity types were part of an earlier version and are no "
+            "longer valid PhiSQL: naming one is a semantic error.\n\n"
+        )
+        for r in removed:
+            out += f"### `{r['name']}`\n\n"
+            out += f"Removed in {r['removed_in']} (RFC #{r['rfc']}).\n\n"
+            out += f"{r['rationale'].strip()}\n\n"
     return out
 
 
