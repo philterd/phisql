@@ -584,6 +584,34 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#removed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Removed
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Removed">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#physician_name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PHYSICIAN_NAME
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2083,6 +2111,91 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    v1.3.0
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    v1.3.0
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/pheye-physician-name/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    pheye-physician-name
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -2144,6 +2257,34 @@
     <span class="md-ellipsis">
       
         PERSON
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#removed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Removed
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Removed">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#physician_name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PHYSICIAN_NAME
       
     </span>
   </a>
@@ -2285,11 +2426,6 @@
 <td><code>phoneNumberExtension</code></td>
 </tr>
 <tr>
-<td><code>PHYSICIAN_NAME</code></td>
-<td>Physician names.</td>
-<td><code>physicianName</code></td>
-</tr>
-<tr>
 <td><code>SSN</code></td>
 <td>U.S. Social Security Numbers.</td>
 <td><code>ssn</code></td>
@@ -2344,7 +2480,18 @@
 instead"); it is a $ref to the same filterPhEye shape as the <code>pheyes</code>
 array. PhiSQL exposes that shape fully through DETECT PHEYE, so person
 detection is not lost — only the legacy <code>person</code> JSON key is unexposed.
-Use DETECT PHEYE (or FIRST_NAME / SURNAME / PHYSICIAN_NAME) in PhiSQL v1.0.</p>
+Use DETECT PHEYE (or FIRST_NAME / SURNAME) in PhiSQL v1.0.</p>
+<h2 id="removed">Removed<a class="headerlink" href="#removed" title="Permanent link">&para;</a></h2>
+<p>These entity types were part of an earlier version and are no longer valid PhiSQL: naming one is a semantic error.</p>
+<h3 id="physician_name"><code>PHYSICIAN_NAME</code><a class="headerlink" href="#physician_name" title="Permanent link">&para;</a></h3>
+<p>Removed in 1.3.0 (RFC #35).</p>
+<p>Implemented in only one runtime (Java Phileas) as a heuristic — an n-gram
+scan keyed on pre-nominals ("Dr.") and post-nominals ("MD", "PhD") with a
+letter-ratio check — and absent from phileas-python and phileas-dotnet.
+There was no specified detection behavior to conform to, so the entity
+promised redaction that two of three runtimes silently did not deliver.
+Use DETECT PHEYE with an appropriate label (for example
+LABELS ('physician name')) instead.</p>
 
 
 
