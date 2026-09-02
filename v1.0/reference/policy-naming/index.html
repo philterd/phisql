@@ -2291,7 +2291,7 @@
 
 <h1 id="policy-naming">Policy naming<a class="headerlink" href="#policy-naming" title="Permanent link">&para;</a></h1>
 <p><em>This page is generated from the PhiSQL <a href="https://github.com/philterd/phisql/blob/main/spec/v1.0">spec artifacts</a> for <code>v1.0</code>. Do not edit it by hand; change the artifact and rebuild.</em></p>
-<p>The Phileas JSON policy schema has no top-level name or description field; policy identity comes from the filename. These rules bridge that convention with PhiSQL's optional <code>POLICY</code> declaration.</p>
+<p>The Phileas JSON policy schema has no top-level name field; policy identity comes from the filename. (A policy carries its description in <code>metadata.description</code>, but that is descriptive text, not identity.) These rules bridge that convention with PhiSQL's optional <code>POLICY</code> declaration.</p>
 <h2 id="policy-name">Policy name<a class="headerlink" href="#policy-name" title="Permanent link">&para;</a></h2>
 <p>The policy name is the file basename (with the .phisql or .json
 extension stripped). This matches the existing convention in
@@ -2313,10 +2313,12 @@ format), the POLICY declaration is the only source of the name.
 If absent, the policy name is null and the caller must provide one.</p>
 <h2 id="the-description-clause">The DESCRIPTION clause<a class="headerlink" href="#the-description-clause" title="Permanent link">&para;</a></h2>
 <p>The DESCRIPTION '<text>' clause, when present on a POLICY declaration,
-compiles to the policy's human-readable description. The Phileas JSON
-schema has no description field, so the destination is a sibling
-Markdown file named <basename>.md. The compiler returns the description
-text on CompileResult; writing the file is the caller's choice.</p>
+compiles to metadata.description in the policy JSON, so the description
+travels with the policy through export, import, and sharing. The compiler
+also returns the text on CompileResult, which is what callers that keep a
+description elsewhere (such as a sibling <basename>.md file) read. Before
+schema 1.3.0 the schema had no description field and CompileResult was the
+only destination.</p>
 
 
 
