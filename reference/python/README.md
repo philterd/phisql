@@ -138,7 +138,7 @@ exactly as the Java reference exposes it through `ai.philterd.phisql.PolicySchem
 ```python
 from phisql import PolicySchema
 
-PolicySchema.get_supported_schema_version()  # "1.0.0"
+PolicySchema.get_supported_schema_version()  # "1.3.0"
 PolicySchema.get_schema()                    # the schema as a JSON string
 PolicySchema.get_schema_dict()               # the schema parsed into a dict
 ```
