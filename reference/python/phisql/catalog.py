@@ -69,6 +69,9 @@ class EntityType:
     name: str
     phileas_field: str
     phileas_strategies_field: str
+    #: Earlier names for the strategies array that an engine must still read. The
+    #: primary name above is the one to emit.
+    phileas_strategies_field_aliases: tuple = ()
 
 
 class Catalog:
@@ -94,6 +97,9 @@ class Catalog:
                 name=item["name"],
                 phileas_field=item["phileas_field"],
                 phileas_strategies_field=item["phileas_strategies_field"],
+                phileas_strategies_field_aliases=tuple(
+                    item.get("phileas_strategies_field_aliases") or ()
+                ),
             )
             entities[entity.name.upper()] = entity
 

@@ -14,6 +14,10 @@
 #     name           : the PhiSQL entity type identifier (case-insensitive).
 #     phileas_field  : the property name under identifiers in Phileas JSON.
 #     phileas_strategies_field : the strategies array name on the filter object.
+#     phileas_strategies_field_aliases : optional; earlier names for that array
+#                        that an engine must still read, so a policy written
+#                        against an older schema keeps working. Emit the primary
+#                        name; accept the primary name and every alias.
 #     description    : human-readable description (informative).
 
 version: v1.0
@@ -167,6 +171,10 @@ entities:
   - name: ZIP_CODE
     phileas_field: zipCode
     phileas_strategies_field: zipCodeFilterStrategies
+    # Singular until schema 1.3.0, when it was renamed to match every other
+    # filter. Deprecated in the schema, still read.
+    phileas_strategies_field_aliases:
+      - zipCodeFilterStrategy
     description: U.S. ZIP codes.
 
 # Custom identifier reference syntax: IDENTIFIER('<classification>').

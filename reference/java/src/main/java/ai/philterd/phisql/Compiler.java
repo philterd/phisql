@@ -131,6 +131,13 @@ public final class Compiler {
 
         String policyName = resolvePolicyName(expectedName, declaredName);
         enforceDateOnlyStrategies(policyJson);
+
+        // DESCRIPTION travels in the policy itself, so it survives export and sharing.
+        // It stays on CompileResult as well for callers that write it elsewhere.
+        if (description != null) {
+            policyJson.putObject("metadata").put("description", description);
+        }
+
         return new CompileResult(policyName, description, policyJson);
     }
 

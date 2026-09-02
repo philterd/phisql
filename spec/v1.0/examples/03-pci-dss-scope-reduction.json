@@ -1,4 +1,7 @@
 {
+  "metadata": {
+    "description": "PCI DSS v4.0 Req 3.2-3.4: PAN to last 4, full CVV redaction."
+  },
   "identifiers": {
     "creditCard": {
       "creditCardFilterStrategies": [

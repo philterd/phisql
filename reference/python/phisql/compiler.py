@@ -143,6 +143,12 @@ class Compiler:
 
         policy_name = _resolve_policy_name(expected_name, declared_name)
         self._enforce_date_only_strategies(policy_json)
+
+        # DESCRIPTION travels in the policy itself, so it survives export and sharing.
+        # It stays on CompileResult as well for callers that write it elsewhere.
+        if description is not None:
+            policy_json["metadata"] = {"description": description}
+
         return CompileResult(policy_name, description, policy_json)
 
     def _enforce_date_only_strategies(self, policy_json: dict) -> None:

@@ -92,6 +92,7 @@ TOPLEVEL_EXPOSED = {
     "config": "CONFIGURE SPLITTING | PDF | POSTFILTERS | ANALYSIS ( ... )",
     "graphical": "CONFIGURE GRAPHICAL BOX ( ... )",
     "generators": "DEFINE GENERATOR '<name>' TYPE '<type>' OPTIONS ( ... )",
+    "metadata": "POLICY <name> DESCRIPTION '<text>'",
 }
 TOPLEVEL_DEFERRED: dict[str, str] = {}
 
@@ -123,6 +124,7 @@ FIELD_PASSTHROUGH_CONTAINERS = {
 
 # Objects with no passthrough: every leaf must be listed here with its mechanism.
 FIELD_EXPLICIT_CONTAINERS = {
+    "metadata": {"description": "POLICY <name> DESCRIPTION '<text>'"},
     "crypto": {"key": "CONFIGURE CRYPTO KEY FROM ENV"},
     "fpe": {"key": "CONFIGURE FPE KEY FROM ENV", "tweak": "CONFIGURE FPE ... TWEAK FROM ENV"},
 }
@@ -222,6 +224,20 @@ def check_catalog_references_phileas_schema(schema: dict) -> list[str]:
                 f"'{strategies_field}' (for entity {entry['name']}) not on "
                 f"{filter_def_name}"
             )
+        # An alias is a name an engine must still read, so the schema has to keep
+        # accepting it. A stale alias is a name engines carry for nothing.
+        for alias in entry.get("phileas_strategies_field_aliases") or []:
+            if alias not in filter_props:
+                errors.append(
+                    f"entity-types.yaml: phileas_strategies_field_aliases entry "
+                    f"'{alias}' (for entity {entry['name']}) not on {filter_def_name}"
+                )
+            elif alias == strategies_field:
+                errors.append(
+                    f"entity-types.yaml: phileas_strategies_field_aliases entry "
+                    f"'{alias}' (for entity {entry['name']}) duplicates the primary "
+                    f"phileas_strategies_field"
+                )
 
     # Strategies. Each strategy is validated against its declared Phileas
     # strategy $def (baseFilterStrategy by default; date-only strategies such as
