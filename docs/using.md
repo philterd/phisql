@@ -17,7 +17,7 @@ Three implementations produce identical output from the same input.
 |---|---|---|
 | Java | `ai.philterd:phisql` | Maven Central |
 | .NET | `Philterd.PhiSql` | NuGet |
-| Python | `phisql` | Not yet on PyPI; install from source |
+| Python | `phisql` | PyPI |
 
 Implementation versions and the schema version move independently. See the
 [compatibility table](https://github.com/philterd/phisql#reference-implementation-compatibility)
@@ -73,10 +73,10 @@ result.policy_name()      # "ssn_only"
 result.to_json_string()   # the Phileas JSON policy
 ```
 
-Until the package is published to PyPI, install it from the repository:
+Install the package from PyPI:
 
 ```sh
-pip install "git+https://github.com/philterd/phisql#subdirectory=reference/python"
+pip install phisql
 ```
 
 ### From Java
