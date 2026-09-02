@@ -4,9 +4,7 @@ All notable changes to the PhiSQL specification are documented here: the languag
 
 As of v1.0.0 this project follows [Semantic Versioning](https://semver.org/): additive, backward-compatible changes bump the minor version, and changes that break existing PhiSQL or Phileas JSON require a new major version.
 
-## [1.3.0] - unreleased
-
-> This version is in development. Changes will be listed here as they land.
+## [1.3.0] - 2026-09-02
 
 Removal of the `PHYSICIAN_NAME` entity type. **This breaks existing input**: a `.phisql` file using `REDACT PHYSICIAN_NAME ...` no longer compiles, and a Phileas JSON policy containing `identifiers.physicianName` no longer validates against schema `1.3.0` (`$defs.identifiers` sets `"additionalProperties": false`, so the key is rejected rather than ignored). Read the migration note below before upgrading.
 
