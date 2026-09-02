@@ -21,9 +21,9 @@ parser from it (it needs a JDK to run the ANTLR tool), and CI regenerates and
 runs `git diff --exit-code` over `PhiSql/Generated/`, so any drift between the
 grammar and the committed parser fails the build.
 
-## Target framework
+## Target frameworks
 
-**.NET 10.0** (`net10.0`, the current LTS). Dependencies: `YamlDotNet` (catalog
+**.NET 8.0 and .NET 10.0** (`net8.0;net10.0`, both LTS). Dependencies: `YamlDotNet` (catalog
 parsing) and `Antlr4.Runtime.Standard` (loads the generated parser), plus, for
 the test project only, `xUnit` and `JsonSchema.Net`.
 
@@ -78,7 +78,7 @@ the library, exactly as the Java (`PolicySchema.getSchema()`) and Python
 (`PolicySchema.get_schema()`) references expose it:
 
 ```csharp
-PolicySchema.GetSupportedSchemaVersion(); // "1.1.0"
+PolicySchema.GetSupportedSchemaVersion(); // "1.3.0"
 PolicySchema.GetSchema();                  // the schema as a JSON string
 PolicySchema.GetSchemaJson();              // the schema as a JsonNode
 ```
