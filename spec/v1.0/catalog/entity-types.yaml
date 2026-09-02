@@ -166,10 +166,7 @@ entities:
 
   - name: ZIP_CODE
     phileas_field: zipCode
-    # Note: this field is singular for Phileas backward compatibility but
-    # accepts an array of strategies. Implementations must emit the
-    # singular field name regardless.
-    phileas_strategies_field: zipCodeFilterStrategy
+    phileas_strategies_field: zipCodeFilterStrategies
     description: U.S. ZIP codes.
 
 # Custom identifier reference syntax: IDENTIFIER('<classification>').

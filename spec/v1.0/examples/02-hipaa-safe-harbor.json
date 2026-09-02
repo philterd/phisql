@@ -28,7 +28,7 @@
       "stateFilterStrategies": [{ "strategy": "REDACT" }]
     },
     "zipCode": {
-      "zipCodeFilterStrategy": [{ "strategy": "REDACT" }]
+      "zipCodeFilterStrategies": [{ "strategy": "REDACT" }]
     },
     "pheyes": [
       {

@@ -1,7 +1,7 @@
 {
   "identifiers": {
     "zipCode": {
-      "zipCodeFilterStrategy": [
+      "zipCodeFilterStrategies": [
         {
           "strategy": "MASK"
         }
