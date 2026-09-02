@@ -1,4 +1,7 @@
 {
+  "metadata": {
+    "description": "HIPAA Safe Harbor de-identification (45 CFR 164.514(b)(2))."
+  },
   "identifiers": {
     "hospital": {
       "hospitalFilterStrategies": [{ "strategy": "RANDOM_REPLACE" }]

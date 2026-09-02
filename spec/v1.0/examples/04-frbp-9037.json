@@ -1,4 +1,7 @@
 {
+  "metadata": {
+    "description": "FRBP 9037: SSN to last 4, dates to year only, accounts to last 4."
+  },
   "identifiers": {
     "ssn": {
       "ssnFilterStrategies": [{ "strategy": "LAST_4" }]

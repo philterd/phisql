@@ -1,4 +1,7 @@
 {
+  "metadata": {
+    "description": "A policy that carries a human-readable description."
+  },
   "identifiers": {
     "ssn": {
       "ssnFilterStrategies": [

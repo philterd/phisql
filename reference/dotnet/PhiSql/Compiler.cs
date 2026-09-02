@@ -125,6 +125,14 @@ public sealed class Compiler
 
         string? policyName = ResolvePolicyName(expectedName, declaredName);
         EnforceDateOnlyStrategies(policyJson);
+
+        // DESCRIPTION travels in the policy itself, so it survives export and sharing.
+        // It stays on CompileResult as well for callers that write it elsewhere.
+        if (description is not null)
+        {
+            policyJson["metadata"] = new JsonObject { ["description"] = description };
+        }
+
         return new CompileResult(policyName, description, policyJson);
     }
 

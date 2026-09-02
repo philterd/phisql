@@ -7,6 +7,10 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "metadata": {
+      "description": "Optional descriptive information about the policy. Ignored during redaction.",
+      "$ref": "#/$defs/metadata"
+    },
     "config": {
       "description": "Global configuration settings for the policy.",
       "$ref": "#/$defs/config"
@@ -47,6 +51,17 @@
     }
   },
   "$defs": {
+    "metadata": {
+      "description": "Descriptive information about the policy, carried with the policy itself so it survives export, import, and sharing. Nothing here affects detection or redaction; an engine reads and writes it unchanged. Additional properties are allowed so the object can grow (author, timestamps, labels) without a breaking schema change.",
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "description": {
+          "description": "Human-readable description of what the policy does.",
+          "type": "string"
+        }
+      }
+    },
     "validatorName": {
       "description": "Name of a built-in checksum or structural validator the identifier filter may apply to its matches. The set is the source-of-truth catalog spec/v1.0/catalog/validators.yaml; this enum is kept in sync with it. Most national and financial identifiers reduce to the shared algorithms (luhn, mod11, mod97, mod23-letter); the remainder are specific named validators.",
       "type": "string",

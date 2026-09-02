@@ -34,8 +34,13 @@ public sealed record Strategy(string Name, string PhileasEnum, IReadOnlyList<Str
     }
 }
 
-/// <summary>Catalog entry for an entity type.</summary>
-public sealed record EntityType(string Name, string PhileasField, string PhileasStrategiesField);
+/// <summary>
+/// Catalog entry for an entity type. <paramref name="PhileasStrategiesFieldAliases" /> holds
+/// earlier names for the strategies array that an engine must still read; the primary name is
+/// the one to emit.
+/// </summary>
+public sealed record EntityType(string Name, string PhileasField, string PhileasStrategiesField,
+    IReadOnlyList<string> PhileasStrategiesFieldAliases);
 
 /// <summary>
 /// In-memory view of the PhiSQL spec catalog YAML files. The catalog is the
@@ -69,7 +74,8 @@ public sealed class Catalog
         var entitiesFile = deserializer.Deserialize<EntityTypesFile>(Resources.EntityTypesYaml());
         foreach (EntityEntry e in entitiesFile.Entities ?? new())
         {
-            var entity = new EntityType(e.Name!, e.PhileasField!, e.PhileasStrategiesField!);
+            var entity = new EntityType(e.Name!, e.PhileasField!, e.PhileasStrategiesField!,
+                e.PhileasStrategiesFieldAliases ?? new List<string>());
             entities[entity.Name.ToUpperInvariant()] = entity;
         }
 
@@ -122,6 +128,7 @@ public sealed class Catalog
         public string? Name { get; set; }
         public string? PhileasField { get; set; }
         public string? PhileasStrategiesField { get; set; }
+        public List<string>? PhileasStrategiesFieldAliases { get; set; }
     }
 
     private sealed class StrategiesFile { public List<StrategyEntry>? Strategies { get; set; } }

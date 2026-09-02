@@ -1,4 +1,7 @@
 {
+  "metadata": {
+    "description": "Customer support ticket redaction with allowlist."
+  },
   "identifiers": {
     "firstName": {
       "ignored": ["Acme", "AcmeCorp"],

@@ -552,9 +552,11 @@ def page_policy_naming(cat: dict) -> str:
     out = front("Policy naming")
     out += GENERATED_NOTE
     out += (
-        "The Phileas JSON policy schema has no top-level name or description "
-        "field; policy identity comes from the filename. These rules bridge "
-        "that convention with PhiSQL's optional `POLICY` declaration.\n\n"
+        "The Phileas JSON policy schema has no top-level name field; policy "
+        "identity comes from the filename. (A policy carries its description "
+        "in `metadata.description`, but that is descriptive text, not "
+        "identity.) These rules bridge that convention with PhiSQL's optional "
+        "`POLICY` declaration.\n\n"
     )
 
     def section(key: str, heading: str) -> str:

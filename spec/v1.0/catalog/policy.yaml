@@ -2,9 +2,8 @@
 #
 # Defines how a PhiSQL document's POLICY declaration relates to the Phileas
 # JSON policy filename. The Phileas JSON policy schema has no top-level name
-# or description field; policy identity comes from the filename. This file
-# documents the rule that bridges that convention with PhiSQL's POLICY
-# declaration.
+# field; policy identity comes from the filename. This file documents the rule
+# that bridges that convention with PhiSQL's POLICY declaration.
 #
 # Status: Stable (v1.0).
 
@@ -49,10 +48,12 @@ string_only_compilation:
     If absent, the policy name is null and the caller must provide one.
 
 description_clause:
-  destination: sibling_markdown
+  destination: policy_metadata_description
   description: |
     The DESCRIPTION '<text>' clause, when present on a POLICY declaration,
-    compiles to the policy's human-readable description. The Phileas JSON
-    schema has no description field, so the destination is a sibling
-    Markdown file named <basename>.md. The compiler returns the description
-    text on CompileResult; writing the file is the caller's choice.
+    compiles to metadata.description in the policy JSON, so the description
+    travels with the policy through export, import, and sharing. The compiler
+    also returns the text on CompileResult, which is what callers that keep a
+    description elsewhere (such as a sibling <basename>.md file) read. Before
+    schema 1.3.0 the schema had no description field and CompileResult was the
+    only destination.

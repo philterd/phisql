@@ -70,10 +70,18 @@ public final class Catalog {
             List<?> list = (List<?>) root.get("entities");
             for (Object item : list) {
                 Map<?, ?> m = (Map<?, ?>) item;
+                Object rawAliases = m.get("phileas_strategies_field_aliases");
+                List<String> aliases = new java.util.ArrayList<>();
+                if (rawAliases instanceof List<?> aliasList) {
+                    for (Object alias : aliasList) {
+                        aliases.add((String) alias);
+                    }
+                }
                 EntityType e = new EntityType(
                         (String) m.get("name"),
                         (String) m.get("phileas_field"),
-                        (String) m.get("phileas_strategies_field")
+                        (String) m.get("phileas_strategies_field"),
+                        List.copyOf(aliases)
                 );
                 entities.put(e.name().toUpperCase(Locale.ROOT), e);
             }
@@ -153,8 +161,13 @@ public final class Catalog {
         return null;
     }
 
-    /** Catalog entry for an entity type. */
-    public record EntityType(String name, String phileasField, String phileasStrategiesField) {}
+    /**
+     * Catalog entry for an entity type. {@code phileasStrategiesFieldAliases} holds earlier
+     * names for the strategies array that an engine must still read; the primary name is
+     * the one to emit.
+     */
+    public record EntityType(String name, String phileasField, String phileasStrategiesField,
+                             List<String> phileasStrategiesFieldAliases) {}
 
     /** Catalog entry for a filter strategy. {@code dateOnly} marks date-only strategies. */
     public record Strategy(String name, String phileasEnum, List<StrategyArg> args, boolean dateOnly) {
