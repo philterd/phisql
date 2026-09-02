@@ -10,7 +10,7 @@ The parser is generated from [`spec/v1.0/grammar/PhiSQL.g4`](../../spec/v1.0/gra
 <dependency>
     <groupId>ai.philterd</groupId>
     <artifactId>phisql</artifactId>
-    <version>1.0.0</version>
+    <version>1.4.0</version>
 </dependency>
 ```
 

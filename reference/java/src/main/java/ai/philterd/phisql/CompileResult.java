@@ -27,9 +27,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * <p>{@link #policyName()} is the name from the {@code POLICY} declaration, which
  * implementations should use as the output filename ({@code <name>.json}).
  *
- * <p>{@link #description()} is the {@code DESCRIPTION '...'} text, which the
- * spec says belongs in a sibling {@code <name>.md} file. The compiler does
- * not write files; that is the caller's choice.
+ * <p>{@link #description()} is the {@code DESCRIPTION '...'} text. As of schema
+ * 1.3.0 it is also compiled into the policy itself as {@code metadata.description},
+ * so it travels with the policy; it is returned here as well for callers that keep
+ * a description elsewhere (such as a sibling {@code <name>.md} file). The compiler
+ * does not write files; that is the caller's choice.
  *
  * <p>{@link #policyJson()} is the compiled Phileas JSON policy.
  */
