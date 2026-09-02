@@ -14,6 +14,10 @@ Removal of the `PHYSICIAN_NAME` entity type. **This breaks existing input**: a `
 
 - **`PHYSICIAN_NAME` entity type** (RFC #35). Removed from the catalog (`spec/v1.0/catalog/entity-types.yaml`), and `physicianName` / `filterPhysicianName` (with `physicianNameFilterStrategies`) removed from schema `1.3.0`. It was the one rules-based entity no conforming implementation could be held to: Java Phileas implemented it as a heuristic (an n-gram scan keyed on pre-nominals such as `Dr.` and post-nominals such as `MD`, with a letter-ratio check), phileas-python had no reference to it, and phileas-dotnet carried only an unused `FilterType` entry. There was no specified detection behavior to conform to, so a policy author writing `REDACT PHYSICIAN_NAME WITH MASK;` got redaction on one runtime and silence on the others, with no error to say so. The accept case `accept/entities/physician-name` is replaced by `reject/semantic/physician-name-removed`, which pins the compile-time rejection.
 
+### Added
+
+- **`zipCodeFilterStrategies` on `filterZipCode`** (philterd/phileas#337). The zip-code filter was the only one whose strategies key was singular; every other filter uses the plural, so a policy that followed the convention was rejected by the schema and silently ignored by Phileas, producing a zip-code filter with no strategies. The plural is now the canonical name. `zipCodeFilterStrategy` is kept and marked `deprecated`, so policies written against `1.2.0` and earlier keep validating.
+
 ### Changed
 
 - **Schema version advances to `1.3.0`.** The three references target it (`redaction.policy.schema.version`, `SUPPORTED_SCHEMA_VERSION`, `PolicySchema.SupportedSchemaVersion`), and `validate_spec.py` and the conformance accept-case check (`compliance/run.py`) validate against it. Schema `1.2.0` stays published, so existing policies keep validating against the version they were written for.

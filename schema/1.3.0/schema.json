@@ -1985,8 +1985,16 @@
         "windowSize": true,
         "priority": true,
         "id": true,
+        "zipCodeFilterStrategies": {
+          "description": "Strategies for handling detected ZIP codes.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/baseFilterStrategy"
+          }
+        },
         "zipCodeFilterStrategy": {
-          "description": "Strategies for handling detected ZIP codes. Note: this property name is singular for backwards compatibility but accepts an array.",
+          "description": "Deprecated. Use 'zipCodeFilterStrategies' instead.",
+          "deprecated": true,
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
