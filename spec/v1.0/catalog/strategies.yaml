@@ -94,7 +94,9 @@ strategies:
 
   - name: TRUNCATE
     phileas_enum: TRUNCATE
-    description: Truncate the detected value (e.g., dates to year only).
+    description: >
+      Keep a set number of characters at one end of the detected value and
+      replace the rest. To reduce a date to its year, use TRUNCATE_TO_YEAR.
 
   - name: TRUNCATE_TO_YEAR
     phileas_enum: TRUNCATE_TO_YEAR
