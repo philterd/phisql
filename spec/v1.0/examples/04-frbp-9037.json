@@ -7,7 +7,7 @@
       "ssnFilterStrategies": [{ "strategy": "LAST_4" }]
     },
     "date": {
-      "dateFilterStrategies": [{ "strategy": "TRUNCATE" }]
+      "dateFilterStrategies": [{ "strategy": "TRUNCATE_TO_YEAR" }]
     },
     "surname": {
       "surnameFilterStrategies": [{ "strategy": "ABBREVIATE" }]
