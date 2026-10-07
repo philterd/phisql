@@ -43,6 +43,11 @@ entities:
     phileas_strategies_field: bitcoinFilterStrategies
     description: Bitcoin wallet addresses.
 
+  - name: CANADA_SIN
+    phileas_field: canadaSin
+    phileas_strategies_field: canadaSinFilterStrategies
+    description: Canadian Social Insurance Numbers (nine digits, Luhn-validated, format NNN-NNN-NNN).
+
   - name: CITY
     phileas_field: city
     phileas_strategies_field: cityFilterStrategies

@@ -1,0 +1,12 @@
+{
+  "identifiers": {
+    "canadaSin": {
+      "canadaSinFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ],
+      "onlyValidPrefixes": true
+    }
+  }
+}

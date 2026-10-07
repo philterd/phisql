@@ -395,6 +395,10 @@
           "description": "Detects Bitcoin wallet addresses.",
           "$ref": "#/$defs/filterBitcoinAddress"
         },
+        "canadaSin": {
+          "description": "Detects Canadian Social Insurance Numbers (nine digits, Luhn-validated, format NNN-NNN-NNN).",
+          "$ref": "#/$defs/filterCanadaSin"
+        },
         "city": {
           "description": "Detects city names using dictionary matching.",
           "$ref": "#/$defs/filterCity"
@@ -961,6 +965,35 @@
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
           }
+        }
+      },
+      "additionalProperties": false
+    },
+    "filterCanadaSin": {
+      "description": "Detects Canadian Social Insurance Numbers (nine digits, Luhn-validated, format NNN-NNN-NNN).",
+      "type": "object",
+      "allOf": [
+        { "$ref": "#/$defs/abstractFilterProperties" }
+      ],
+      "properties": {
+        "enabled": true,
+        "ignored": true,
+        "ignoredFiles": true,
+        "ignoredPatterns": true,
+        "windowSize": true,
+        "priority": true,
+        "id": true,
+        "canadaSinFilterStrategies": {
+          "description": "Strategies for handling detected SINs.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/baseFilterStrategy"
+          }
+        },
+        "onlyValidPrefixes": {
+          "description": "Do not detect SINs beginning with 0 or 8, which are not issued to individuals (8 is used for business numbers, which also pass the Luhn check). Default false (match any Luhn-valid nine-digit value).",
+          "type": "boolean",
+          "default": false
         }
       },
       "additionalProperties": false

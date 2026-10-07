@@ -10,6 +10,8 @@ As of v1.0.0 this project follows [Semantic Versioning](https://semver.org/): ad
 
 - **`ITIN` entity type** (RFC #59). A new first-class identifier for the U.S. Individual Taxpayer Identification Number, which has the SSN's shape (`9XX-XX-XXXX`) but always begins with 9. Adds an `itin` identifier and a `filterItin` definition to schema `1.3.0` (edited in place, additive and backward-compatible) and an `ITIN` row to the entity-types catalog, so `REDACT ITIN WITH ...` compiles to an `itin` filter with an `itinFilterStrategies` array. `filterItin` carries an optional `onlyValidRanges` boolean (default `false`) that, when true, keeps only ITINs whose fourth and fifth digits fall in the ranges the IRS issues. It is set through the existing filter `OPTIONS` passthrough (`OPTIONS (onlyValidRanges = TRUE)`), like `ein.onlyValidPrefixes`, so no grammar change was required. Example `itin`.
 - **`spec/v1.3.0/examples/itin`** example pair (`.phisql` and compiled `.json`), and the `accept/entities/itin` conformance case.
+- **`CANADA_SIN` entity type** (RFC #61). A new first-class identifier for the Canadian Social Insurance Number, so a SIN can be detected without writing a pattern for a custom identifier. Adds a `canadaSin` identifier and a `filterCanadaSin` definition to schema `1.3.0` (edited in place, additive and backward-compatible) and a `CANADA_SIN` row to the entity-types catalog, so `REDACT CANADA_SIN WITH ...` compiles to a `canadaSin` filter with a `canadaSinFilterStrategies` array. `filterCanadaSin` carries an optional `onlyValidPrefixes` boolean (default `false`) that, when true, drops values beginning with 0 or 8. It is set through the existing filter `OPTIONS` passthrough, like `ein.onlyValidPrefixes`, so no grammar change was required. Example `canada-sin`.
+- **`spec/v1.3.0/examples/canada-sin`** example pair (`.phisql` and compiled `.json`), and the `accept/entities/canada-sin` conformance case.
 
 ### Notes
 
@@ -18,7 +20,14 @@ As of v1.0.0 this project follows [Semantic Versioning](https://semver.org/): ad
   - **No overlap with SSN.** The SSN filter never reports an SSN-shaped value (`NNN-NN-NNNN`, in any of those forms) beginning with 9, so a value is never reported as both `ssn` and `itin`.
   - **`onlyValidRanges`.** When true, a match is kept only if its fourth and fifth digits are in 50-65, 70-88, 90-92, or 94-99 (IRS Publication 4757; IRM 3.21.263, which also states that 89 and 93 are reserved for other programs). The default is `false`, because a range list that lags the IRS would silently drop real numbers.
   - **ATINs.** Adoption Taxpayer Identification Numbers (`9XX-93-XXXX`, IRM 3.13.40) are reported as `itin` in the default mode, so they are detected rather than missed. With `onlyValidRanges` true they are dropped, since 93 is outside the ITIN ranges.
-- A Phileas build that bundles this schema fails its schema conformance test until it implements the `itin` filter, so the schema change and the Phileas implementation must ship together.
+- Canadian SIN detection is a Phileas runtime behavior (philterd/phileas#416, with the Python and .NET ports in philterd/phileas-python#101 and philterd/phileas-dotnet#157; conformance cases in philterd/phileas-conformance#4). The contract is:
+  - **Format.** Nine digits, unformatted (`046454286`) or in three groups of three separated by a hyphen or a single space (`046-454-286`, `046 454 286`), with the same separator, line-wrap, and boundary handling as the SSN filter. Span type `canada-sin`.
+  - **Luhn.** Every match must pass the mod-10 Luhn check. There is no option to turn it off.
+  - **Temporary residents.** SINs beginning with 9, which the Social Insurance Number Regulations (SOR/2013-82) require for temporary residents, are detected like any other.
+  - **`onlyValidPrefixes`.** When true, a value beginning with 0 or 8 is not detected. Neither is issued as a personal SIN, and 8 is used for CRA business numbers, whose nine-digit root also passes Luhn. This rests on secondary sources (python-stdnum, Wikipedia), not an official Government of Canada statement, so it is opt-in: in the default mode business numbers are detected as SINs, which is a known false positive.
+  - **Contextual terms.** English and French: `sin`, `social insurance`, `nas`, `assurance sociale`.
+  - **Overlap with SSN.** Policies that detect SINs are not expected to also enable the SSN filter. If both are enabled, the existing span disambiguation applies, with no SIN-specific rule. Hyphenated forms never collide (`NNN-NN-NNNN` and `NNN-NNN-NNN`).
+- The Java Phileas build (philterd/phileas) fails its `SchemaConformanceTest` once it bundles this schema, until it implements the `itin` and `canadaSin` filters, so the phisql release and the Phileas implementation must ship together. The Python and .NET ports have no identifier conformance check against the schema.
 
 ## [1.3.0] - 2026-09-02
 
