@@ -4,6 +4,17 @@ All notable changes to the PhiSQL .NET reference implementation (the `Philterd.P
 
 The implementation version is independent of the PhiSQL policy schema version it implements (exposed through the `PolicySchema` API). The .NET reference implementation was introduced alongside the PhiSQL 1.1.0 cycle, so its release history starts at 1.1.0 (there is no 1.0.0 .NET release). Specification-level changes (grammar, schema, catalog, examples) are recorded in the repository [release notes](../../RELEASE_NOTES.md). The current development version is `1.4.0-preview`.
 
+## 1.4.0 - Unreleased
+
+Targets policy schema 1.3.0, which gains two entity types in place (additive and backward-compatible).
+
+### Added
+
+- **`ITIN` entity type** (#59), for the U.S. Individual Taxpayer Identification Number. `REDACT ITIN WITH ...` compiles to an `itin` filter with an `itinFilterStrategies` array; the optional `onlyValidRanges` flag is set through `OPTIONS (onlyValidRanges = TRUE)`.
+- **`CANADA_SIN` entity type** (#61), for the Canadian Social Insurance Number. `REDACT CANADA_SIN WITH ...` compiles to a `canadaSin` filter with a `canadaSinFilterStrategies` array; the optional `onlyValidPrefixes` flag is set through `OPTIONS (onlyValidPrefixes = TRUE)`.
+
+Both come from the catalog and the bundled schema, with no compiler code change. Detection is implemented in Phileas, not here: until a Phileas release implements the `itin` and `canadaSin` filters, a policy using them compiles and validates but nothing is detected. See the repository [release notes](../../RELEASE_NOTES.md) for the detection contract.
+
 ## 1.3.0 - 2026-09-02
 
 Targets policy schema 1.3.0. **This release breaks existing input**: a document using `REDACT PHYSICIAN_NAME ...` no longer compiles. Read the migration note below before upgrading.
