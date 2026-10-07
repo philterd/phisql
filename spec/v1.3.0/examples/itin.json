@@ -1,0 +1,19 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [
+        {
+          "strategy": "LAST_4"
+        }
+      ]
+    },
+    "itin": {
+      "itinFilterStrategies": [
+        {
+          "strategy": "LAST_4"
+        }
+      ],
+      "onlyValidRanges": true
+    }
+  }
+}

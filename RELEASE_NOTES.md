@@ -4,6 +4,22 @@ All notable changes to the PhiSQL specification are documented here: the languag
 
 As of v1.0.0 this project follows [Semantic Versioning](https://semver.org/): additive, backward-compatible changes bump the minor version, and changes that break existing PhiSQL or Phileas JSON require a new major version.
 
+## [Unreleased]
+
+### Added
+
+- **`ITIN` entity type** (RFC #59). A new first-class identifier for the U.S. Individual Taxpayer Identification Number, which has the SSN's shape (`9XX-XX-XXXX`) but always begins with 9. Adds an `itin` identifier and a `filterItin` definition to schema `1.3.0` (edited in place, additive and backward-compatible) and an `ITIN` row to the entity-types catalog, so `REDACT ITIN WITH ...` compiles to an `itin` filter with an `itinFilterStrategies` array. `filterItin` carries an optional `onlyValidRanges` boolean (default `false`) that, when true, keeps only ITINs whose fourth and fifth digits fall in the ranges the IRS issues. It is set through the existing filter `OPTIONS` passthrough (`OPTIONS (onlyValidRanges = TRUE)`), like `ein.onlyValidPrefixes`, so no grammar change was required. Example `itin`.
+- **`spec/v1.3.0/examples/itin`** example pair (`.phisql` and compiled `.json`), and the `accept/entities/itin` conformance case.
+
+### Notes
+
+- ITIN detection is a Phileas runtime behavior (philterd/phileas#403, with the Python and .NET ports in philterd/phileas-python#98 and philterd/phileas-dotnet#144). The contract is:
+  - **Format.** Nine digits beginning with 9, in the same forms the SSN filter accepts: hyphenated (`912-70-1234`), single-space separated (`912 70 1234`), or unformatted (`912701234`).
+  - **No overlap with SSN.** The SSN filter never reports an SSN-shaped value (`NNN-NN-NNNN`, in any of those forms) beginning with 9, so a value is never reported as both `ssn` and `itin`.
+  - **`onlyValidRanges`.** When true, a match is kept only if its fourth and fifth digits are in 50-65, 70-88, 90-92, or 94-99 (IRS Publication 4757; IRM 3.21.263, which also states that 89 and 93 are reserved for other programs). The default is `false`, because a range list that lags the IRS would silently drop real numbers.
+  - **ATINs.** Adoption Taxpayer Identification Numbers (`9XX-93-XXXX`, IRM 3.13.40) are reported as `itin` in the default mode, so they are detected rather than missed. With `onlyValidRanges` true they are dropped, since 93 is outside the ITIN ranges.
+- A Phileas build that bundles this schema fails its schema conformance test until it implements the `itin` filter, so the schema change and the Phileas implementation must ship together.
+
 ## [1.3.0] - 2026-09-02
 
 Removal of the `PHYSICIAN_NAME` entity type. **This breaks existing input**: a `.phisql` file using `REDACT PHYSICIAN_NAME ...` no longer compiles, and a Phileas JSON policy containing `identifiers.physicianName` no longer validates against schema `1.3.0` (`$defs.identifiers` sets `"additionalProperties": false`, so the key is rejected rather than ignored). Read the migration note below before upgrading.

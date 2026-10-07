@@ -103,6 +103,11 @@ entities:
     phileas_strategies_field: ipAddressFilterStrategies
     description: IP addresses (IPv4 and IPv6).
 
+  - name: ITIN
+    phileas_field: itin
+    phileas_strategies_field: itinFilterStrategies
+    description: U.S. Individual Taxpayer Identification Numbers (SSN-shaped, beginning with 9, format 9XX-XX-XXXX).
+
   - name: MAC_ADDRESS
     phileas_field: macAddress
     phileas_strategies_field: macAddressFilterStrategies

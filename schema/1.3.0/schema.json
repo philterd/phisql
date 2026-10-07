@@ -457,6 +457,10 @@
           "description": "Detects IPv4 and IPv6 addresses.",
           "$ref": "#/$defs/filterIpAddress"
         },
+        "itin": {
+          "description": "Detects U.S. Individual Taxpayer Identification Numbers (SSN-shaped, beginning with 9, format 9XX-XX-XXXX).",
+          "$ref": "#/$defs/filterItin"
+        },
         "macAddress": {
           "description": "Detects MAC addresses.",
           "$ref": "#/$defs/filterMacAddress"
@@ -1471,6 +1475,35 @@
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
           }
+        }
+      },
+      "additionalProperties": false
+    },
+    "filterItin": {
+      "description": "Detects U.S. Individual Taxpayer Identification Numbers (SSN-shaped, beginning with 9, format 9XX-XX-XXXX).",
+      "type": "object",
+      "allOf": [
+        { "$ref": "#/$defs/abstractFilterProperties" }
+      ],
+      "properties": {
+        "enabled": true,
+        "ignored": true,
+        "ignoredFiles": true,
+        "ignoredPatterns": true,
+        "windowSize": true,
+        "priority": true,
+        "id": true,
+        "itinFilterStrategies": {
+          "description": "Strategies for handling detected ITINs.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/baseFilterStrategy"
+          }
+        },
+        "onlyValidRanges": {
+          "description": "Only detect ITINs whose fourth and fifth digits fall in the ranges the IRS issues (50-65, 70-88, 90-92, 94-99). Excludes ATINs (fourth and fifth digits 93), which are otherwise detected as ITINs. Default false (match any 9XX-XX-XXXX value).",
+          "type": "boolean",
+          "default": false
         }
       },
       "additionalProperties": false

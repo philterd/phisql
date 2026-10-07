@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "itin": {
+      "itinFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,13 @@
+-- ITIN (Individual Taxpayer Identification Number) filter. A first-class entity
+-- type for the U.S. ITIN, which has the SSN's shape but always begins with 9
+-- (e.g. 912-70-1234). It is its own filter, so ITINs are labelled itin rather than
+-- ssn and a policy can handle the two independently. The optional onlyValidRanges
+-- flag (default FALSE) keeps only ITINs whose fourth and fifth digits fall in the
+-- ranges the IRS issues; with it off, any 9XX-XX-XXXX value is detected, including
+-- ATINs (9XX-93-XXXX). It is set through the filter OPTIONS passthrough, like EIN's
+-- onlyValidPrefixes. Added to schema 1.3.0 in place (additive). Compiles to itin.json.
+
+POLICY itin;
+
+REDACT SSN WITH LAST_4;
+REDACT ITIN WITH LAST_4 OPTIONS (onlyValidRanges = TRUE);
