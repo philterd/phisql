@@ -1,8 +1,12 @@
--- PCI DSS v4.0 Req 3.2-3.4: PAN to last 4 only, full CVV redaction.
--- Demonstrates a WHERE predicate using CONFIDENCE.
+-- PCI DSS v4.0 Req 3.2-3.4: PAN to last 4 only.
+-- Demonstrates a WHERE predicate using CONFIDENCE. High-confidence card numbers
+-- keep their last four digits; every other detected card number is fully
+-- redacted by the final statement, which has no WHERE. Without it, a card
+-- number at or below the threshold would be left unchanged (RFC #57).
 -- Compiles to 03-pci-dss-scope-reduction.json.
 
 POLICY pci_dss_scope_reduction
-  DESCRIPTION 'PCI DSS v4.0 Req 3.2-3.4: PAN to last 4, full CVV redaction.';
+  DESCRIPTION 'PCI DSS v4.0 Req 3.2-3.4: PAN to last 4, with full redaction below the confidence threshold.';
 
 REDACT CREDIT_CARD WITH LAST_4 WHERE CONFIDENCE > 0.85;
+REDACT CREDIT_CARD WITH REDACT;

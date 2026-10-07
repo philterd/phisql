@@ -325,7 +325,10 @@ def page_clauses(rules: dict[str, str]) -> str:
         ("WHERE (redaction predicate)", ["predicate", "confidence predicate",
                                          "compare op"],
          "Gates a redaction strategy on a condition. In v1.0 the only "
-         "predicate is `CONFIDENCE`; see [Predicates](predicates.md)."),
+         "predicate is `CONFIDENCE`; see [Predicates](predicates.md). If every "
+         "strategy on an entity has a `WHERE` and none is satisfied, the value "
+         "is left unchanged, so end with a statement that has no `WHERE` when "
+         "every detected value must be transformed."),
         ("WHERE (discovery predicate)", ["where discovery", "discovery predicate"],
          "Filters discovered entities by findings-table columns before they "
          "reach the findings store. See [Findings](findings.md) for the "
@@ -477,13 +480,21 @@ def page_predicates(cat: dict) -> str:
     out += GENERATED_NOTE
     out += (
         "Predicates appear in a `WHERE` clause and gate a strategy on a "
-        "condition. They compile to the Phileas `conditions` string on the "
+        "condition. They compile to the Phileas `condition` string on the "
         "strategy object.\n\n"
+        "Strategies for an entity are evaluated in order, and the first one "
+        "with no condition or a satisfied condition is applied. If every "
+        "strategy has a condition and none is satisfied, the value is left "
+        "unchanged, not redacted. For example, `REDACT SSN WITH LAST_4 WHERE "
+        "CONFIDENCE > 0.9;` on its own leaves lower-confidence SSNs as they "
+        "are; add `REDACT SSN WITH REDACT;` after it to redact them.\n\n"
     )
     compose = cat.get("compose", {})
     ops = ", ".join(f"`{o['logical']}`" for o in compose.get("operators", []))
     if ops:
-        out += f"Predicates combine with {ops} and may be parenthesized.\n\n"
+        out += (f"Predicates combine with {ops} and may be parenthesized. "
+                "`OR` and parentheses are evaluated only by phileas-python today; "
+                "the reference compilers warn when they are used (RFC #15).\n\n")
     for p in cat["predicates"]:
         out += f"## {p['name']}\n\n{p.get('description', '').strip()}\n\n"
         cops = ", ".join(f"`{o}`" for o in p.get("compare_ops", []))

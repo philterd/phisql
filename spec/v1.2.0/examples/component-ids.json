@@ -15,6 +15,10 @@
           "strategy": "LAST_4",
           "id": "cc-last4-highconf",
           "condition": "confidence >= 0.9"
+        },
+        {
+          "strategy": "REDACT",
+          "id": "cc-redact-fallback"
         }
       ]
     }

@@ -11,5 +11,8 @@ POLICY component_ids;
 REDACT SSN WITH MASK(id = 'ssn-mask') OPTIONS (id = 'ssn-filter');
 
 -- The strategy carries a condition (which can embed PII); its id lets a log line
--- name this rule without printing the condition text.
+-- name this rule without printing the condition text. The final strategy has no
+-- condition, so a card number below the threshold is still redacted instead of
+-- being left unchanged (RFC #57).
 REDACT CREDIT_CARD WITH LAST_4(id = 'cc-last4-highconf') WHERE CONFIDENCE >= 0.9;
+REDACT CREDIT_CARD WITH REDACT(id = 'cc-redact-fallback');

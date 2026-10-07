@@ -658,7 +658,7 @@
           "default": "LEADING"
         },
         "condition": {
-          "description": "Conditional expression that must be satisfied for this strategy to apply. Supports fields: token, context, confidence, population. Operators: startswith, ==, !=, >, <, >=, <=, is, is not. Multiple conditions joined with and. Example: 'confidence > 0.9', 'confidence > 0.5 and confidence < 0.9', 'token startswith \"5\"', 'population < 4500', 'token is birthdate'.",
+          "description": "Conditional expression that must be satisfied for this strategy to apply. If every strategy on a filter has a condition and none is satisfied, the value is left unchanged. Supports fields: token, context, confidence, population. Operators: startswith, ==, !=, >, <, >=, <=, is, is not. Multiple conditions joined with and. Example: 'confidence > 0.9', 'confidence > 0.5 and confidence < 0.9', 'token startswith \"5\"', 'population < 4500', 'token is birthdate'.",
           "type": "string"
         },
         "salt": {
@@ -797,7 +797,7 @@
           "default": "LEADING"
         },
         "condition": {
-          "description": "Conditional expression that must be satisfied for this strategy to apply. Date filters support: 'token is birthdate', 'token is deathdate', 'token is birthdate or deathdate'.",
+          "description": "Conditional expression that must be satisfied for this strategy to apply. If every strategy on a filter has a condition and none is satisfied, the value is left unchanged. Date filters support: 'token is birthdate', 'token is deathdate', 'token is birthdate or deathdate'.",
           "type": "string"
         },
         "salt": {
@@ -912,7 +912,7 @@
         "priority": true,
         "id": true,
         "ageFilterStrategies": {
-          "description": "Strategies for handling detected age values.",
+          "description": "Strategies for handling detected age values. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -936,7 +936,7 @@
         "priority": true,
         "id": true,
         "bankRoutingNumberFilterStrategies": {
-          "description": "Strategies for handling detected bank routing numbers.",
+          "description": "Strategies for handling detected bank routing numbers. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -960,7 +960,7 @@
         "priority": true,
         "id": true,
         "bitcoinFilterStrategies": {
-          "description": "Strategies for handling detected Bitcoin addresses.",
+          "description": "Strategies for handling detected Bitcoin addresses. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -984,7 +984,7 @@
         "priority": true,
         "id": true,
         "canadaSinFilterStrategies": {
-          "description": "Strategies for handling detected SINs.",
+          "description": "Strategies for handling detected SINs. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -1013,7 +1013,7 @@
         "priority": true,
         "id": true,
         "cityFilterStrategies": {
-          "description": "Strategies for handling detected city names.",
+          "description": "Strategies for handling detected city names. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -1052,7 +1052,7 @@
         "priority": true,
         "id": true,
         "countyFilterStrategies": {
-          "description": "Strategies for handling detected county names.",
+          "description": "Strategies for handling detected county names. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -1091,7 +1091,7 @@
         "priority": true,
         "id": true,
         "creditCardFilterStrategies": {
-          "description": "Strategies for handling detected credit card numbers.",
+          "description": "Strategies for handling detected credit card numbers. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -1130,7 +1130,7 @@
         "priority": true,
         "id": true,
         "currencyFilterStrategies": {
-          "description": "Strategies for handling detected currency values.",
+          "description": "Strategies for handling detected currency values. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -1154,7 +1154,7 @@
         "priority": true,
         "id": true,
         "customFilterStrategies": {
-          "description": "Strategies for handling detected custom dictionary terms.",
+          "description": "Strategies for handling detected custom dictionary terms. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -1211,7 +1211,7 @@
         "priority": true,
         "id": true,
         "dateFilterStrategies": {
-          "description": "Strategies for handling detected dates. Supports date-specific strategies: TRUNCATE_TO_YEAR, SHIFT, RELATIVE.",
+          "description": "Strategies for handling detected dates. Supports date-specific strategies: TRUNCATE_TO_YEAR, SHIFT, RELATIVE. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/dateFilterStrategy"
@@ -1240,7 +1240,7 @@
         "priority": true,
         "id": true,
         "driversLicenseFilterStrategies": {
-          "description": "Strategies for handling detected driver's license numbers.",
+          "description": "Strategies for handling detected driver's license numbers. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -1264,7 +1264,7 @@
         "priority": true,
         "id": true,
         "einFilterStrategies": {
-          "description": "Strategies for handling detected EINs.",
+          "description": "Strategies for handling detected EINs. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -1293,7 +1293,7 @@
         "priority": true,
         "id": true,
         "emailAddressFilterStrategies": {
-          "description": "Strategies for handling detected email addresses.",
+          "description": "Strategies for handling detected email addresses. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -1327,7 +1327,7 @@
         "priority": true,
         "id": true,
         "firstNameFilterStrategies": {
-          "description": "Strategies for handling detected first names.",
+          "description": "Strategies for handling detected first names. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -1366,7 +1366,7 @@
         "priority": true,
         "id": true,
         "hospitalFilterStrategies": {
-          "description": "Strategies for handling detected hospital names.",
+          "description": "Strategies for handling detected hospital names. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -1405,7 +1405,7 @@
         "priority": true,
         "id": true,
         "ibanCodeFilterStrategies": {
-          "description": "Strategies for handling detected IBAN codes.",
+          "description": "Strategies for handling detected IBAN codes. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -1439,7 +1439,7 @@
         "priority": true,
         "id": true,
         "identifierFilterStrategies": {
-          "description": "Strategies for handling detected custom identifiers.",
+          "description": "Strategies for handling detected custom identifiers. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -1503,7 +1503,7 @@
         "priority": true,
         "id": true,
         "ipAddressFilterStrategies": {
-          "description": "Strategies for handling detected IP addresses.",
+          "description": "Strategies for handling detected IP addresses. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -1527,7 +1527,7 @@
         "priority": true,
         "id": true,
         "itinFilterStrategies": {
-          "description": "Strategies for handling detected ITINs.",
+          "description": "Strategies for handling detected ITINs. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -1556,7 +1556,7 @@
         "priority": true,
         "id": true,
         "macAddressFilterStrategies": {
-          "description": "Strategies for handling detected MAC addresses.",
+          "description": "Strategies for handling detected MAC addresses. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -1580,7 +1580,7 @@
         "priority": true,
         "id": true,
         "medicalConditionFilterStrategies": {
-          "description": "Strategies for handling detected medical conditions.",
+          "description": "Strategies for handling detected medical conditions. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -1622,7 +1622,7 @@
         "priority": true,
         "id": true,
         "passportNumberFilterStrategies": {
-          "description": "Strategies for handling detected passport numbers.",
+          "description": "Strategies for handling detected passport numbers. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -1646,7 +1646,7 @@
         "priority": true,
         "id": true,
         "phEyeFilterStrategies": {
-          "description": "Strategies for handling entities detected by PhEye.",
+          "description": "Strategies for handling entities detected by PhEye. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -1732,7 +1732,7 @@
         "priority": true,
         "id": true,
         "phoneNumberFilterStrategies": {
-          "description": "Strategies for handling detected phone numbers.",
+          "description": "Strategies for handling detected phone numbers. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -1764,7 +1764,7 @@
         "priority": true,
         "id": true,
         "phoneNumberExtensionFilterStrategies": {
-          "description": "Strategies for handling detected phone number extensions.",
+          "description": "Strategies for handling detected phone number extensions. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -1788,7 +1788,7 @@
         "priority": true,
         "id": true,
         "sectionFilterStrategies": {
-          "description": "Strategies for handling detected sections.",
+          "description": "Strategies for handling detected sections. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -1820,7 +1820,7 @@
         "priority": true,
         "id": true,
         "ssnFilterStrategies": {
-          "description": "Strategies for handling detected SSNs.",
+          "description": "Strategies for handling detected SSNs. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -1844,7 +1844,7 @@
         "priority": true,
         "id": true,
         "stateFilterStrategies": {
-          "description": "Strategies for handling detected state names.",
+          "description": "Strategies for handling detected state names. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -1883,7 +1883,7 @@
         "priority": true,
         "id": true,
         "stateAbbreviationFilterStrategies": {
-          "description": "Strategies for handling detected state abbreviations.",
+          "description": "Strategies for handling detected state abbreviations. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -1907,7 +1907,7 @@
         "priority": true,
         "id": true,
         "streetAddressFilterStrategies": {
-          "description": "Strategies for handling detected street addresses.",
+          "description": "Strategies for handling detected street addresses. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -1931,7 +1931,7 @@
         "priority": true,
         "id": true,
         "surnameFilterStrategies": {
-          "description": "Strategies for handling detected surnames.",
+          "description": "Strategies for handling detected surnames. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -1970,7 +1970,7 @@
         "priority": true,
         "id": true,
         "trackingNumberFilterStrategies": {
-          "description": "Strategies for handling detected tracking numbers.",
+          "description": "Strategies for handling detected tracking numbers. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -2014,7 +2014,7 @@
         "priority": true,
         "id": true,
         "urlFilterStrategies": {
-          "description": "Strategies for handling detected URLs.",
+          "description": "Strategies for handling detected URLs. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -2043,7 +2043,7 @@
         "priority": true,
         "id": true,
         "vinFilterStrategies": {
-          "description": "Strategies for handling detected VINs.",
+          "description": "Strategies for handling detected VINs. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"
@@ -2067,7 +2067,7 @@
         "priority": true,
         "id": true,
         "zipCodeFilterStrategies": {
-          "description": "Strategies for handling detected ZIP codes.",
+          "description": "Strategies for handling detected ZIP codes. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/baseFilterStrategy"

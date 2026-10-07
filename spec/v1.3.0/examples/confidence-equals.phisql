@@ -1,9 +1,12 @@
 -- Equality in a WHERE clause. PhiSQL writes equality as `=`, and it compiles to
 -- the Phileas condition operator `==` (RFC #58); earlier compilers emitted `=`,
 -- which the Java and .NET runtimes could not evaluate. Predicates joined with
--- AND compile to `and`. Compiles to confidence-equals.json.
+-- AND compile to `and`. The last statement has no WHERE, so a value that meets
+-- neither condition is still redacted: without it, that value would be left
+-- unchanged (RFC #57). Compiles to confidence-equals.json.
 
 POLICY confidence_equals;
 
 REDACT SSN WITH LAST_4 WHERE CONFIDENCE = 1.0;
-REDACT SSN WITH REDACT WHERE CONFIDENCE >= 0.5 AND CONFIDENCE < 1.0;
+REDACT SSN WITH MASK WHERE CONFIDENCE >= 0.5 AND CONFIDENCE < 1.0;
+REDACT SSN WITH REDACT;
