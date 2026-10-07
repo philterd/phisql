@@ -138,7 +138,7 @@ public final class Compiler {
             policyJson.putObject("metadata").put("description", description);
         }
 
-        return new CompileResult(policyName, description, policyJson);
+        return new CompileResult(policyName, description, policyJson, conditionWarnings(document));
     }
 
     /**
@@ -759,7 +759,7 @@ public final class Compiler {
 
     private String compilePredicate(PhiSQLParser.PredicateContext ctx) {
         if (ctx instanceof PhiSQLParser.ConfidencePredicateContext c) {
-            return "confidence " + c.compareOp().getText() + " " + c.NUMERIC_LITERAL().getText();
+            return "confidence " + phileasCompareOp(c.compareOp().getText()) + " " + c.NUMERIC_LITERAL().getText();
         }
         if (ctx instanceof PhiSQLParser.ParenPredicateContext p) {
             return "( " + compilePredicate(p.predicate()) + " )";
@@ -769,6 +769,46 @@ public final class Compiler {
             return compilePredicate(l.predicate(0)) + " " + op + " " + compilePredicate(l.predicate(1));
         }
         throw new CompileException("Unsupported predicate form: " + ctx.getText());
+    }
+
+    /**
+     * PhiSQL writes equality as {@code =}; the Phileas condition grammar spells it
+     * {@code ==} (spec/v1.0/catalog/predicates.yaml, phileas_ops; RFC #58).
+     */
+    private static String phileasCompareOp(String op) {
+        return "=".equals(op) ? "==" : op;
+    }
+
+    static final String OR_WARNING = "WHERE uses OR, which only phileas-python evaluates today; "
+            + "the Java and .NET Phileas runtimes do not support it yet (RFC #15).";
+    static final String PAREN_WARNING = "WHERE uses parentheses, which only phileas-python evaluates today; "
+            + "the Java and .NET Phileas runtimes do not support them yet (RFC #15).";
+
+    /** Warns once per document for each WHERE construct not every runtime supports. */
+    private static List<String> conditionWarnings(PhiSQLParser.DocumentContext document) {
+        boolean[] found = new boolean[2]; // [0] OR, [1] parentheses
+        for (PhiSQLParser.StatementContext stmt : document.statement()) {
+            PhiSQLParser.PredicateContext predicate = null;
+            if (stmt.redactStmt() != null) predicate = stmt.redactStmt().predicate();
+            else if (stmt.defineIdentifierStmt() != null) predicate = stmt.defineIdentifierStmt().predicate();
+            else if (stmt.detectStmt() != null) predicate = stmt.detectStmt().predicate();
+            scanPredicate(predicate, found);
+        }
+        List<String> warnings = new java.util.ArrayList<>();
+        if (found[0]) warnings.add(OR_WARNING);
+        if (found[1]) warnings.add(PAREN_WARNING);
+        return warnings;
+    }
+
+    private static void scanPredicate(PhiSQLParser.PredicateContext ctx, boolean[] found) {
+        if (ctx instanceof PhiSQLParser.ParenPredicateContext p) {
+            found[1] = true;
+            scanPredicate(p.predicate(), found);
+        } else if (ctx instanceof PhiSQLParser.LogicalPredicateContext l) {
+            if (l.OR() != null) found[0] = true;
+            scanPredicate(l.predicate(0), found);
+            scanPredicate(l.predicate(1), found);
+        }
     }
 
     // ------------------------------------------------------------------

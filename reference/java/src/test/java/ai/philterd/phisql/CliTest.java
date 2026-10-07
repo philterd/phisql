@@ -71,6 +71,15 @@ class CliTest {
     }
 
     @Test
+    void warningsGoToStderrWithoutChangingTheExitCode() throws IOException {
+        Path f = write("or.phisql", "REDACT SSN WITH MASK WHERE CONFIDENCE < 0.2 OR CONFIDENCE > 0.9;\n");
+        Run r = invoke(f.toString());
+        assertEquals(Cli.EXIT_OK, r.code(), r.err());
+        assertTrue(r.err().contains("warning: " + Compiler.OR_WARNING), r.err());
+        MAPPER.readTree(r.out());
+    }
+
+    @Test
     void parseErrorExitsWithParseCode() throws IOException {
         // Missing the semicolon after the POLICY declaration is a grammar error.
         Path f = write("bad.phisql", "POLICY x\nREDACT SSN WITH MASK;\n");

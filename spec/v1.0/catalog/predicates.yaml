@@ -17,6 +17,9 @@
 #     value_type  : type of the right-hand side.
 #     phileas_template : how this predicate serializes into Phileas
 #                        condition syntax.
+#     phileas_ops : optional map from a PhiSQL compare operator to the
+#                   operator emitted in place of {op}. An operator not
+#                   listed is emitted as written.
 #     phileas_field : the field on the strategy object that receives the
 #                     compiled condition string.
 
@@ -37,6 +40,11 @@ predicates:
     compare_ops: [">", ">=", "<", "<=", "="]
     value_type: number
     phileas_template: "confidence {op} {value}"
+    # PhiSQL writes equality as `=`; the Phileas condition grammar spells it
+    # `==` (RFC #58). Emitting `=` crashed the Java runtime and was evaluated
+    # as always true by .NET.
+    phileas_ops:
+      "=": "=="
     phileas_field: condition
     description: |
       Limits the strategy to detections whose model confidence meets the

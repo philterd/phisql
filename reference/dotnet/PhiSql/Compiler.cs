@@ -25,6 +25,8 @@ namespace Philterd.PhiSql;
 /// Result of compiling a PhiSQL document. <see cref="PolicyName"/> is the name
 /// from the POLICY declaration (or the filename basename); <see cref="Description"/>
 /// is the DESCRIPTION text; <see cref="PolicyJson"/> is the compiled Phileas JSON.
+/// <see cref="Warnings"/> lists problems that do not stop compilation, such as a
+/// WHERE clause that not every Phileas runtime can evaluate yet.
 /// </summary>
 public sealed class CompileResult
 {
@@ -38,15 +40,25 @@ public sealed class CompileResult
     };
 
     public CompileResult(string? policyName, string? description, JsonObject policyJson)
+        : this(policyName, description, policyJson, Array.Empty<string>())
+    {
+    }
+
+    public CompileResult(string? policyName, string? description, JsonObject policyJson,
+        IReadOnlyList<string> warnings)
     {
         PolicyName = policyName;
         Description = description;
         PolicyJson = policyJson;
+        Warnings = warnings.ToArray();
     }
 
     public string? PolicyName { get; }
     public string? Description { get; }
     public JsonObject PolicyJson { get; }
+
+    /// <summary>The compile warnings, in the order found; empty when there are none.</summary>
+    public IReadOnlyList<string> Warnings { get; }
 
     /// <summary>Returns the policy JSON as a pretty-printed string.</summary>
     public string ToJsonString() => PolicyJson.ToJsonString(Pretty);
@@ -133,7 +145,7 @@ public sealed class Compiler
             policyJson["metadata"] = new JsonObject { ["description"] = description };
         }
 
-        return new CompileResult(policyName, description, policyJson);
+        return new CompileResult(policyName, description, policyJson, ConditionWarnings(document));
     }
 
     /// <summary>
@@ -572,11 +584,57 @@ public sealed class Compiler
 
     private string CompilePredicate(IPredicate ctx) => ctx switch
     {
-        ConfidencePredicate c => $"confidence {c.Op} {c.Number}",
+        ConfidencePredicate c => $"confidence {PhileasCompareOp(c.Op)} {c.Number}",
         ParenPredicate p => "( " + CompilePredicate(p.Inner) + " )",
         LogicalPredicate l => CompilePredicate(l.Left) + " " + (l.Op == "AND" ? "and" : "or") + " " + CompilePredicate(l.Right),
         _ => throw new CompileException("Unsupported predicate form"),
     };
+
+    // PhiSQL writes equality as `=`; the Phileas condition grammar spells it `==`
+    // (spec/v1.0/catalog/predicates.yaml, phileas_ops; RFC #58).
+    private static string PhileasCompareOp(string op) => op == "=" ? "==" : op;
+
+    public const string OrWarning = "WHERE uses OR, which only phileas-python evaluates today; "
+        + "the Java and .NET Phileas runtimes do not support it yet (RFC #15).";
+    public const string ParenWarning = "WHERE uses parentheses, which only phileas-python evaluates today; "
+        + "the Java and .NET Phileas runtimes do not support them yet (RFC #15).";
+
+    /// <summary>Warns once per document for each WHERE construct not every runtime supports.</summary>
+    private static List<string> ConditionWarnings(Document document)
+    {
+        bool foundOr = false, foundParen = false;
+
+        void Scan(IPredicate? pred)
+        {
+            switch (pred)
+            {
+                case ParenPredicate p:
+                    foundParen = true;
+                    Scan(p.Inner);
+                    break;
+                case LogicalPredicate l:
+                    if (l.Op == "OR") foundOr = true;
+                    Scan(l.Left);
+                    Scan(l.Right);
+                    break;
+            }
+        }
+
+        foreach (IStatement stmt in document.Statements)
+        {
+            switch (stmt)
+            {
+                case RedactStmt r: Scan(r.Predicate); break;
+                case DefineIdentifierStmt d: Scan(d.Predicate); break;
+                case DetectStmt d: Scan(d.Predicate); break;
+            }
+        }
+
+        var warnings = new List<string>();
+        if (foundOr) warnings.Add(OrWarning);
+        if (foundParen) warnings.Add(ParenWarning);
+        return warnings;
+    }
 
     // --- JSON helpers --------------------------------------------------------
 

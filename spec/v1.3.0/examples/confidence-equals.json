@@ -1,0 +1,16 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [
+        {
+          "strategy": "LAST_4",
+          "condition": "confidence == 1.0"
+        },
+        {
+          "strategy": "REDACT",
+          "condition": "confidence >= 0.5 and confidence < 1.0"
+        }
+      ]
+    }
+  }
+}

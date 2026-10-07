@@ -31,6 +31,9 @@ Exit codes form the adapter contract the conformance runner relies on:
 * ``64`` — usage error (wrong arguments).
 * ``1``  — an I/O or otherwise unexpected error.
 
+Compile warnings (see ``CompileResult.warnings()``) are printed to stderr as
+``warning: ...`` lines. They do not change the output or the exit code.
+
 The two reject codes are kept distinct so the suite can assert not just that an
 invalid policy is rejected but that it is rejected at the right layer.
 """
@@ -71,6 +74,8 @@ def run(args, out, err) -> int:
 
     try:
         result = Compiler().compile_file(file)
+        for warning in result.warnings():
+            print(f"warning: {warning}", file=err)
         print(result.to_json_string(), file=out)
         out.flush()
         return EXIT_OK

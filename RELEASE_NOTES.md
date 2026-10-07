@@ -12,6 +12,17 @@ As of v1.0.0 this project follows [Semantic Versioning](https://semver.org/): ad
 - **`spec/v1.3.0/examples/itin`** example pair (`.phisql` and compiled `.json`), and the `accept/entities/itin` conformance case.
 - **`CANADA_SIN` entity type** (RFC #61). A new first-class identifier for the Canadian Social Insurance Number, so a SIN can be detected without writing a pattern for a custom identifier. Adds a `canadaSin` identifier and a `filterCanadaSin` definition to schema `1.3.0` (edited in place, additive and backward-compatible) and a `CANADA_SIN` row to the entity-types catalog, so `REDACT CANADA_SIN WITH ...` compiles to a `canadaSin` filter with a `canadaSinFilterStrategies` array. `filterCanadaSin` carries an optional `onlyValidPrefixes` boolean (default `false`) that, when true, drops values beginning with 0 or 8. It is set through the existing filter `OPTIONS` passthrough, like `ein.onlyValidPrefixes`, so no grammar change was required. Example `canada-sin`.
 - **`spec/v1.3.0/examples/canada-sin`** example pair (`.phisql` and compiled `.json`), and the `accept/entities/canada-sin` conformance case.
+- **`spec/v1.3.0/examples/confidence-equals`** example pair (`.phisql` and compiled `.json`).
+- **Defect-fix rule in CONTRIBUTING.** A change to compiled output for existing valid input may ship within the current major version when the old output fails or misbehaves in a supported runtime and the new output means the same everywhere the old one worked.
+
+### Fixed
+
+- **`WHERE CONFIDENCE = n` now compiles to `confidence == n`** (RFC #58). The compilers emitted `confidence = n`, which the Phileas condition grammar does not define: the Java runtime exhausted the heap trying to parse it (philterd/phileas#402), and .NET applied the strategy to every span regardless of confidence (philterd/phileas-dotnet#136). Python accepted both, so `==` changes nothing there. **This changes compiled output for existing input**: recompile any policy that uses `WHERE CONFIDENCE =`. It ships within v1.x under the defect-fix rule added to CONTRIBUTING. The `CONFIDENCE` entry in `predicates.yaml` records the mapping as `phileas_ops`, and the conformance cases `accept/predicates/confidence-eq` and `confidence-paren` now expect `==`. Example `confidence-equals`.
+- **The schema's `condition` description documents `and` as the joiner** (RFC #58). It said conditions are joined with `&&`, which no Phileas runtime evaluates; `and`, which the compilers emit, works in all three. Description text only, edited in place in schema `1.3.0`.
+
+### Changed
+
+- **The reference compilers warn when a `WHERE` uses `OR` or parentheses** (RFC #58). Only phileas-python evaluates them today; the Java and .NET runtimes do not support them yet (RFC #15). The warning does not change the output or the exit code, and is removed once #15 is implemented. It is a reference-compiler behavior, not a conformance requirement.
 
 ### Notes
 

@@ -119,6 +119,13 @@ A **major** version bump (`v1.x` → `v2.0`) is warranted when an Accepted RFC:
 
 As of the `v1.0` release the compatibility contract is in force: the spec is no longer a draft, the rules above are binding, and a breaking change requires a major version bump rather than landing within a minor version.
 
+**Defect fixes to compiled output.** A change to the compiled Phileas JSON for an existing valid input is a defect fix, allowed within the current major version, when both of these hold:
+
+- the existing output fails or misbehaves in at least one supported Phileas runtime (it is rejected, crashes, or is evaluated with a different meaning than the PhiSQL source states); and
+- the new output is accepted by every runtime that accepted the old output, with the same meaning, so no deployment that works today changes behavior.
+
+The RFC proposing the fix must show both, and the release notes must call out the output change. RFC #58 (`WHERE CONFIDENCE =` compiling to `==` instead of `=`) was the first change made under this rule.
+
 Each accepted RFC notes which kind of bump it requires (in the issue); accepted changes are bundled into the next version following these rules.
 
 ## Code of conduct

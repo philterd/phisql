@@ -92,7 +92,8 @@ def test_decimal_passthrough_argument(compiler):
 def test_equals_comparison_operator(compiler):
     strategy = _strategy(compiler, "REDACT SSN WITH MASK WHERE CONFIDENCE = 0.5;",
                          "ssn", "ssnFilterStrategies")
-    assert strategy["condition"] == "confidence = 0.5"
+    # PhiSQL `=` compiles to the Phileas `==` operator (RFC #58).
+    assert strategy["condition"] == "confidence == 0.5"
 
 
 def test_parenthesised_and_predicate(compiler):

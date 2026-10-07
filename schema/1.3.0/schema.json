@@ -658,7 +658,7 @@
           "default": "LEADING"
         },
         "condition": {
-          "description": "Conditional expression that must be satisfied for this strategy to apply. Supports fields: token, context, confidence, population. Operators: startswith, ==, !=, >, <, >=, <=, is, is not. Multiple conditions joined with &&. Example: 'confidence > 0.9', 'token startswith \"5\"', 'population < 4500', 'token is birthdate'.",
+          "description": "Conditional expression that must be satisfied for this strategy to apply. Supports fields: token, context, confidence, population. Operators: startswith, ==, !=, >, <, >=, <=, is, is not. Multiple conditions joined with and. Example: 'confidence > 0.9', 'confidence > 0.5 and confidence < 0.9', 'token startswith \"5\"', 'population < 4500', 'token is birthdate'.",
           "type": "string"
         },
         "salt": {

@@ -47,6 +47,16 @@ public class CliTests : IDisposable
     }
 
     [Fact]
+    public void WarningsGoToStderrWithoutChangingTheExitCode()
+    {
+        string file = Write("or.phisql", "REDACT SSN WITH MASK WHERE CONFIDENCE < 0.2 OR CONFIDENCE > 0.9;\n");
+        var (code, output, err) = Invoke(file);
+        Assert.Equal(Cli.ExitOk, code);
+        Assert.Contains("warning: " + Compiler.OrWarning, err);
+        JsonNode.Parse(output);
+    }
+
+    [Fact]
     public void ParseErrorExitsWithParseCode()
     {
         string file = Write("bad.phisql", "POLICY x\nREDACT SSN WITH MASK;\n");

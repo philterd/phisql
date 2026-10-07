@@ -12,8 +12,13 @@ Targets policy schema 1.3.0, which gains two entity types in place (additive and
 
 - **`ITIN` entity type** (#59), for the U.S. Individual Taxpayer Identification Number. `REDACT ITIN WITH ...` compiles to an `itin` filter with an `itinFilterStrategies` array; the optional `onlyValidRanges` flag is set through `OPTIONS (onlyValidRanges = TRUE)`.
 - **`CANADA_SIN` entity type** (#61), for the Canadian Social Insurance Number. `REDACT CANADA_SIN WITH ...` compiles to a `canadaSin` filter with a `canadaSinFilterStrategies` array; the optional `onlyValidPrefixes` flag is set through `OPTIONS (onlyValidPrefixes = TRUE)`.
+- **Compile warnings** (RFC #58). `CompileResult.Warnings` lists problems that do not stop compilation; the CLI prints each to stderr as `warning: ...` and still exits 0. The first warnings flag a `WHERE` that uses `OR` or parentheses, which only phileas-python evaluates today (RFC #15).
 
-Both come from the catalog and the bundled schema, with no compiler code change. Detection is implemented in Phileas, not here: until a Phileas release implements the `itin` and `canadaSin` filters, a policy using them compiles and validates but nothing is detected. See the repository [release notes](../../RELEASE_NOTES.md) for the detection contract.
+The two entity types come from the catalog and the bundled schema, with no compiler code change. Detection is implemented in Phileas, not here: until a Phileas release implements the `itin` and `canadaSin` filters, a policy using them compiles and validates but nothing is detected. See the repository [release notes](../../RELEASE_NOTES.md) for the detection contract.
+
+### Fixed
+
+- **`WHERE CONFIDENCE = n` now compiles to `confidence == n`** (RFC #58), the operator every Phileas runtime evaluates. The old `confidence = n` crashed the Java runtime and was applied unconditionally by .NET. This changes compiled output for existing input; recompile policies that use `WHERE CONFIDENCE =`.
 
 ## 1.3.0 - 2026-09-02
 

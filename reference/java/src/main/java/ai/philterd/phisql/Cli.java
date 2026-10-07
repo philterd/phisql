@@ -45,6 +45,9 @@ import java.nio.file.Path;
  *   <li>{@code 1} - an I/O or otherwise unexpected error.</li>
  * </ul>
  *
+ * <p>Compile warnings (see {@link CompileResult#warnings()}) are printed to stderr
+ * as {@code warning: ...} lines. They do not change the output or the exit code.
+ *
  * <p>The two reject codes are kept distinct so the suite can assert not just
  * that an invalid policy is rejected but that it is rejected at the right
  * layer: a malformed token must fail to parse, while a well-formed policy that
@@ -83,6 +86,9 @@ public final class Cli {
 
         try {
             CompileResult result = new Compiler().compile(file);
+            for (String warning : result.warnings()) {
+                err.println("warning: " + warning);
+            }
             byte[] json = (result.toJsonString() + System.lineSeparator())
                     .getBytes(StandardCharsets.UTF_8);
             out.write(json, 0, json.length);

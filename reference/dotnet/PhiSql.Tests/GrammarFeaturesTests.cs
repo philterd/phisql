@@ -68,7 +68,8 @@ public class GrammarFeaturesTests
     public void EqualsComparisonOperator()
     {
         JsonNode s = Strategy("REDACT SSN WITH MASK WHERE CONFIDENCE = 0.5;", "ssn", "ssnFilterStrategies");
-        Assert.Equal("confidence = 0.5", s["condition"]!.GetValue<string>());
+        // PhiSQL `=` compiles to the Phileas `==` operator (RFC #58).
+        Assert.Equal("confidence == 0.5", s["condition"]!.GetValue<string>());
     }
 
     [Fact]

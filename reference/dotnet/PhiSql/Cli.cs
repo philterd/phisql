@@ -29,6 +29,8 @@ namespace Philterd.PhiSql;
 ///   <item><c>64</c> — usage error (wrong arguments).</item>
 ///   <item><c>1</c>  — an I/O or otherwise unexpected error.</item>
 /// </list>
+/// Compile warnings (see <see cref="CompileResult.Warnings"/>) are printed to
+/// stderr as <c>warning: ...</c> lines. They do not change the output or the exit code.
 /// </summary>
 public static class Cli
 {
@@ -63,6 +65,10 @@ public static class Cli
         try
         {
             CompileResult result = new Compiler().CompileFile(file);
+            foreach (string warning in result.Warnings)
+            {
+                errw.WriteLine($"warning: {warning}");
+            }
             outw.WriteLine(result.ToJsonString());
             return ExitOk;
         }

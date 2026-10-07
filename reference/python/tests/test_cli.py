@@ -75,3 +75,12 @@ def test_missing_argument_is_usage_error():
 def test_missing_file_is_usage_error(tmp_path):
     code, out, err = _invoke(str(tmp_path / "does-not-exist.phisql"))
     assert code == cli.EXIT_USAGE
+
+
+def test_warnings_go_to_stderr_without_changing_the_exit_code(tmp_path):
+    from phisql.compiler import OR_WARNING
+    file = _write(tmp_path, "or.phisql", "REDACT SSN WITH MASK WHERE CONFIDENCE < 0.2 OR CONFIDENCE > 0.9;\n")
+    code, out, err = _invoke(str(file))
+    assert code == cli.EXIT_OK, err
+    assert "warning: " + OR_WARNING in err
+    json.loads(out)

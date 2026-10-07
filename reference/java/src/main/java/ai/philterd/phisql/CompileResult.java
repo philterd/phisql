@@ -21,6 +21,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import java.util.List;
+
 /**
  * Result of compiling a PhiSQL document.
  *
@@ -34,6 +36,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * does not write files; that is the caller's choice.
  *
  * <p>{@link #policyJson()} is the compiled Phileas JSON policy.
+ *
+ * <p>{@link #warnings()} lists problems that do not stop compilation, such as a
+ * {@code WHERE} clause that not every Phileas runtime can evaluate yet.
  */
 public final class CompileResult {
 
@@ -43,11 +48,17 @@ public final class CompileResult {
     private final String policyName;
     private final String description;
     private final ObjectNode policyJson;
+    private final List<String> warnings;
 
     public CompileResult(String policyName, String description, ObjectNode policyJson) {
+        this(policyName, description, policyJson, List.of());
+    }
+
+    public CompileResult(String policyName, String description, ObjectNode policyJson, List<String> warnings) {
         this.policyName = policyName;
         this.description = description;
         this.policyJson = policyJson;
+        this.warnings = List.copyOf(warnings);
     }
 
     public String policyName() {
@@ -60,6 +71,11 @@ public final class CompileResult {
 
     public ObjectNode policyJson() {
         return policyJson;
+    }
+
+    /** Returns the compile warnings, in the order found; empty when there are none. */
+    public List<String> warnings() {
+        return warnings;
     }
 
     /** Returns the policy JSON as a pretty-printed string. */

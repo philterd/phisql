@@ -32,7 +32,7 @@ from __future__ import annotations
 import copy
 import json
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 
 from . import ast
 from .catalog import Catalog
@@ -58,13 +58,16 @@ class CompileResult:
     filename basename), which callers should use as the output filename
     (``<name>.json``). ``description`` is the ``DESCRIPTION '...'`` text, which
     the spec places in a sibling ``<name>.md`` file. ``policy_json`` is the
-    compiled Phileas JSON policy as a Python ``dict``.
+    compiled Phileas JSON policy as a Python ``dict``. ``warnings`` lists
+    problems that do not stop compilation, such as a ``WHERE`` clause that not
+    every Phileas runtime can evaluate yet.
     """
 
-    def __init__(self, policy_name, description, policy_json):
+    def __init__(self, policy_name, description, policy_json, warnings=None):
         self._policy_name = policy_name
         self._description = description
         self._policy_json = policy_json
+        self._warnings = list(warnings or [])
 
     def policy_name(self) -> Optional[str]:
         return self._policy_name
@@ -74,6 +77,10 @@ class CompileResult:
 
     def policy_json(self) -> dict:
         return self._policy_json
+
+    def warnings(self) -> List[str]:
+        """Returns the compile warnings, in the order found; empty when there are none."""
+        return list(self._warnings)
 
     def to_json_string(self) -> str:
         """Returns the policy JSON as a pretty-printed string."""
@@ -149,7 +156,8 @@ class Compiler:
         if description is not None:
             policy_json["metadata"] = {"description": description}
 
-        return CompileResult(policy_name, description, policy_json)
+        return CompileResult(policy_name, description, policy_json,
+                             _condition_warnings(document))
 
     def _enforce_date_only_strategies(self, policy_json: dict) -> None:
         """Date-only strategies (SHIFT, TRUNCATE_TO_YEAR, RELATIVE) may target only
@@ -493,7 +501,7 @@ class Compiler:
 
     def _compile_predicate(self, ctx) -> str:
         if isinstance(ctx, ast.ConfidencePredicate):
-            return f"confidence {ctx.op} {ctx.number}"
+            return f"confidence {_phileas_compare_op(ctx.op)} {ctx.number}"
         if isinstance(ctx, ast.ParenPredicate):
             return "( " + self._compile_predicate(ctx.inner) + " )"
         if isinstance(ctx, ast.LogicalPredicate):
@@ -584,3 +592,41 @@ def _strip_quotes_if_present(text: str) -> str:
     if len(text) >= 2 and text[0] == "'" and text[-1] == "'":
         return text[1:-1]
     return text
+
+
+def _phileas_compare_op(op: str) -> str:
+    """PhiSQL writes equality as ``=``; the Phileas condition grammar spells it
+    ``==`` (spec/v1.0/catalog/predicates.yaml, phileas_ops; RFC #58)."""
+    return "==" if op == "=" else op
+
+
+OR_WARNING = ("WHERE uses OR, which only phileas-python evaluates today; "
+              "the Java and .NET Phileas runtimes do not support it yet (RFC #15).")
+PAREN_WARNING = ("WHERE uses parentheses, which only phileas-python evaluates today; "
+                 "the Java and .NET Phileas runtimes do not support them yet (RFC #15).")
+
+
+def _condition_warnings(document: ast.Document) -> List[str]:
+    """Warns once per document for each WHERE construct not every runtime supports."""
+    found = {"or": False, "paren": False}
+
+    def scan(pred):
+        if isinstance(pred, ast.ParenPredicate):
+            found["paren"] = True
+            scan(pred.inner)
+        elif isinstance(pred, ast.LogicalPredicate):
+            if pred.op == "OR":
+                found["or"] = True
+            scan(pred.left)
+            scan(pred.right)
+
+    for stmt in document.statements:
+        if isinstance(stmt, (ast.RedactStmt, ast.DefineIdentifierStmt, ast.DetectStmt)):
+            scan(stmt.predicate)
+
+    warnings = []
+    if found["or"]:
+        warnings.append(OR_WARNING)
+    if found["paren"]:
+        warnings.append(PAREN_WARNING)
+    return warnings

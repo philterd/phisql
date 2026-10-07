@@ -489,7 +489,10 @@ def page_predicates(cat: dict) -> str:
         cops = ", ".join(f"`{o}`" for o in p.get("compare_ops", []))
         out += f"- **Comparison operators:** {cops}\n"
         out += f"- **Value type:** {p.get('value_type', '')}\n"
-        out += f"- **Compiles to:** `{p.get('phileas_template', '')}`\n\n"
+        out += f"- **Compiles to:** `{p.get('phileas_template', '')}`\n"
+        for src, dst in (p.get("phileas_ops") or {}).items():
+            out += f"- **`{src}` compiles to:** `{dst}`\n"
+        out += "\n"
     return out
 
 
