@@ -2287,8 +2287,9 @@
 
 <h1 id="predicates">Predicates<a class="headerlink" href="#predicates" title="Permanent link">&para;</a></h1>
 <p><em>This page is generated from the PhiSQL <a href="https://github.com/philterd/phisql/blob/main/spec/v1.0">spec artifacts</a> for <code>v1.0</code>. Do not edit it by hand; change the artifact and rebuild.</em></p>
-<p>Predicates appear in a <code>WHERE</code> clause and gate a strategy on a condition. They compile to the Phileas <code>conditions</code> string on the strategy object.</p>
-<p>Predicates combine with <code>AND</code>, <code>OR</code> and may be parenthesized.</p>
+<p>Predicates appear in a <code>WHERE</code> clause and gate a strategy on a condition. They compile to the Phileas <code>condition</code> string on the strategy object.</p>
+<p>Strategies for an entity are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged, not redacted. For example, <code>REDACT SSN WITH LAST_4 WHERE CONFIDENCE &gt; 0.9;</code> on its own leaves lower-confidence SSNs as they are; add <code>REDACT SSN WITH REDACT;</code> after it to redact them.</p>
+<p>Predicates combine with <code>AND</code>, <code>OR</code> and may be parenthesized. <code>OR</code> and parentheses are evaluated only by phileas-python today; the reference compilers warn when they are used (RFC #15).</p>
 <h2 id="confidence">CONFIDENCE<a class="headerlink" href="#confidence" title="Permanent link">&para;</a></h2>
 <p>Limits the strategy to detections whose model confidence meets the
 threshold. Compiles to the <code>condition</code> field of the strategy object
