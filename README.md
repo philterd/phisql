@@ -32,6 +32,8 @@ All are driven by the catalog YAML under `spec/v1.0/catalog/`; none keeps a copy
 
 | Version | Status | Tag |
 |---|---|---|
+| 1.4.0 | Stable | [`1.4.0`](https://github.com/philterd/phisql/releases/tag/1.4.0) |
+| 1.3.0 | Stable | [`1.3.0`](https://github.com/philterd/phisql/releases/tag/1.3.0) |
 | 1.2.0 | Stable | [`1.2.0`](https://github.com/philterd/phisql/releases/tag/1.2.0) |
 | 1.1.0 | Stable | [`1.1.0`](https://github.com/philterd/phisql/releases/tag/1.1.0) |
 | 1.0.0 | Stable | [`1.0.0`](https://github.com/philterd/phisql/releases/tag/1.0.0) |
@@ -43,7 +45,7 @@ Git tags distinguish specification releases from reference-implementation releas
 - **Specification releases** are tagged with a bare version number, for example [`1.0.0`](https://github.com/philterd/phisql/releases/tag/1.0.0) and [`1.1.0`](https://github.com/philterd/phisql/releases/tag/1.1.0). Each marks a frozen version of the PhiSQL language, grammar, and redaction policy schema.
 - **Reference-implementation releases** are tagged `phisql-<language>-<version>`, where `<language>` is `java`, `python`, or `dotnet`, for example [`phisql-dotnet-1.1.0`](https://github.com/philterd/phisql/releases/tag/phisql-dotnet-1.1.0) and [`phisql-dotnet-1.1.1`](https://github.com/philterd/phisql/releases/tag/phisql-dotnet-1.1.1). Each marks a published build of a single reference implementation (the Java `ai.philterd:phisql` jar, the Python `phisql` package, or the .NET `Philterd.PhiSql` package). An implementation's version is independent of the schema version (see [Reference implementation compatibility](#reference-implementation-compatibility)), so these tags advance on their own cadence.
 
-New reference-implementation releases should use the `phisql-<language>-<version>` form, so each language tags on its own cadence. Only the .NET implementation follows this so far (`phisql-dotnet-*`). The early Java `1.0.0` and `1.1.0` releases predate the convention and reused the bare specification tags; future Java and Python releases should be tagged `phisql-java-<version>` and `phisql-python-<version>`.
+Reference-implementation releases use the `phisql-<language>-<version>` form, so each language tags on its own cadence: `phisql-java-*`, `phisql-python-*`, and `phisql-dotnet-*`. The early Java `1.0.0` and `1.1.0` releases also reused the bare specification tags.
 
 ## Reference implementation compatibility
 
@@ -54,7 +56,10 @@ The reference implementation versions and the schema version are independent. An
 | 1.0.0 | 1.0.0 | 1.0.0 | 1.0.0 |
 | 1.1.0 | 1.1.0 | 1.1.0 | 1.1.0 |
 | 1.2.0 | 1.3.0 | 1.2.0 | 1.2.0 |
-| 1.3.0 | 1.4.0 | 1.3.0 | 1.3.0 |
+| 1.3.0 (as tagged at spec `1.3.0`) | 1.4.0 | 1.3.0 | 1.3.0 |
+| 1.3.0 (as amended in spec `1.4.0`: adds `itin` and `canadaSin`) | 1.5.0 | 1.4.0 | 1.4.0 |
+
+Schema `1.3.0` was extended in place in spec `1.4.0`, as an additive change. The later implementations accept every policy the earlier ones do, plus the two new entity types.
 
 Released versions of the Java jar are on Maven Central. The latest development build is published as a `-SNAPSHOT` to the [Maven Central snapshot repository](https://central.sonatype.com/repository/maven-snapshots/) on every push to `main`. To consume it, add that repository to your build and depend on the `-SNAPSHOT` version (snapshots are mutable and periodically pruned, so pin a release version for anything you need to reproduce).
 

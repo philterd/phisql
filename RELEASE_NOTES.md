@@ -4,7 +4,9 @@ All notable changes to the PhiSQL specification are documented here: the languag
 
 As of v1.0.0 this project follows [Semantic Versioning](https://semver.org/): additive, backward-compatible changes bump the minor version, and changes that break existing PhiSQL or Phileas JSON require a new major version.
 
-## [Unreleased]
+## [1.4.0] - 2026-10-08
+
+Two new entity types, `ITIN` and `CANADA_SIN`, and fixes to how strategy conditions compile and are documented. Additive and backward-compatible, with one exception called out below: `WHERE CONFIDENCE = n` now compiles to `confidence == n`, so recompile policies that use it. The redaction policy schema stays at `1.3.0`. The new entity types and the description changes were made in place, so schema `1.3.0` as of this release is a superset of schema `1.3.0` as tagged at `1.3.0`: every policy valid against the earlier one is still valid, and policies may now also use `itin` and `canadaSin`.
 
 ### Added
 
@@ -17,6 +19,7 @@ As of v1.0.0 this project follows [Semantic Versioning](https://semver.org/): ad
 
 ### Fixed
 
+- **The `04-frbp-9037` example used `TRUNCATE` on dates** (pull request #47). `TRUNCATE` keeps a set number of characters at one end of the value; it does not reduce a date to its year. The example now uses `TRUNCATE_TO_YEAR`, and the catalog's `TRUNCATE` description, which said "dates to year only", is corrected. The example still truncates every date, not only birth dates, until #49 lets PhiSQL express `token is birthdate`.
 - **Three examples left some values unredacted under the no-match rule** (RFC #57). `03-pci-dss-scope-reduction`, `component-ids`, and `confidence-equals` each gated every strategy on a confidence condition, so a match outside the conditions was left unchanged; in the PCI DSS example that meant a card number at or below the 0.85 threshold kept all its digits. Each now ends with a statement that has no `WHERE`. The PCI DSS example's description also claimed full CVV redaction, which the policy never did (there is no CVV entity type); the claim is removed.
 - **The generated Predicates page named the compiled field `conditions`.** It is `condition`, as compiled since 1.2.0. The Predicates and Clauses pages now also state the no-match rule (RFC #57), and that `OR` and parentheses are evaluated only by phileas-python today.
 - **`WHERE CONFIDENCE = n` now compiles to `confidence == n`** (RFC #58). The compilers emitted `confidence = n`, which the Phileas condition grammar does not define: the Java runtime exhausted the heap trying to parse it (philterd/phileas#402), and .NET applied the strategy to every span regardless of confidence (philterd/phileas-dotnet#136). Python accepted both, so `==` changes nothing there. **This changes compiled output for existing input**: recompile any policy that uses `WHERE CONFIDENCE =`. It ships within v1.x under the defect-fix rule added to CONTRIBUTING. The `CONFIDENCE` entry in `predicates.yaml` records the mapping as `phileas_ops`, and the conformance cases `accept/predicates/confidence-eq` and `confidence-paren` now expect `==`. Example `confidence-equals`.
