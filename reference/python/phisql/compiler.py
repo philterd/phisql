@@ -16,7 +16,7 @@ Compiles a parsed PhiSQL document into a Phileas JSON policy.
 
 The compiler is driven by :class:`~phisql.catalog.Catalog`, which loads the
 ``spec/v1.0/catalog/*.yaml`` files. Translation rules are defined by those
-files; this module implements the traversal — a direct port of the Java
+files; this module implements the traversal, a direct port of the Java
 reference ``Compiler``.
 
 **Scope.** This compiler targets the redaction subset of PhiSQL (REDACT,
@@ -202,7 +202,7 @@ class Compiler:
             config = _get_or_create_object(policy_json, "config")
             self._apply_settings(_get_or_create_object(config, block), ctx.settings)
         else:
-            # GRAPHICAL BOX ( ... ) — append a fixed bounding box.
+            # GRAPHICAL BOX ( ... ): append a fixed bounding box.
             graphical = _get_or_create_object(policy_json, "graphical")
             boxes = _get_or_create_array(graphical, "boundingBoxes")
             box = {}
@@ -236,7 +236,7 @@ class Compiler:
             return float(text) if "." in text else int(text)
         if literal.kind == "STRING":
             return _unquote_string(literal.text)
-        # Bare identifier — treated as a string value.
+        # Bare identifier: treated as a string value.
         return literal.text
 
     # --- REDACT --------------------------------------------------------------

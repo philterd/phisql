@@ -212,7 +212,7 @@ class DiscoveryStmt:
 
     Discovery verbs (FIND PII, DISCOVER ENTITIES, SCAN, SELECT ... FROM
     findings) parse successfully but are not compiled to Phileas JSON by this
-    compiler — they target a separate discovery-query schema. The parsed shape
+    compiler; they target a separate discovery-query schema. The parsed shape
     is retained for completeness but the compiler ignores it, matching the Java
     reference's scope.
     """

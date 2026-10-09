@@ -17,7 +17,7 @@ Five checks run, in order:
    that resolve against the findings catalog.
 5. PhiSQL covers the schema: every identifier type, strategy, and top-level
    policy block in the schema is either exposed by PhiSQL or recorded as a
-   deliberate deferral below. This is the reverse of check 2 — it stops the
+   deliberate deferral below. This is the reverse of check 2: it stops the
    language from silently falling behind the schema when the schema grows.
 6. PhiSQL covers every schema leaf field: descends into every policy-bearing
    object and asserts each individual property is expressible (via passthrough,
@@ -59,7 +59,7 @@ DISCOVERY_OPERATIONS = {"FIND_PII", "DISCOVER_ENTITIES", "SCAN", "SELECT_FINDING
 # Check 5 proves the opposite direction: every schema feature is either exposed
 # by PhiSQL or listed here as a deliberate deferral. When the schema gains a new
 # identifier, strategy, or top-level block, check 5 fails until PhiSQL either
-# exposes it (catalog/grammar) or someone records the deferral below — so a gap
+# exposes it (catalog/grammar) or someone records the deferral below, so a gap
 # is always a conscious choice, never a silent omission. The reasons are part of
 # the contract; keep them accurate.
 
@@ -76,7 +76,7 @@ IDENTIFIERS_EXPOSED_VIA_GRAMMAR = {
 IDENTIFIERS_DEFERRED = {
     "person": "the schema marks `person` deprecated ('use pheyes instead'); it is a "
               "$ref to filterPhEye, the exact shape PhiSQL already exposes fully via "
-              "DETECT PHEYE, so the capability is not lost — only the legacy JSON key",
+              "DETECT PHEYE, so the capability is not lost; only the legacy JSON key",
 }
 
 # Strategy enum values intentionally not exposed. Empty: PhiSQL exposes them all.
@@ -102,14 +102,14 @@ TOPLEVEL_DEFERRED: dict[str, str] = {}
 # property of every policy-bearing object and asserts PhiSQL can set it.
 #
 # Filters, strategies, and config objects are reachable by a passthrough
-# mechanism — OPTIONS (...), CONFIGURE <block> (...), or strategy args — and the
+# mechanism (OPTIONS (...), CONFIGURE <block> (...), or strategy args), and the
 # setting value is recursive (scalars, nested objects, and arrays), so *every*
 # property on them, however deeply nested, is expressible by name. Only objects
 # with no passthrough entry point (crypto/fpe, set by dedicated CONFIGURE forms)
 # need a field-by-field map.
 # ---------------------------------------------------------------------------
 
-# Objects whose every leaf — scalar, array, or nested object — is reachable by
+# Objects whose every leaf (scalar, array, or nested object) is reachable by
 # passthrough. (Entity filter $defs are added dynamically.) phEyeConfiguration is
 # reachable as a nested value inside a PhEye/medical-condition filter's OPTIONS.
 FIELD_PASSTHROUGH_CONTAINERS = {
@@ -331,7 +331,7 @@ def _coverage_errors(kind: str, in_schema: set[str], accounted: set[str]) -> lis
     for name in sorted(accounted - in_schema):
         errors.append(
             f"{kind} '{name}': accounted for in validate_spec.py but no longer "
-            f"present in the schema — remove the stale entry"
+            f"present in the schema; remove the stale entry"
         )
     return errors
 
@@ -432,7 +432,7 @@ def check_phisql_covers_schema_fields(schema: dict) -> tuple[list[str], dict[str
                         f"{container}.{field}: object exposed field-by-field but this "
                         f"leaf is neither mapped nor deferred in validate_spec.py"
                     )
-            # else: passthrough container — recursive OPTIONS/CONFIGURE settings
+            # else: passthrough container. Recursive OPTIONS/CONFIGURE settings
             # (or WITH <strategy> for the strategy arrays) reach every leaf.
 
     # Flag stale explicit-field mappings the schema no longer has.
@@ -442,7 +442,7 @@ def check_phisql_covers_schema_fields(schema: dict) -> tuple[list[str], dict[str
             if field not in schema_fields:
                 errors.append(
                     f"{container}.{field}: mapped in validate_spec.py but not present in "
-                    f"the schema — remove the stale entry"
+                    f"the schema; remove the stale entry"
                 )
 
     # Flag stale deferrals (registry entries the schema no longer has).
@@ -451,7 +451,7 @@ def check_phisql_covers_schema_fields(schema: dict) -> tuple[list[str], dict[str
             container, field = key
             errors.append(
                 f"{container}.{field}: deferred in validate_spec.py but not present in "
-                f"the schema — remove the stale entry"
+                f"the schema; remove the stale entry"
             )
 
     return errors, deferred_report

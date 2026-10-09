@@ -16,7 +16,7 @@ Completeness checks over the spec example pairs under spec/v1.0/examples/.
 
 Every example is a (.phisql, .json) pair. These tests assert the pairing is
 complete (no orphan files), every .json is well-formed, and the discovery
-examples — which the compiler does not translate — are still covered: their
+examples (which the compiler does not translate) are still covered: their
 .phisql parses to a discovery statement and their .json carries an
 ``operation``. This guarantees no example file is silently uncovered by the
 suite.

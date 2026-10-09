@@ -202,7 +202,7 @@ public sealed class ConfigureStmt : IStatement
 
 /// <summary>
 /// A parsed discovery statement. Discovery verbs parse successfully but are not
-/// compiled to Phileas JSON — they target a separate discovery-query schema.
+/// compiled to Phileas JSON; they target a separate discovery-query schema.
 /// </summary>
 public sealed class DiscoveryStmt : IStatement
 {

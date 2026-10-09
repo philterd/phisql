@@ -12,7 +12,7 @@ namespace Philterd.PhiSql.Tests;
 
 /// <summary>
 /// Parses every example, compiles every redaction example and compares it to the
-/// sibling .json fixture, and validates both against the canonical schema —
+/// sibling .json fixture, and validates both against the canonical schema:
 /// the load-bearing assertions that this implementation stays in sync with the
 /// spec, mirroring the Java and Python reference test suites.
 /// </summary>

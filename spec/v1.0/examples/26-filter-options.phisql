@@ -1,5 +1,5 @@
 -- Per-filter OPTIONS: set arbitrary leaf properties on the filter a statement
--- produces — abstract knobs (priority, windowSize, enabled, ignoredFiles) and
+-- produces: abstract knobs (priority, windowSize, enabled, ignoredFiles) and
 -- entity-specific validation flags. Keys are Phileas schema property names; a
 -- ('a', 'b') value compiles to an array. Compiles to 26-filter-options.json.
 

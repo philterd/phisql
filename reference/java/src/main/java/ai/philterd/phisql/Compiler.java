@@ -218,7 +218,7 @@ public final class Compiler {
             ObjectNode config = getOrCreateObject(policyJson, "config");
             applySettings(getOrCreateObject(config, block), ctx.settingList());
         } else {
-            // GRAPHICAL BOX ( ... ) — append a fixed bounding box.
+            // GRAPHICAL BOX ( ... ): append a fixed bounding box.
             ObjectNode graphical = getOrCreateObject(policyJson, "graphical");
             ArrayNode boxes = graphical.has("boundingBoxes")
                     ? (ArrayNode) graphical.get("boundingBoxes")
@@ -277,7 +277,7 @@ public final class Compiler {
         if (literal.STRING_LITERAL() != null) {
             return MAPPER.getNodeFactory().textNode(unquoteString(literal.getText()));
         }
-        // Bare identifier — treated as a string value.
+        // Bare identifier: treated as a string value.
         return MAPPER.getNodeFactory().textNode(literal.getText());
     }
 

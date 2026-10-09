@@ -20,7 +20,7 @@ fails the build. (Regenerating needs a JDK to run the ANTLR tool; using and
 testing the package does not.)
 
 The compiler is driven by the catalog YAML files under
-[`spec/v1.0/catalog/`](https://github.com/philterd/phisql/tree/main/spec/v1.0/catalog) — the same files the Java
+[`spec/v1.0/catalog/`](https://github.com/philterd/phisql/tree/main/spec/v1.0/catalog), the same files the Java
 reference, the spec validator, and the conformance suite use. There is no copy
 of the catalog or grammar inside this directory; both are read from the spec.
 
@@ -132,7 +132,7 @@ compile error, `64` usage error, `1` other I/O error.
 ### Retrieve the policy schema
 
 An application that depends on `phisql` can read the canonical redaction policy
-JSON Schema straight from the library — no network fetch, no separate checkout —
+JSON Schema straight from the library (no network fetch, no separate checkout),
 exactly as the Java reference exposes it through `ai.philterd.phisql.PolicySchema`:
 
 ```python
@@ -144,14 +144,14 @@ PolicySchema.get_schema_dict()               # the schema parsed into a dict
 ```
 
 The schema (and the catalog the compiler uses) are copied into the package at
-build time — see [How the spec data is bundled](#how-the-spec-data-is-bundled) —
+build time (see [How the spec data is bundled](#how-the-spec-data-is-bundled)),
 so these work from an installed wheel regardless of where it came from.
 
 ## How the spec data is bundled
 
 The compiler is driven by the catalog YAML and the policy schema, both of which
 live in the repository root (`spec/` and `schema/`). The build copies them into
-the package at `phisql/_data/` — the Python analogue of the Maven
+the package at `phisql/_data/`, the Python analogue of the Maven
 `copy-resources` steps that pack the same files into the Java JAR. This is done
 by `setup.py` at build time, so:
 

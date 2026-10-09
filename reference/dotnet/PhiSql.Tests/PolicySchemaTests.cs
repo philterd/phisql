@@ -12,7 +12,7 @@ namespace Philterd.PhiSql.Tests;
 
 /// <summary>
 /// Verifies the bundled schema is readable and that the reported version, the
-/// schema's own <c>version</c>, and its <c>$id</c> agree — the assertion that
+/// schema's own <c>version</c>, and its <c>$id</c> agree, the assertion that
 /// PolicySchema and the embedded resource cannot drift.
 /// </summary>
 public class PolicySchemaTests

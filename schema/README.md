@@ -58,4 +58,4 @@ Validate multiple files at once:
 check-jsonschema --schemafile schema/1.0.0/schema.json policy1.json policy2.json
 ```
 
-To validate the spec's own catalogs and examples against this schema (the check CI runs), use [`scripts/validate_spec.py`](../scripts/validate_spec.py) — see the repository [README](../README.md#validation).
+To validate the spec's own catalogs and examples against this schema (the check CI runs), use [`scripts/validate_spec.py`](../scripts/validate_spec.py). See the repository [README](../README.md#validation).

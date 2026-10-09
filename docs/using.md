@@ -35,8 +35,8 @@ REDACT SSN WITH MASK;
 
 ### Command line
 
-The Python implementation ships a `phisql` command that compiles a file and writes the
-policy to stdout:
+Each implementation has a command-line front end that compiles a file and writes the
+policy to stdout. The Python package installs it as the `phisql` command:
 
 ```sh
 phisql ssn_only.phisql
@@ -62,6 +62,23 @@ Redirect it to a file to hand the result to Philter or Phileas:
 phisql ssn_only.phisql > ssn_only.json
 ```
 
+The Java implementation publishes a self-contained jar alongside the library, with the
+`cli` classifier (`phisql-<version>-cli.jar`):
+
+```sh
+java -jar phisql-<version>-cli.jar ssn_only.phisql
+```
+
+The .NET implementation includes a `PhiSql.Cli` project in the
+[repository](https://github.com/philterd/phisql/tree/main/reference/dotnet):
+
+```sh
+dotnet run --project PhiSql.Cli -- ssn_only.phisql
+```
+
+All three use the same exit codes: `0` compiled, `2` parse error, `3` compile error,
+`64` usage error, and `1` for other I/O errors.
+
 ### From Python
 
 ```python
@@ -84,6 +101,29 @@ pip install phisql
 Add `ai.philterd:phisql` from Maven Central. Phileas can also load PhiSQL directly with
 `Policy.fromPhiSQL(...)`, which compiles the document and applies the resulting policy in
 one step, so a Java caller does not have to handle the JSON at all.
+
+## Compile warnings
+
+Some valid PhiSQL compiles correctly but does not behave the same in every Phileas
+runtime. The compilers report these cases as warnings without failing. Today the only
+warnings are for a `WHERE` clause that uses `OR` or parentheses: only phileas-python
+evaluates them, and the Java and .NET runtimes do not support them yet (RFC #15).
+
+```sql
+REDACT SSN WITH LAST_4 WHERE CONFIDENCE > 0.9 OR CONFIDENCE < 0.2;
+```
+
+```text
+warning: WHERE uses OR, which only phileas-python evaluates today; the Java and .NET Phileas runtimes do not support it yet (RFC #15).
+```
+
+On the command line, warnings are printed to stderr as `warning: ...` lines, so they do not
+mix with the policy on stdout. A warning does not change the compiled policy or the exit
+code. From code, read them from the compile result: `result.warnings()` in Python and Java,
+`result.Warnings` in .NET. The list is empty when there are none.
+
+If you apply the policy with the Java or .NET runtime, rewrite the condition without `OR`
+or parentheses, for example as separate statements with their own `WHERE` clauses.
 
 ## Checking your work
 

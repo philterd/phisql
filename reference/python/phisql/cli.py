@@ -25,11 +25,11 @@ Usage::
 
 Exit codes form the adapter contract the conformance runner relies on:
 
-* ``0``  — compiled successfully; the Phileas JSON is on stdout.
-* ``2``  — the input failed to parse (a grammar/syntax error).
-* ``3``  — the input parsed but failed to compile (a semantic/catalog error).
-* ``64`` — usage error (wrong arguments).
-* ``1``  — an I/O or otherwise unexpected error.
+* ``0``: compiled successfully; the Phileas JSON is on stdout.
+* ``2``: the input failed to parse (a grammar/syntax error).
+* ``3``: the input parsed but failed to compile (a semantic/catalog error).
+* ``64``: usage error (wrong arguments).
+* ``1``: an I/O or otherwise unexpected error.
 
 Compile warnings (see ``CompileResult.warnings()``) are printed to stderr as
 ``warning: ...`` lines. They do not change the output or the exit code.

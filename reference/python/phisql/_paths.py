@@ -25,9 +25,9 @@ wheel is self-contained.
 Resolution order for the "spec root" (a directory containing ``spec/`` and
 ``schema/``):
 
-1. ``PHISQL_SPEC_ROOT`` — explicit override, for running against a checkout.
-2. The bundled ``phisql/_data`` directory — present in a built/installed wheel.
-3. The repository tree — found by walking up from this file. This lets the
+1. ``PHISQL_SPEC_ROOT``: explicit override, for running against a checkout.
+2. The bundled ``phisql/_data`` directory, present in a built/installed wheel.
+3. The repository tree, found by walking up from this file. This lets the
    tests and a source checkout work without first running the build step.
 
 The repo stays the single source of truth; ``phisql/_data`` is a gitignored

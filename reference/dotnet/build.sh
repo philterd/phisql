@@ -14,8 +14,8 @@
 # limitations under the License.
 #
 # Builds and tests the PhiSQL .NET reference implementation inside the official
-# .NET 10 SDK Docker image, so the only requirement on the host is Docker — no
-# .NET SDK needed.
+# .NET 10 SDK Docker image, so the only requirement on the host is Docker (no
+# .NET SDK needed).
 #
 # Usage: ./build.sh [Release|Debug]   (default: Release)
 set -euo pipefail

@@ -214,7 +214,7 @@ public sealed class Compiler
         }
         else
         {
-            // GRAPHICAL BOX ( ... ) — append a fixed bounding box.
+            // GRAPHICAL BOX ( ... ): append a fixed bounding box.
             JsonObject graphical = GetOrCreateObject(policyJson, "graphical");
             JsonArray boxes = GetOrCreateArray(graphical, "boundingBoxes");
             var box = new JsonObject();
@@ -256,7 +256,7 @@ public sealed class Compiler
             LiteralKind.Boolean => JsonValue.Create(string.Equals(literal.Text, "true", StringComparison.OrdinalIgnoreCase)),
             LiteralKind.Numeric => NumberNode(literal.Text),
             LiteralKind.String => JsonValue.Create(Unquote(literal.Text)),
-            _ => JsonValue.Create(literal.Text), // bare identifier — string value
+            _ => JsonValue.Create(literal.Text), // bare identifier: string value
         };
     }
 

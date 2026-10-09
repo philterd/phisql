@@ -13,7 +13,7 @@
 # limitations under the License.
 """
 Validates that the compiler's output conforms to the canonical redaction policy
-JSON Schema — not merely that it equals the example fixtures.
+JSON Schema, not merely that it equals the example fixtures.
 
 test_compiler.py asserts the compiled output equals the sibling .json file;
 this asserts that what the compiler emits actually validates against the schema

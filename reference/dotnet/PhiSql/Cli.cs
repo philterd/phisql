@@ -23,11 +23,11 @@ namespace Philterd.PhiSql;
 ///
 /// Exit codes form the adapter contract:
 /// <list type="bullet">
-///   <item><c>0</c>  — compiled successfully; the Phileas JSON is on stdout.</item>
-///   <item><c>2</c>  — the input failed to parse (a grammar/syntax error).</item>
-///   <item><c>3</c>  — the input parsed but failed to compile (a semantic/catalog error).</item>
-///   <item><c>64</c> — usage error (wrong arguments).</item>
-///   <item><c>1</c>  — an I/O or otherwise unexpected error.</item>
+///   <item><c>0</c>: compiled successfully; the Phileas JSON is on stdout.</item>
+///   <item><c>2</c>: the input failed to parse (a grammar/syntax error).</item>
+///   <item><c>3</c>: the input parsed but failed to compile (a semantic/catalog error).</item>
+///   <item><c>64</c>: usage error (wrong arguments).</item>
+///   <item><c>1</c>: an I/O or otherwise unexpected error.</item>
 /// </list>
 /// Compile warnings (see <see cref="CompileResult.Warnings"/>) are printed to
 /// stderr as <c>warning: ...</c> lines. They do not change the output or the exit code.

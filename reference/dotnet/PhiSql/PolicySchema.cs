@@ -19,7 +19,7 @@ namespace Philterd.PhiSql;
 /// <summary>
 /// Access to the canonical redaction policy JSON Schema bundled in this
 /// assembly. An application that depends on Philterd.PhiSql can read the schema
-/// straight from the library — no network fetch, no separate checkout — exactly
+/// straight from the library (no network fetch, no separate checkout), exactly
 /// as the Java reference exposes it through
 /// <c>ai.philterd.phisql.PolicySchema</c> and the Python reference through
 /// <c>phisql.PolicySchema</c>.

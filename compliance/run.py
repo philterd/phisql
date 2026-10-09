@@ -164,7 +164,7 @@ def check(case, code, stdout, stderr):
             return ("compiled JSON did not match expected\n"
                     + _json_diff(case.expected_json, actual))
         # The accepted output must also be a valid Phileas policy, not merely
-        # match the fixture — this catches a schema-invalid fixture or a
+        # match the fixture. This catches a schema-invalid fixture or a
         # compiler emitting malformed policy JSON. Cases with a .schema-exempt
         # sidecar are skipped here (a known, documented divergence pending an RFC).
         if _SCHEMA_VALIDATOR is not None and case.schema_exempt is None:

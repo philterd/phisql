@@ -69,7 +69,7 @@ Removal of the `PHYSICIAN_NAME` entity type. **This breaks existing input**: a `
 
 ### Migration
 
-Physician-name detection is not lost — it moves to PhEye (AI/NER), the same path `PERSON` was deferred to in v1.0. Replace
+Physician-name detection is not lost. It moves to PhEye (AI/NER), the same path `PERSON` was deferred to in v1.0. Replace
 
 ```sql
 REDACT PHYSICIAN_NAME WITH REDACT;
@@ -86,7 +86,7 @@ See the new example `pheye-physician-name` (`spec/v1.3.0/examples/`).
 ### Notes
 
 - **Breaking change in a minor version.** Under the versioning policy in [`CONTRIBUTING.md`](CONTRIBUTING.md) a removal is a major bump; this removal ships on the `1.x` line by maintainer decision, on the grounds that the removed entity was never honored by two of the three runtimes and so had no portable behavior to break.
-- **Phileas degrades silently, not loudly.** Policy JSON is deserialized with Gson, which ignores unknown keys, and Phileas does not schema-validate at load time. A policy still naming `physicianName` therefore loads and simply stops redacting physician names rather than erroring — the main risk in this change, and the reason it is called out here and in the Phileas release notes (philterd/phileas#339).
+- **Phileas degrades silently, not loudly.** Policy JSON is deserialized with Gson, which ignores unknown keys, and Phileas does not schema-validate at load time. A policy still naming `physicianName` therefore loads and simply stops redacting physician names rather than erroring. That is the main risk in this change, and the reason it is called out here and in the Phileas release notes (philterd/phileas#339).
 - **Downstream.** philterd/phileas removes `PhysicianNameFilter`, `PhysicianNameFilterStrategy`, the `PhysicianName` policy class, the `Identifiers.physicianName` field, and the `FilterType` entry once it targets schema `1.3.0`; phileas-dotnet drops its unused `FilterType` entry.
 
 ## [1.2.0] - 2026-07-13
@@ -169,16 +169,16 @@ First stable release. The PhiSQL language and the redaction policy schema are ve
 - **The canonical redaction policy schema (`schema/1.0.0/schema.json`) now lives in this repository** as the source of truth that PhiSQL compiles to and Phileas executes against.
 - **Full schema coverage.** PhiSQL now exposes every identifier type, strategy, and top-level policy block in the schema except `PERSON` (deferred while the Phileas `pheyes` configuration surface settles). The new constructs:
   - **`RELATIVE`** date strategy (DATE entities only), alongside the existing `SHIFT` and `TRUNCATE_TO_YEAR`. Example `21-date-relative`.
-  - **`DEFINE DICTIONARY '<classification>' TERMS ('a', 'b') [FUZZY [SENSITIVITY <auto|off|low|medium|high>]] [CAPITALIZED] WITH <strategy>`** — custom term-list filters, compiling to `identifiers.dictionaries[]`. Example `22-custom-dictionary`.
-  - **`DEFINE SECTION START '<regex>' END '<regex>' WITH <strategy>`** — redact a block bounded by start/end patterns, compiling to `identifiers.sections[]`. Example `23-section-redaction`.
-  - **`CONFIGURE SPLITTING | PDF | POSTFILTERS | ANALYSIS ( key = value, ... )`** — the global `config` blocks, with the value's JSON type inferred from the literal. Example `24-config-settings`.
-  - **`CONFIGURE GRAPHICAL BOX ( x = ..., y = ..., w = ..., h = ..., [page = ...], [color = '...'] )`** — fixed bounding boxes for image/PDF redaction, compiling to `graphical.boundingBoxes[]`. Example `25-graphical-boundingbox`.
-- **Field-level completeness.** Every leaf property of every filter, strategy, and config object — scalar, array, or nested object — is now expressible:
-  - **`OPTIONS ( key = value, ... )`** — an optional trailing clause on `REDACT`, `DEIDENTIFY`, `DEFINE IDENTIFIER/DICTIONARY/SECTION`, `DETECT PHEYE`, and scope-less `IGNORE` that sets arbitrary leaf properties on the filter object the statement produces (`priority`, `windowSize`, `enabled`, `ignoredFiles`, entity-specific validation flags like `onlyValidCreditCardNumbers`, etc.). Example `26-filter-options`.
-  - **Recursive setting values** — a setting value may be a scalar, a nested object `( k = v, ... )`, or an array `[ ... ]`, so any schema structure is expressible, including arrays of objects (`ignoredPatterns`), map objects (`thresholds`), and nested config (`phEyeConfiguration`). A key that collides with a reserved word is quoted (e.g. `'pattern'`). Example `28-nested-options`.
-  - **Strategy argument passthrough** — a strategy argument the catalog does not list is no longer rejected; it passes through to the Phileas JSON by its schema property name, so any strategy field (`salt`, `condition`, `truncateDirection`, `anonymizationCandidates`, `futureDates`, ...) is settable. Catalogued arguments are still validated and aliased. Example `27-strategy-params`.
+  - **`DEFINE DICTIONARY '<classification>' TERMS ('a', 'b') [FUZZY [SENSITIVITY <auto|off|low|medium|high>]] [CAPITALIZED] WITH <strategy>`**: custom term-list filters, compiling to `identifiers.dictionaries[]`. Example `22-custom-dictionary`.
+  - **`DEFINE SECTION START '<regex>' END '<regex>' WITH <strategy>`**: redact a block bounded by start/end patterns, compiling to `identifiers.sections[]`. Example `23-section-redaction`.
+  - **`CONFIGURE SPLITTING | PDF | POSTFILTERS | ANALYSIS ( key = value, ... )`**: the global `config` blocks, with the value's JSON type inferred from the literal. Example `24-config-settings`.
+  - **`CONFIGURE GRAPHICAL BOX ( x = ..., y = ..., w = ..., h = ..., [page = ...], [color = '...'] )`**: fixed bounding boxes for image/PDF redaction, compiling to `graphical.boundingBoxes[]`. Example `25-graphical-boundingbox`.
+- **Field-level completeness.** Every leaf property of every filter, strategy, and config object (scalar, array, or nested object) is now expressible:
+  - **`OPTIONS ( key = value, ... )`**: an optional trailing clause on `REDACT`, `DEIDENTIFY`, `DEFINE IDENTIFIER/DICTIONARY/SECTION`, `DETECT PHEYE`, and scope-less `IGNORE` that sets arbitrary leaf properties on the filter object the statement produces (`priority`, `windowSize`, `enabled`, `ignoredFiles`, entity-specific validation flags like `onlyValidCreditCardNumbers`, etc.). Example `26-filter-options`.
+  - **Recursive setting values**: a setting value may be a scalar, a nested object `( k = v, ... )`, or an array `[ ... ]`, so any schema structure is expressible, including arrays of objects (`ignoredPatterns`), map objects (`thresholds`), and nested config (`phEyeConfiguration`). A key that collides with a reserved word is quoted (e.g. `'pattern'`). Example `28-nested-options`.
+  - **Strategy argument passthrough**: a strategy argument the catalog does not list is no longer rejected; it passes through to the Phileas JSON by its schema property name, so any strategy field (`salt`, `condition`, `truncateDirection`, `anonymizationCandidates`, `futureDates`, ...) is settable. Catalogued arguments are still validated and aliased. Example `27-strategy-params`.
 - **Coverage checks** in `scripts/validate_spec.py`: check 5 asserts the reverse of check 2 at the type/strategy/block level, and check 6 descends to every individual leaf property of every policy-bearing object. Each schema field must be exposed by PhiSQL or recorded as a deliberate, reasoned deferral; the build fails if the schema gains a feature PhiSQL neither exposes nor defers, and stale deferrals are flagged.
-- `CONFIGURE CRYPTO KEY FROM ENV '<name>'` and `CONFIGURE FPE KEY FROM ENV '<name>' TWEAK FROM ENV '<name>'` statements for supplying the policy-level secrets required by the `ENCRYPT` (`CRYPTO_REPLACE`) and `FPE_ENCRYPT` (`FPE_ENCRYPT_REPLACE`) strategies, which previously had no way to be configured in PhiSQL. Secrets are referenced by environment-variable name only — never inlined — and compile to the Phileas `crypto`/`fpe` blocks using the `env:` prefix (e.g. `"crypto": { "key": "env:CRYPTO_KEY" }`). Example `20-crypto-encryption`.
+- `CONFIGURE CRYPTO KEY FROM ENV '<name>'` and `CONFIGURE FPE KEY FROM ENV '<name>' TWEAK FROM ENV '<name>'` statements for supplying the policy-level secrets required by the `ENCRYPT` (`CRYPTO_REPLACE`) and `FPE_ENCRYPT` (`FPE_ENCRYPT_REPLACE`) strategies, which previously had no way to be configured in PhiSQL. Secrets are referenced by environment-variable name only (never inlined) and compile to the Phileas `crypto`/`fpe` blocks using the `env:` prefix (e.g. `"crypto": { "key": "env:CRYPTO_KEY" }`). Example `20-crypto-encryption`.
 - **Discovery query verbs.** Three scan verbs and one query verb were added to the grammar:
   - `FIND PII IN '<uri>' [WHERE <predicate>]`
   - `DISCOVER ENTITIES IN '<uri>' [WHERE <predicate>]`
@@ -213,7 +213,7 @@ First stable release. The PhiSQL language and the redaction policy schema are ve
 - `spec/v1.0/catalog/policy.yaml` defining the relationship between PhiSQL `POLICY` declarations and Phileas filenames: the filename basename is canonical, `POLICY` is optional, and when present the declared name must match the basename after hyphen/underscore normalization.
 - Spec example `11-policy-wide-ignore-terms` covering scope-less `IGNORE TERMS`.
 - RFC process and contribution guidelines: `CONTRIBUTING.md` at the repo root, `.github/RFC_TEMPLATE.md` for new proposals, and `rfcs/` directory for the historical record.
-- RFC 0001 (`rfcs/0001-scope-less-ignore-terms.md`) — worked example RFC documenting the scope-less `IGNORE TERMS` change end to end, for use as a reference by future authors.
+- RFC 0001 (`rfcs/0001-scope-less-ignore-terms.md`): worked example RFC documenting the scope-less `IGNORE TERMS` change end to end, for use as a reference by future authors.
 
 ### Changed
 

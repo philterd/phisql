@@ -22,7 +22,7 @@ body:
         [CONTRIBUTING.md](https://github.com/philterd/phisql/blob/main/CONTRIBUTING.md#what-needs-an-rfc)
         for the full list.
 
-        **This issue is the RFC.** There is no separate file or document — the issue and its
+        **This issue is the RFC.** There is no separate file or document; the issue and its
         discussion are the record. Fill in the sections below; the design is decided here, and the
         implementation lands in a normal pull request that closes this issue. See
         [CONTRIBUTING.md](https://github.com/philterd/phisql/blob/main/CONTRIBUTING.md#how-to-open-an-rfc).

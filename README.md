@@ -89,7 +89,7 @@ Two CI workflows enforce that the spec and the reference implementation cannot d
 
 - **`.github/workflows/validate.yml`** runs `scripts/validate_spec.py` to verify (a) the catalog YAML files are well-formed, (b) every Phileas field referenced by the catalogs exists in the canonical Phileas schema, (c) every example JSON file validates against the same Phileas schema, (d) discovery examples reference known findings columns, (e) PhiSQL covers the schema - every schema identifier, strategy, and top-level block is either exposed by PhiSQL or recorded as a deliberate deferral - and (f) PhiSQL covers every schema *leaf field*, descending into each policy object so no individual property can silently fall behind the schema.
 
-- **`.github/workflows/reference.yml`** builds all three reference implementations (Java, Python, and .NET), each of which parses every `.phisql` example file — and the Python and .NET jobs compile and schema-validate them — as part of its test suite. Any grammar change that breaks an example, or any new example an implementation can't handle, fails this job.
+- **`.github/workflows/reference.yml`** builds all three reference implementations (Java, Python, and .NET), each of which parses every `.phisql` example file (and the Python and .NET jobs compile and schema-validate them) as part of its test suite. Any grammar change that breaks an example, or any new example an implementation can't handle, fails this job.
 
 Run them locally:
 
@@ -112,8 +112,8 @@ cd reference/dotnet && dotnet test PhiSql.Tests
 ## Documentation site
 
 The published spec reference lives at **https://philterd.github.io/phisql/**. It
-is generated from the spec artifacts (`spec/<version>/`) — the grammar, the
-catalog YAML, and the example pairs — so the rendered reference cannot drift
+is generated from the spec artifacts (`spec/<version>/`): the grammar, the
+catalog YAML, and the example pairs. As a result, the rendered reference cannot drift
 from the artifacts it documents.
 
 - **`scripts/gen_docs.py`** renders the catalogs, grammar, and examples into
