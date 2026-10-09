@@ -131,7 +131,11 @@ jobs:
       - name: Resolve the project version
         id: version
         working-directory: reference/java
-        run: echo "version=$(mvn -q help:evaluate -Dexpression=project.version -DforceStdout)" >> "$GITHUB_OUTPUT"
+        # Capture the version first so a Maven failure prints its error to the log
+        # instead of being written into GITHUB_OUTPUT.
+        run: |
+          version=$(mvn -B -q help:evaluate -Dexpression=project.version -DforceStdout) || { echo "$version"; exit 1; }
+          echo "version=$version" >> "$GITHUB_OUTPUT"
 
       - name: Publish snapshot to Maven Central
         # Only publish when the resolved version is a snapshot; a release version
