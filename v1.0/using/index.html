@@ -414,6 +414,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#compile-warnings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compile warnings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#checking-your-work" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2389,6 +2400,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#compile-warnings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compile warnings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#checking-your-work" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2473,8 +2495,8 @@ for which implementation release targets which schema version.</p>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">REDACT</span><span class="w"> </span><span class="n">SSN</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="n">MASK</span><span class="p">;</span>
 </code></pre></div>
 <h3 id="command-line">Command line<a class="headerlink" href="#command-line" title="Permanent link">&para;</a></h3>
-<p>The Python implementation ships a <code>phisql</code> command that compiles a file and writes the
-policy to stdout:</p>
+<p>Each implementation has a command-line front end that compiles a file and writes the
+policy to stdout. The Python package installs it as the <code>phisql</code> command:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>phisql<span class="w"> </span>ssn_only.phisql
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span>
@@ -2492,21 +2514,46 @@ policy to stdout:</p>
 <p>Redirect it to a file to hand the result to Philter or Phileas:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>phisql<span class="w"> </span>ssn_only.phisql<span class="w"> </span>&gt;<span class="w"> </span>ssn_only.json
 </code></pre></div>
+<p>The Java implementation publishes a self-contained jar alongside the library, with the
+<code>cli</code> classifier (<code>phisql-&lt;version&gt;-cli.jar</code>):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>java<span class="w"> </span>-jar<span class="w"> </span>phisql-&lt;version&gt;-cli.jar<span class="w"> </span>ssn_only.phisql
+</code></pre></div>
+<p>The .NET implementation includes a <code>PhiSql.Cli</code> project in the
+<a href="https://github.com/philterd/phisql/tree/main/reference/dotnet">repository</a>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>dotnet<span class="w"> </span>run<span class="w"> </span>--project<span class="w"> </span>PhiSql.Cli<span class="w"> </span>--<span class="w"> </span>ssn_only.phisql
+</code></pre></div>
+<p>All three use the same exit codes: <code>0</code> compiled, <code>2</code> parse error, <code>3</code> compile error,
+<code>64</code> usage error, and <code>1</code> for other I/O errors.</p>
 <h3 id="from-python">From Python<a class="headerlink" href="#from-python" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">phisql</span><span class="w"> </span><span class="kn">import</span> <span class="n">Compiler</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">result</span> <span class="o">=</span> <span class="n">Compiler</span><span class="p">()</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">"POLICY ssn_only; REDACT SSN WITH MASK;"</span><span class="p">)</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="n">result</span><span class="o">.</span><span class="n">policy_name</span><span class="p">()</span>      <span class="c1"># "ssn_only"</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="n">result</span><span class="o">.</span><span class="n">to_json_string</span><span class="p">()</span>   <span class="c1"># the Phileas JSON policy</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">phisql</span><span class="w"> </span><span class="kn">import</span> <span class="n">Compiler</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">result</span> <span class="o">=</span> <span class="n">Compiler</span><span class="p">()</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">"POLICY ssn_only; REDACT SSN WITH MASK;"</span><span class="p">)</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="n">result</span><span class="o">.</span><span class="n">policy_name</span><span class="p">()</span>      <span class="c1"># "ssn_only"</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="n">result</span><span class="o">.</span><span class="n">to_json_string</span><span class="p">()</span>   <span class="c1"># the Phileas JSON policy</span>
 </code></pre></div>
 <p>Install the package from PyPI:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>pip<span class="w"> </span>install<span class="w"> </span>phisql
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>pip<span class="w"> </span>install<span class="w"> </span>phisql
 </code></pre></div>
 <h3 id="from-java">From Java<a class="headerlink" href="#from-java" title="Permanent link">&para;</a></h3>
 <p>Add <code>ai.philterd:phisql</code> from Maven Central. Phileas can also load PhiSQL directly with
 <code>Policy.fromPhiSQL(...)</code>, which compiles the document and applies the resulting policy in
 one step, so a Java caller does not have to handle the JSON at all.</p>
+<h2 id="compile-warnings">Compile warnings<a class="headerlink" href="#compile-warnings" title="Permanent link">&para;</a></h2>
+<p>Some valid PhiSQL compiles correctly but does not behave the same in every Phileas
+runtime. The compilers report these cases as warnings without failing. Today the only
+warnings are for a <code>WHERE</code> clause that uses <code>OR</code> or parentheses: only phileas-python
+evaluates them, and the Java and .NET runtimes do not support them yet (RFC #15).</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">REDACT</span><span class="w"> </span><span class="n">SSN</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="n">LAST_4</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">CONFIDENCE</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">9</span><span class="w"> </span><span class="k">OR</span><span class="w"> </span><span class="n">CONFIDENCE</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">2</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>warning: WHERE uses OR, which only phileas-python evaluates today; the Java and .NET Phileas runtimes do not support it yet (RFC #15).
+</code></pre></div>
+<p>On the command line, warnings are printed to stderr as <code>warning: ...</code> lines, so they do not
+mix with the policy on stdout. A warning does not change the compiled policy or the exit
+code. From code, read them from the compile result: <code>result.warnings()</code> in Python and Java,
+<code>result.Warnings</code> in .NET. The list is empty when there are none.</p>
+<p>If you apply the policy with the Java or .NET runtime, rewrite the condition without <code>OR</code>
+or parentheses, for example as separate statements with their own <code>WHERE</code> clauses.</p>
 <h2 id="checking-your-work">Checking your work<a class="headerlink" href="#checking-your-work" title="Permanent link">&para;</a></h2>
 <p>Every construct on this site has a
 <a href="../examples/">worked example</a> paired with the policy JSON it compiles to. When a
