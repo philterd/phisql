@@ -1,0 +1,11 @@
+-- Phone number detection that requires valid numbers. By default the phone filter
+-- reports any candidate whose length is possible for a region (leniency POSSIBLE),
+-- which can match short numeric identifiers or years. Set `leniency` to VALID to
+-- keep only numbers that are valid under the region's numbering plan; STRICT_GROUPING
+-- and EXACT_GROUPING also constrain how the digits are grouped. Set through the
+-- existing OPTIONS passthrough; no grammar change. Added to schema 1.3.0 in place
+-- (additive). Compiles to phone-leniency.json.
+
+POLICY phone_leniency;
+
+REDACT PHONE_NUMBER WITH REDACT OPTIONS (region = ['US', 'GB', 'DE'], leniency = 'VALID');

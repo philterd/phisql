@@ -1745,6 +1745,12 @@
             "type": "string"
           },
           "default": "US"
+        },
+        "leniency": {
+          "description": "How strictly a candidate must match to be detected, using libphonenumber's leniency levels. \"POSSIBLE\" accepts numbers whose length is possible for the region. \"VALID\" also requires the number to be valid under the region's numbering plan, which drops candidates such as short numeric identifiers or years. \"STRICT_GROUPING\" also requires the digits to be grouped as in one of the number's formats, and \"EXACT_GROUPING\" requires them to be grouped exactly as in one of those formats. Validity follows numbering-plan rules only; it does not establish that a number is assigned or in service. Values are case-sensitive. Default \"POSSIBLE\".",
+          "type": "string",
+          "enum": ["POSSIBLE", "VALID", "STRICT_GROUPING", "EXACT_GROUPING"],
+          "default": "POSSIBLE"
         }
       },
       "additionalProperties": false

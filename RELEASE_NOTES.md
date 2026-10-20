@@ -4,6 +4,13 @@ All notable changes to the PhiSQL specification are documented here: the languag
 
 As of v1.0.0 this project follows [Semantic Versioning](https://semver.org/): additive, backward-compatible changes bump the minor version, and changes that break existing PhiSQL or Phileas JSON require a new major version.
 
+## [Unreleased]
+
+### Added
+
+- **`leniency` option on the phone number filter.** `filterPhoneNumber` in schema `1.3.0` (edited in place, additive and backward-compatible) gains an optional `leniency` string, one of `POSSIBLE`, `VALID`, `STRICT_GROUPING`, or `EXACT_GROUPING` (default `POSSIBLE`), selecting the libphonenumber leniency the runtime matches with. `VALID` drops candidates that are only possible for a region, such as short numeric identifiers or years. It is set through the existing filter `OPTIONS` passthrough (`OPTIONS (leniency = 'VALID')`), like `region`, so no grammar change was required. Phileas runtime support: philterd/phileas#423. Example `phone-leniency`.
+- **`spec/v1.3.0/examples/phone-leniency`** example pair (`.phisql` and compiled `.json`).
+
 ## [1.4.0] - 2026-10-08
 
 Two new entity types, `ITIN` and `CANADA_SIN`, and fixes to how strategy conditions compile and are documented. Additive and backward-compatible, with one exception called out below: `WHERE CONFIDENCE = n` now compiles to `confidence == n`, so recompile policies that use it. The redaction policy schema stays at `1.3.0`. The new entity types and the description changes were made in place, so schema `1.3.0` as of this release is a superset of schema `1.3.0` as tagged at `1.3.0`: every policy valid against the earlier one is still valid, and policies may now also use `itin` and `canadaSin`.
