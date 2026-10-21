@@ -4,6 +4,16 @@ All notable changes to the PhiSQL Java reference implementation (the `ai.philter
 
 The implementation version is independent of the PhiSQL policy schema version it implements (exposed through `PolicySchema.getSupportedSchemaVersion()`). Specification-level changes (grammar, schema, catalog, examples) are recorded in the repository [release notes](../../RELEASE_NOTES.md).
 
+## 1.6.0 - 2026-10-21
+
+Implements PhiSQL 1.5.0. Targets policy schema 1.3.0, which gains an optional `leniency` on the phone number filter in place in 1.5.0 (additive and backward-compatible).
+
+### Added
+
+- **`leniency` option on the phone number filter** (philterd/phileas#422). `REDACT PHONE_NUMBER ... OPTIONS (leniency = 'VALID')` compiles to a `phoneNumber` filter with `"leniency": "VALID"`. The value is one of `POSSIBLE` (the default), `VALID`, `STRICT_GROUPING`, or `EXACT_GROUPING`.
+
+The option comes from the bundled schema, with no compiler code change. Matching is implemented in Phileas, not here: a Phileas runtime that does not support `leniency` accepts the policy but matches with `POSSIBLE`. See the repository [release notes](../../RELEASE_NOTES.md) for which runtimes support it.
+
 ## 1.5.0 - 2026-10-08
 
 Implements PhiSQL 1.4.0. Targets policy schema 1.3.0, which gains two entity types in place in 1.4.0 (additive and backward-compatible).

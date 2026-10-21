@@ -4,12 +4,18 @@ All notable changes to the PhiSQL specification are documented here: the languag
 
 As of v1.0.0 this project follows [Semantic Versioning](https://semver.org/): additive, backward-compatible changes bump the minor version, and changes that break existing PhiSQL or Phileas JSON require a new major version.
 
-## [Unreleased]
+## [1.5.0] - 2026-10-21
+
+A `leniency` option on the phone number filter. Additive and backward-compatible. The redaction policy schema stays at `1.3.0`. The option was added in place, so schema `1.3.0` as of this release is a superset of schema `1.3.0` as of spec `1.4.0`: every policy valid against the earlier one is still valid, and `phoneNumber` filters may now also set `leniency`.
 
 ### Added
 
 - **`leniency` option on the phone number filter.** `filterPhoneNumber` in schema `1.3.0` (edited in place, additive and backward-compatible) gains an optional `leniency` string, one of `POSSIBLE`, `VALID`, `STRICT_GROUPING`, or `EXACT_GROUPING` (default `POSSIBLE`), selecting the libphonenumber leniency the runtime matches with. `VALID` drops candidates that are only possible for a region, such as short numeric identifiers or years. It is set through the existing filter `OPTIONS` passthrough (`OPTIONS (leniency = 'VALID')`), like `region`, so no grammar change was required. Phileas runtime support: philterd/phileas#423. Example `phone-leniency`.
 - **`spec/v1.3.0/examples/phone-leniency`** example pair (`.phisql` and compiled `.json`).
+
+### Notes
+
+- Leniency is applied by the Phileas runtime, not by PhiSQL. The Java runtime supports it from philterd/phileas#423. phileas-python (philterd/phileas-python#111) and phileas-dotnet (philterd/phileas-dotnet#180) do not support it yet: they accept a policy that sets `leniency`, because it is valid against the schema, but they match with `POSSIBLE` regardless of its value.
 
 ## [1.4.0] - 2026-10-08
 
