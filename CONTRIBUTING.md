@@ -13,6 +13,7 @@ Bug fixes, documentation tweaks, new test cases, and clarifications that do not 
 - [Lifecycle](#lifecycle)
 - [Deciding and implementing](#deciding-and-implementing)
 - [Versioning policy](#versioning-policy)
+- [Licensing and sign-off](#licensing-and-sign-off)
 - [Code of conduct](#code-of-conduct)
 
 > **Process scope.** While Philterd is the sole maintainer, the RFC process is
@@ -127,6 +128,10 @@ As of the `v1.0` release the compatibility contract is in force: the spec is no 
 The RFC proposing the fix must show both, and the release notes must call out the output change. RFC #58 (`WHERE CONFIDENCE =` compiling to `==` instead of `=`) was the first change made under this rule.
 
 Each accepted RFC notes which kind of bump it requires (in the issue); accepted changes are bundled into the next version following these rules.
+
+## Licensing and sign-off
+
+This project is licensed under [Apache 2.0](LICENSE), and contributions are accepted under the same license. Sign off every commit with `git commit -s` to certify the [Developer Certificate of Origin](https://developercertificate.org/); a required check enforces it. See the [Philterd contributing guide](https://github.com/philterd/.github/blob/main/CONTRIBUTING.md#licensing-and-sign-off) for how to sign off commits you have already made.
 
 ## Code of conduct
 
