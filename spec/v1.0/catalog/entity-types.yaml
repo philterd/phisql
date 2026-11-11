@@ -73,6 +73,11 @@ entities:
     phileas_strategies_field: dateFilterStrategies
     description: Date values in various formats.
 
+  - name: DEA_NUMBER
+    phileas_field: deaNumber
+    phileas_strategies_field: deaNumberFilterStrategies
+    description: DEA registration numbers (two letters, or a letter and 9, followed by seven digits, validated by the check digit, format AB1234563).
+
   - name: DRIVERS_LICENSE
     phileas_field: driversLicense
     phileas_strategies_field: driversLicenseFilterStrategies
@@ -118,10 +123,20 @@ entities:
     phileas_strategies_field: macAddressFilterStrategies
     description: MAC addresses.
 
+  - name: MBI
+    phileas_field: mbi
+    phileas_strategies_field: mbiFilterStrategies
+    description: Medicare Beneficiary Identifiers (eleven characters in the format CMS publishes, such as 1EG4-TE5-MK73).
+
   - name: MEDICAL_CONDITION
     phileas_field: medicalCondition
     phileas_strategies_field: medicalConditionFilterStrategies
     description: Medical conditions and diagnoses.
+
+  - name: NPI
+    phileas_field: npi
+    phileas_strategies_field: npiFilterStrategies
+    description: National Provider Identifiers (ten digits beginning with 1 or 2, validated by the NPI check digit, format 1234567893).
 
   - name: PASSPORT_NUMBER
     phileas_field: passportNumber

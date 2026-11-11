@@ -4,6 +4,21 @@ All notable changes to the PhiSQL specification are documented here: the languag
 
 As of v1.0.0 this project follows [Semantic Versioning](https://semver.org/): additive, backward-compatible changes bump the minor version, and changes that break existing PhiSQL or Phileas JSON require a new major version.
 
+## [Unreleased]
+
+### Added
+
+- **`NPI`, `DEA_NUMBER`, and `MBI` entity types.** First-class identifiers for three U.S. healthcare identifiers: the National Provider Identifier, the DEA registration number, and the Medicare Beneficiary Identifier. Adds `npi`, `deaNumber`, and `mbi` identifiers and `filterNpi`, `filterDeaNumber`, and `filterMbi` definitions to schema `1.3.0` (edited in place, additive and backward-compatible) and `NPI`, `DEA_NUMBER`, and `MBI` rows to the entity-types catalog, so `REDACT NPI WITH ...` compiles to an `npi` filter with an `npiFilterStrategies` array, and likewise for the other two. None of the three has options, so no grammar change was required.
+- **`spec/v1.3.0/examples/clinical-identifiers`** example pair (`.phisql` and compiled `.json`), and the `accept/entities/npi`, `accept/entities/dea-number`, and `accept/entities/mbi` conformance cases.
+
+### Notes
+
+- Detection is a Phileas runtime behavior (philterd/phileas#456). The contract is:
+  - **NPI.** Ten digits beginning with 1 or 2, the digits CMS issues NPIs with. Every match must pass the NPI check digit: the Luhn check digit of the number with the `80840` prefix (CMS, "Requirements for National Provider Identifier (NPI) and NPI Check Digit"). `1234567893` is an NPI; `1234567897`, which passes the plain Luhn check, is not.
+  - **DEA number.** Two letters, or a letter and `9` for a registrant identified by a business name, followed by seven digits. The last digit of the sum of the first, third, and fifth digits plus twice the sum of the second, fourth, and sixth digits must equal the seventh digit (`AB1234563`).
+  - **MBI.** Eleven characters in the format CMS publishes ("Understanding the Medicare Beneficiary Identifier (MBI) Format"): a digit from 1 to 9, then letters in the 2nd, 5th, 8th, and 9th positions, a letter or digit in the 3rd and 6th, and digits in the rest, never using S, L, O, I, B, or Z. Written unformatted or in the card's grouping (`1EG4-TE5-MK73`). The MBI has no check digit.
+- A Phileas build that bundles this schema fails its schema conformance test until it implements the three filters, so the schema change and the Phileas implementation must ship together.
+
 ## [1.5.0] - 2026-10-21
 
 A `leniency` option on the phone number filter. Additive and backward-compatible. The redaction policy schema stays at `1.3.0`. The option was added in place, so schema `1.3.0` as of this release is a superset of schema `1.3.0` as of spec `1.4.0`: every policy valid against the earlier one is still valid, and `phoneNumber` filters may now also set `leniency`.

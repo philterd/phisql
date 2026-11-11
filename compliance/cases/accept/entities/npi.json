@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "npi": {
+      "npiFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  }
+}

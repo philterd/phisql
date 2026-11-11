@@ -1,0 +1,25 @@
+{
+  "identifiers": {
+    "npi": {
+      "npiFilterStrategies": [
+        {
+          "strategy": "LAST_4"
+        }
+      ]
+    },
+    "deaNumber": {
+      "deaNumberFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    },
+    "mbi": {
+      "mbiFilterStrategies": [
+        {
+          "strategy": "REDACT"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,15 @@
+-- NPI, DEA_NUMBER, and MBI filters. First-class entity types for three U.S.
+-- healthcare identifiers, so they are labelled npi, dea-number, and mbi rather
+-- than as custom identifiers, with no pattern for the policy author to write.
+-- NPI: ten digits beginning with 1 or 2 that pass the NPI check digit (the Luhn
+-- check of the number with the 80840 prefix), e.g. 1234567893. DEA_NUMBER: two
+-- letters, or a letter and 9, followed by seven digits that pass the DEA check
+-- digit, e.g. AB1234563. MBI: the eleven-character Medicare Beneficiary
+-- Identifier in the format CMS publishes, e.g. 1EG4-TE5-MK73. None has options.
+-- Added to schema 1.3.0 in place (additive). Compiles to clinical-identifiers.json.
+
+POLICY clinical_identifiers;
+
+REDACT NPI WITH LAST_4;
+REDACT DEA_NUMBER WITH MASK;
+REDACT MBI WITH REDACT;
