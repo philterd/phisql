@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "mbi": {
+      "mbiFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  }
+}

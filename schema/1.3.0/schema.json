@@ -419,6 +419,10 @@
           "description": "Detects date values in various formats.",
           "$ref": "#/$defs/filterDate"
         },
+        "deaNumber": {
+          "description": "Detects DEA registration numbers (two letters, or a letter and 9, followed by seven digits, validated by the check digit, format AB1234563).",
+          "$ref": "#/$defs/filterDeaNumber"
+        },
         "dictionaries": {
           "description": "Custom dictionary filters. Each entry defines a set of terms to detect.",
           "type": "array",
@@ -469,9 +473,17 @@
           "description": "Detects MAC addresses.",
           "$ref": "#/$defs/filterMacAddress"
         },
+        "mbi": {
+          "description": "Detects Medicare Beneficiary Identifiers (eleven characters in the format CMS publishes, such as 1EG4-TE5-MK73).",
+          "$ref": "#/$defs/filterMbi"
+        },
         "medicalCondition": {
           "description": "Detects medical conditions using PhEye AI-based detection.",
           "$ref": "#/$defs/filterMedicalCondition"
+        },
+        "npi": {
+          "description": "Detects National Provider Identifiers (ten digits beginning with 1 or 2, validated by the NPI check digit, format 1234567893).",
+          "$ref": "#/$defs/filterNpi"
         },
         "passportNumber": {
           "description": "Detects passport numbers.",
@@ -1225,6 +1237,30 @@
       },
       "additionalProperties": false
     },
+    "filterDeaNumber": {
+      "description": "Detects DEA registration numbers (two letters, or a letter and 9, followed by seven digits, validated by the check digit, format AB1234563).",
+      "type": "object",
+      "allOf": [
+        { "$ref": "#/$defs/abstractFilterProperties" }
+      ],
+      "properties": {
+        "enabled": true,
+        "ignored": true,
+        "ignoredFiles": true,
+        "ignoredPatterns": true,
+        "windowSize": true,
+        "priority": true,
+        "id": true,
+        "deaNumberFilterStrategies": {
+          "description": "Strategies for handling detected DEA numbers. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/baseFilterStrategy"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
     "filterDriversLicense": {
       "description": "Detects driver's license numbers.",
       "type": "object",
@@ -1565,6 +1601,30 @@
       },
       "additionalProperties": false
     },
+    "filterMbi": {
+      "description": "Detects Medicare Beneficiary Identifiers (eleven characters in the format CMS publishes, such as 1EG4-TE5-MK73).",
+      "type": "object",
+      "allOf": [
+        { "$ref": "#/$defs/abstractFilterProperties" }
+      ],
+      "properties": {
+        "enabled": true,
+        "ignored": true,
+        "ignoredFiles": true,
+        "ignoredPatterns": true,
+        "windowSize": true,
+        "priority": true,
+        "id": true,
+        "mbiFilterStrategies": {
+          "description": "Strategies for handling detected MBIs. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/baseFilterStrategy"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
     "filterMedicalCondition": {
       "description": "Detects medical conditions using PhEye AI-based detection.",
       "type": "object",
@@ -1602,6 +1662,30 @@
             "type": "number",
             "minimum": 0,
             "maximum": 1
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "filterNpi": {
+      "description": "Detects National Provider Identifiers (ten digits beginning with 1 or 2, validated by the NPI check digit, format 1234567893).",
+      "type": "object",
+      "allOf": [
+        { "$ref": "#/$defs/abstractFilterProperties" }
+      ],
+      "properties": {
+        "enabled": true,
+        "ignored": true,
+        "ignoredFiles": true,
+        "ignoredPatterns": true,
+        "windowSize": true,
+        "priority": true,
+        "id": true,
+        "npiFilterStrategies": {
+          "description": "Strategies for handling detected NPIs. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/baseFilterStrategy"
           }
         }
       },
