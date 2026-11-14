@@ -1,6 +1,8 @@
 -- Discovery: find a curated set of PHI-relevant entities on a local
 -- filesystem mount used as an ingest staging area.
 -- Compiles to the JSON in 18-find-pii-local-filesystem.json.
+-- This needs the discovery compiler, which has not landed yet. Until it
+-- does, the reference compilers report this file as a compile error (#71).
 
 FIND PII IN 'file:///mnt/exports/intake/'
   WHERE entity_type IN ('PATIENT_ID', 'EMAIL_ADDRESS', 'PHONE_NUMBER');

@@ -84,3 +84,20 @@ def test_warnings_go_to_stderr_without_changing_the_exit_code(tmp_path):
     assert code == cli.EXIT_OK, err
     assert "warning: " + OR_WARNING in err
     json.loads(out)
+
+
+def test_discovery_statement_warning_goes_to_stderr(tmp_path):
+    from phisql.compiler import DISCOVERY_WARNING
+    file = _write(tmp_path, "mixed.phisql", "REDACT SSN WITH MASK;\nFIND PII IN 's3://bucket/';\n")
+    code, out, err = _invoke(str(file))
+    assert code == cli.EXIT_OK, err
+    assert "warning: FIND PII at line 2 was skipped: " + DISCOVERY_WARNING in err
+    json.loads(out)
+
+
+def test_discovery_only_script_exits_with_compile_code(tmp_path):
+    file = _write(tmp_path, "find.phisql", "FIND PII IN 's3://bucket/';\n")
+    code, out, err = _invoke(str(file))
+    assert code == cli.EXIT_COMPILE_ERROR
+    assert "only discovery statements (FIND PII at line 1)" in err
+    assert out == ""

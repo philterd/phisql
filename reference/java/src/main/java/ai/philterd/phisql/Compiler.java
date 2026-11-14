@@ -41,9 +41,12 @@ import java.util.Set;
  * (REDACT, DEIDENTIFY, IGNORE, DEFINE IDENTIFIER, DEFINE DICTIONARY,
  * DEFINE SECTION, DETECT PHEYE, and the CONFIGURE forms) and emits Phileas
  * JSON. Discovery statements (FIND PII, DISCOVER ENTITIES, SCAN, SELECT FROM
- * findings) parse successfully but are silently ignored by this compiler; they
- * target a separate discovery-query JSON schema documented in the spec
- * examples, and a discovery compiler will land in a follow-up.
+ * findings) parse successfully but are not compiled; they target a separate
+ * discovery-query JSON schema documented in the spec examples, and a discovery
+ * compiler will land in a follow-up. Each one is skipped with a compile
+ * warning that names it and its line, and a script with nothing but discovery
+ * statements (and an optional POLICY declaration) is a compile error, since it
+ * has no redaction policy to produce.
  */
 public final class Compiler {
 
@@ -100,9 +103,12 @@ public final class Compiler {
 
         String declaredName = null;
         String description = null;
+        List<String> skippedDiscovery = new java.util.ArrayList<>();
 
         for (PhiSQLParser.StatementContext stmt : document.statement()) {
-            if (stmt.policyDecl() != null) {
+            if (stmt.discoveryStmt() != null) {
+                skippedDiscovery.add(describeDiscovery(stmt.discoveryStmt()));
+            } else if (stmt.policyDecl() != null) {
                 PhiSQLParser.PolicyDeclContext p = stmt.policyDecl();
                 declaredName = p.policyName.getText();
                 if (p.description != null) {
@@ -129,6 +135,13 @@ public final class Compiler {
             }
         }
 
+        if (!skippedDiscovery.isEmpty() && document.statement().stream()
+                .allMatch(s -> s.policyDecl() != null || s.discoveryStmt() != null)) {
+            throw new CompileException("The script has only discovery statements ("
+                    + String.join(", ", skippedDiscovery) + "), and discovery statements are not "
+                    + "compiled to a redaction policy yet.");
+        }
+
         String policyName = resolvePolicyName(expectedName, declaredName);
         enforceDateOnlyStrategies(policyJson);
 
@@ -138,7 +151,12 @@ public final class Compiler {
             policyJson.putObject("metadata").put("description", description);
         }
 
-        return new CompileResult(policyName, description, policyJson, conditionWarnings(document));
+        List<String> warnings = new java.util.ArrayList<>();
+        for (String skipped : skippedDiscovery) {
+            warnings.add(skipped + " was skipped: " + DISCOVERY_WARNING);
+        }
+        warnings.addAll(conditionWarnings(document));
+        return new CompileResult(policyName, description, policyJson, warnings);
     }
 
     /**
@@ -777,6 +795,18 @@ public final class Compiler {
      */
     private static String phileasCompareOp(String op) {
         return "=".equals(op) ? "==" : op;
+    }
+
+    static final String DISCOVERY_WARNING = "discovery statements are not compiled to a redaction policy yet.";
+
+    /** Names a discovery statement and its line, e.g. {@code FIND PII at line 3}. */
+    private static String describeDiscovery(PhiSQLParser.DiscoveryStmtContext ctx) {
+        String verb;
+        if (ctx instanceof PhiSQLParser.FindPiiStmtContext) verb = "FIND PII";
+        else if (ctx instanceof PhiSQLParser.DiscoverEntitiesStmtContext) verb = "DISCOVER ENTITIES";
+        else if (ctx instanceof PhiSQLParser.ScanStmtContext) verb = "SCAN";
+        else verb = "SELECT ... FROM findings";
+        return verb + " at line " + ctx.getStart().getLine();
     }
 
     static final String OR_WARNING = "WHERE uses OR, which only phileas-python evaluates today; "

@@ -24,7 +24,7 @@ An implementation is conformant with PhiSQL v1.0 if, for every case in this
 suite, it:
 
 - compiles each **accept** case to exactly the expected Phileas JSON policy;
-- accepts each **parse-only** case without error;
+- parses each **parse-only** case (a compile error is allowed, a parse error is not);
 - rejects each **reject** case, at the correct layer (a grammar error versus a
   semantic error).
 
@@ -74,7 +74,8 @@ cases/
   accept/        compile must succeed (exit 0) and produce JSON equal to the
                  sibling <name>.json (compared as parsed JSON, so key order and
                  whitespace are irrelevant)
-  parse-only/    must be accepted (exit 0); output is not compared
+  parse-only/    must parse: exit 0, or exit 3 for an input it does not compile
+                 yet, never exit 2; output is not compared
   reject/parse/      must fail to parse (exit 2)
   reject/semantic/   must parse but fail to compile (exit 3)
 ```
@@ -82,7 +83,11 @@ cases/
 `parse-only` exists for the discovery verbs (`FIND PII`, `DISCOVER ENTITIES`,
 `SCAN`, `SELECT ... FROM findings`). They are part of the v1.0 grammar but target
 a separate discovery-query schema rather than a Phileas policy, so the suite
-checks that they parse without pinning a compiled output.
+checks that they parse without pinning a compiled output. Until a discovery
+compiler exists, the Java and Python references reject a script made only of
+discovery statements with a compile error (exit 3) rather than produce an empty
+policy (#71), so a parse-only case passes on exit 0 or exit 3 and fails on a
+parse error (exit 2).
 
 A case may carry an optional sibling `<name>.reject` file (JSON,
 `{"messageContains": "..."}`) to additionally assert that the adapter's stderr

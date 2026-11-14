@@ -80,6 +80,25 @@ class CliTest {
     }
 
     @Test
+    void discoveryStatementWarningGoesToStderr() throws IOException {
+        Path f = write("mixed.phisql", "REDACT SSN WITH MASK;\nFIND PII IN 's3://bucket/';\n");
+        Run r = invoke(f.toString());
+        assertEquals(Cli.EXIT_OK, r.code(), r.err());
+        assertTrue(r.err().contains("warning: FIND PII at line 2 was skipped: " + Compiler.DISCOVERY_WARNING),
+                r.err());
+        MAPPER.readTree(r.out());
+    }
+
+    @Test
+    void discoveryOnlyScriptExitsWithCompileCode() throws IOException {
+        Path f = write("find.phisql", "FIND PII IN 's3://bucket/';\n");
+        Run r = invoke(f.toString());
+        assertEquals(Cli.EXIT_COMPILE_ERROR, r.code());
+        assertTrue(r.err().contains("only discovery statements (FIND PII at line 1)"), r.err());
+        assertEquals("", r.out());
+    }
+
+    @Test
     void parseErrorExitsWithParseCode() throws IOException {
         // Missing the semicolon after the POLICY declaration is a grammar error.
         Path f = write("bad.phisql", "POLICY x\nREDACT SSN WITH MASK;\n");

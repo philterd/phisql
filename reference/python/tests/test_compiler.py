@@ -18,8 +18,9 @@ JSON, so key order and formatting are ignored). This is the load-bearing
 assertion that the compiler stays in sync with the spec examples.
 
 Discovery examples do not compile to Phileas JSON and are listed explicitly so
-the test skips them rather than implicitly. When a discovery compiler lands the
-set shrinks; new redaction examples are picked up automatically.
+the test skips them rather than implicitly, and each one is checked to be a
+compile error instead. When a discovery compiler lands the set shrinks; new
+redaction examples are picked up automatically.
 """
 
 import json
@@ -27,7 +28,8 @@ import json
 import pytest
 
 from phisql import Compiler
-from conftest import redaction_example_files
+from phisql.errors import CompileException
+from conftest import discovery_example_files, redaction_example_files
 
 
 @pytest.mark.parametrize("source_path", redaction_example_files(), ids=lambda p: p.name)
@@ -44,3 +46,9 @@ def test_every_example_compiles_to_expected_json(source_path):
     assert result.policy_name() is not None, (
         "Compiler should extract the POLICY name from the document"
     )
+
+
+@pytest.mark.parametrize("source_path", discovery_example_files(), ids=lambda p: p.name)
+def test_discovery_examples_are_a_compile_error(source_path):
+    with pytest.raises(CompileException, match="^The script has only discovery statements"):
+        Compiler().compile(source_path.read_text(encoding="utf-8"))

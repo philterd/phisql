@@ -9,6 +9,8 @@
 -- compiled JSON is deterministic.
 --
 -- Compiles to the JSON in 19-select-findings-groupby.json.
+-- This needs the discovery compiler, which has not landed yet. Until it
+-- does, the reference compilers report this file as a compile error (#71).
 
 SELECT path, entity_type, COUNT(*)
   FROM phinder.findings
