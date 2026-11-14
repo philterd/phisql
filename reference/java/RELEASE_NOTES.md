@@ -4,6 +4,12 @@ All notable changes to the PhiSQL Java reference implementation (the `ai.philter
 
 The implementation version is independent of the PhiSQL policy schema version it implements (exposed through `PolicySchema.getSupportedSchemaVersion()`). Specification-level changes (grammar, schema, catalog, examples) are recorded in the repository [release notes](../../RELEASE_NOTES.md).
 
+## Unreleased
+
+### Changed
+
+- **Discovery statements are reported instead of skipped silently** (#71). `FIND PII`, `DISCOVER ENTITIES`, `SCAN`, and `SELECT ... FROM findings` are still not compiled, but each one now adds a compile warning that names it and its line (`FIND PII at line 3 was skipped: discovery statements are not compiled to a redaction policy yet.`), which the CLI prints to stderr. A script made only of discovery statements, with or without a `POLICY` declaration, now raises `CompileException` (CLI exit 3) instead of compiling to `{"identifiers": {}}`, which Philter refuses to save.
+
 ## 1.6.0 - 2026-10-21
 
 Implements PhiSQL 1.5.0. Targets policy schema 1.3.0, which gains an optional `leniency` on the phone number filter in place in 1.5.0 (additive and backward-compatible).

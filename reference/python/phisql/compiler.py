@@ -23,8 +23,10 @@ reference ``Compiler``.
 DEIDENTIFY, IGNORE, DEFINE IDENTIFIER, DEFINE DICTIONARY, DEFINE SECTION,
 DETECT PHEYE, and the CONFIGURE forms) and emits Phileas JSON. Discovery
 statements (FIND PII, DISCOVER ENTITIES, SCAN, SELECT FROM findings) parse
-successfully but are silently ignored by this compiler; they target a separate
-discovery-query JSON schema.
+successfully but are not compiled; they target a separate discovery-query JSON
+schema. Each one is skipped with a compile warning that names it and its line,
+and a script with nothing but discovery statements (and an optional POLICY
+declaration) is a compile error, since it has no redaction policy to produce.
 """
 
 from __future__ import annotations
@@ -121,9 +123,12 @@ class Compiler:
 
         declared_name = None
         description = None
+        skipped_discovery = []
 
         for stmt in document.statements:
-            if isinstance(stmt, ast.PolicyDecl):
+            if isinstance(stmt, ast.DiscoveryStmt):
+                skipped_discovery.append(_describe_discovery(stmt))
+            elif isinstance(stmt, ast.PolicyDecl):
                 declared_name = stmt.policy_name
                 if stmt.description_raw is not None:
                     description = _unquote_string(stmt.description_raw)
@@ -145,8 +150,13 @@ class Compiler:
                 self._compile_detect(stmt, identifiers)
             elif isinstance(stmt, ast.ConfigureStmt):
                 self._compile_configure(stmt, policy_json)
-            elif isinstance(stmt, ast.DiscoveryStmt):
-                pass  # discovery statements are not compiled to Phileas JSON
+
+        if skipped_discovery and all(isinstance(s, (ast.PolicyDecl, ast.DiscoveryStmt))
+                                     for s in document.statements):
+            raise CompileException(
+                "The script has only discovery statements ("
+                + ", ".join(skipped_discovery) + "), and discovery statements are not "
+                "compiled to a redaction policy yet.")
 
         policy_name = _resolve_policy_name(expected_name, declared_name)
         self._enforce_date_only_strategies(policy_json)
@@ -156,8 +166,9 @@ class Compiler:
         if description is not None:
             policy_json["metadata"] = {"description": description}
 
-        return CompileResult(policy_name, description, policy_json,
-                             _condition_warnings(document))
+        warnings = [f"{skipped} was skipped: {DISCOVERY_WARNING}" for skipped in skipped_discovery]
+        warnings.extend(_condition_warnings(document))
+        return CompileResult(policy_name, description, policy_json, warnings)
 
     def _enforce_date_only_strategies(self, policy_json: dict) -> None:
         """Date-only strategies (SHIFT, TRUNCATE_TO_YEAR, RELATIVE) may target only
@@ -598,6 +609,22 @@ def _phileas_compare_op(op: str) -> str:
     """PhiSQL writes equality as ``=``; the Phileas condition grammar spells it
     ``==`` (spec/v1.0/catalog/predicates.yaml, phileas_ops; RFC #58)."""
     return "==" if op == "=" else op
+
+
+DISCOVERY_WARNING = "discovery statements are not compiled to a redaction policy yet."
+
+_DISCOVERY_VERBS = {
+    "FIND_PII": "FIND PII",
+    "DISCOVER_ENTITIES": "DISCOVER ENTITIES",
+    "SCAN": "SCAN",
+    "SELECT_FINDINGS": "SELECT ... FROM findings",
+}
+
+
+def _describe_discovery(stmt: ast.DiscoveryStmt) -> str:
+    """Names a discovery statement and its line, e.g. ``FIND PII at line 3``."""
+    verb = _DISCOVERY_VERBS.get(stmt.verb, stmt.verb)
+    return verb if stmt.line is None else f"{verb} at line {stmt.line}"
 
 
 OR_WARNING = ("WHERE uses OR, which only phileas-python evaluates today; "

@@ -41,9 +41,11 @@ How a case is classified (by its location under cases/)
   accept/...          compile must succeed (exit 0) and the produced JSON must
                       equal the sibling <name>.json (compared as parsed JSON,
                       so key order and formatting are ignored).
-  parse-only/...      must be accepted (exit 0); output is not compared. Used
-                      for statements the reference compiler parses but does not
-                      yet translate (the discovery verbs).
+  parse-only/...      must parse: exit 0, or exit 3 for an input that parses
+                      but that the implementation does not compile yet, never
+                      exit 2; output is not compared. Used for statements the
+                      reference compiler parses but does not yet translate (the
+                      discovery verbs).
   reject/parse/...    must fail to parse (exit 2).
   reject/semantic/... must parse but fail to compile (exit 3).
 
@@ -65,6 +67,11 @@ DEFAULT_CASES = HERE / "cases"
 EXIT_OK = 0
 EXIT_PARSE = 2
 EXIT_SEMANTIC = 3
+
+# A parse-only case passes on either code that shows the input parsed. The Java
+# and Python references reject a script made only of discovery statements with a
+# compile error (#71), since it has no redaction policy to produce.
+PARSE_ONLY_EXITS = (EXIT_OK, EXIT_SEMANTIC)
 
 # The canonical redaction policy schema. Accept-case output must validate
 # against it, not merely match the expected fixture, so a schema-invalid fixture
@@ -127,7 +134,7 @@ def classify(phisql_path, cases_root):
                     json.loads(expected.read_text(encoding="utf-8")),
                     message_contains, schema_exempt)
     if "parse-only" in rel_parts:
-        return Case(phisql_path, "parse-only", EXIT_OK, None, message_contains)
+        return Case(phisql_path, "parse-only", PARSE_ONLY_EXITS, None, message_contains)
     if "reject" in rel_parts and "parse" in rel_parts:
         return Case(phisql_path, "reject-parse", EXIT_PARSE, None, message_contains)
     if "reject" in rel_parts and "semantic" in rel_parts:
@@ -150,8 +157,9 @@ def run_adapter(adapter, phisql_path):
 
 def check(case, code, stdout, stderr):
     """Return None if the case passes, else a human-readable failure reason."""
-    if code != case.expected_exit:
-        return (f"expected exit {case.expected_exit}, got {code}"
+    expected = case.expected_exit if isinstance(case.expected_exit, tuple) else (case.expected_exit,)
+    if code not in expected:
+        return (f"expected exit {' or '.join(map(str, expected))}, got {code}"
                 + (f"\n      stderr: {stderr.strip().splitlines()[0]}" if stderr.strip() else ""))
     if case.message_contains and case.message_contains not in stderr:
         return f"stderr did not contain {case.message_contains!r}"

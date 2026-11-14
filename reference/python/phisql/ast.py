@@ -212,9 +212,10 @@ class DiscoveryStmt:
 
     Discovery verbs (FIND PII, DISCOVER ENTITIES, SCAN, SELECT ... FROM
     findings) parse successfully but are not compiled to Phileas JSON by this
-    compiler; they target a separate discovery-query schema. The parsed shape
-    is retained for completeness but the compiler ignores it, matching the Java
-    reference's scope.
+    compiler; they target a separate discovery-query schema. Only the verb and
+    the line the statement starts on are retained, so the compiler can name
+    the statement it skips, matching the Java reference's scope.
     """
 
     verb: str  # "FIND_PII" | "DISCOVER_ENTITIES" | "SCAN" | "SELECT_FINDINGS"
+    line: Optional[int] = None  # 1-based line the statement starts on
