@@ -1,0 +1,11 @@
+-- A bounding box takes the shared filter properties, including the optional
+-- `id` that names one box among several in logs and diagnostics. boundingBox
+-- references abstractFilterProperties in schema 1.3.0 like every other filter
+-- definition. Compiles to graphical-box-id.json.
+
+POLICY graphical_box_id;
+
+REDACT SSN WITH MASK;
+
+CONFIGURE GRAPHICAL BOX (id = 'signature', x = 10, y = 20, w = 100, h = 50, page = 2);
+CONFIGURE GRAPHICAL BOX (id = 'stamp', x = 200, y = 40, w = 80, h = 30);

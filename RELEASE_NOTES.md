@@ -11,6 +11,10 @@ As of v1.0.0 this project follows [Semantic Versioning](https://semver.org/): ad
 - **`NPI`, `DEA_NUMBER`, and `MBI` entity types.** First-class identifiers for three U.S. healthcare identifiers: the National Provider Identifier, the DEA registration number, and the Medicare Beneficiary Identifier. Adds `npi`, `deaNumber`, and `mbi` identifiers and `filterNpi`, `filterDeaNumber`, and `filterMbi` definitions to schema `1.3.0` (edited in place, additive and backward-compatible) and `NPI`, `DEA_NUMBER`, and `MBI` rows to the entity-types catalog, so `REDACT NPI WITH ...` compiles to an `npi` filter with an `npiFilterStrategies` array, and likewise for the other two. None of the three has options, so no grammar change was required.
 - **`spec/v1.3.0/examples/clinical-identifiers`** example pair (`.phisql` and compiled `.json`), and the `accept/entities/npi`, `accept/entities/dea-number`, and `accept/entities/mbi` conformance cases.
 
+### Fixed
+
+- **`id` on a bounding box** ([#44](https://github.com/philterd/phisql/issues/44)). `boundingBox` now references `abstractFilterProperties` like every other filter definition instead of inlining a copy of it, so it accepts the optional `id` that the copy had been missing since schema `1.2.0`. Its other shared properties are unchanged. Schema `1.3.0` is edited in place, additive and backward-compatible. Adds the `spec/v1.3.0/examples/graphical-box-id` example pair and the `accept/configure/graphical-box-id` conformance case.
+
 ### Notes
 
 - Detection is a Phileas runtime behavior (philterd/phileas#456). The contract is:
