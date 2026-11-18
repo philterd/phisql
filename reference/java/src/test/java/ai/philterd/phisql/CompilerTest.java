@@ -32,6 +32,8 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Compiles every redaction example {@code .phisql} file under
@@ -43,8 +45,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * <p>Discovery examples do not compile to Phileas JSON and are not yet
  * handled by this compiler. They are listed in
  * {@link #DISCOVERY_EXAMPLES_NOT_YET_COMPILED} so the test skips them
- * explicitly rather than implicitly. When the discovery compiler lands, the
- * set shrinks; new redaction examples are automatically picked up.
+ * explicitly rather than implicitly, and each one is checked to be a compile
+ * error instead. When the discovery compiler lands, the set shrinks; new
+ * redaction examples are automatically picked up.
  */
 class CompilerTest {
 
@@ -103,5 +106,18 @@ class CompilerTest {
                         "Compiler should extract the POLICY name from the document");
             });
         });
+    }
+
+    @TestFactory
+    Stream<DynamicTest> discoveryExamplesAreACompileError() {
+        Compiler compiler = new Compiler();
+        return DISCOVERY_EXAMPLES_NOT_YET_COMPILED.stream().sorted().map(name ->
+                DynamicTest.dynamicTest(name, () -> {
+                    String phisql = Files.readString(EXAMPLES_DIRS.get(0).resolve(name));
+                    Compiler.CompileException e = assertThrows(Compiler.CompileException.class,
+                            () -> compiler.compile(phisql));
+                    assertTrue(e.getMessage().startsWith("The script has only discovery statements"),
+                            e.getMessage());
+                }));
     }
 }

@@ -11,6 +11,10 @@ As of v1.0.0 this project follows [Semantic Versioning](https://semver.org/): ad
 - **`NPI`, `DEA_NUMBER`, and `MBI` entity types.** First-class identifiers for three U.S. healthcare identifiers: the National Provider Identifier, the DEA registration number, and the Medicare Beneficiary Identifier. Adds `npi`, `deaNumber`, and `mbi` identifiers and `filterNpi`, `filterDeaNumber`, and `filterMbi` definitions to schema `1.3.0` (edited in place, additive and backward-compatible) and `NPI`, `DEA_NUMBER`, and `MBI` rows to the entity-types catalog, so `REDACT NPI WITH ...` compiles to an `npi` filter with an `npiFilterStrategies` array, and likewise for the other two. None of the three has options, so no grammar change was required.
 - **`spec/v1.3.0/examples/clinical-identifiers`** example pair (`.phisql` and compiled `.json`), and the `accept/entities/npi`, `accept/entities/dea-number`, and `accept/entities/mbi` conformance cases.
 
+### Changed
+
+- **A `parse-only` conformance case passes on exit 0 or exit 3** (#71). The Java and Python references now reject a script made only of discovery statements with a compile error instead of compiling it to `{"identifiers": {}}`, a policy Philter refuses to save. A `parse-only` case still fails on a parse error (exit 2), so the suite keeps checking that the discovery verbs parse without requiring an implementation to compile them. The discovery examples `15` to `19` in `spec/v1.0/examples/` now say they need the discovery compiler.
+
 ### Notes
 
 - Detection is a Phileas runtime behavior (philterd/phileas#456). The contract is:
