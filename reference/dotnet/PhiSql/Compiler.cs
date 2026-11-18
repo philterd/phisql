@@ -67,7 +67,10 @@ public sealed class CompileResult
 /// <summary>
 /// Compiles a parsed PhiSQL document into a Phileas JSON policy, driven by the
 /// <see cref="Catalog"/>. A direct port of the Java and Python reference
-/// compilers. Discovery statements parse but are not translated.
+/// compilers. Discovery statements parse but are not translated: each one is
+/// skipped with a compile warning that names it and its line, and a script with
+/// nothing but discovery statements (and an optional POLICY declaration) is a
+/// compile error, since it has no redaction policy to produce.
 /// </summary>
 public sealed class Compiler
 {
@@ -113,6 +116,7 @@ public sealed class Compiler
 
         string? declaredName = null;
         string? description = null;
+        var skippedDiscovery = new List<string>();
 
         foreach (IStatement stmt in document.Statements)
         {
@@ -131,8 +135,16 @@ public sealed class Compiler
                 case DefineGeneratorStmt dg: CompileDefineGenerator(dg, policyJson); break;
                 case DetectStmt det: CompileDetect(det, identifiers); break;
                 case ConfigureStmt c: CompileConfigure(c, policyJson); break;
-                case DiscoveryStmt: break; // not compiled to Phileas JSON
+                case DiscoveryStmt disc: skippedDiscovery.Add(DescribeDiscovery(disc)); break;
             }
+        }
+
+        if (skippedDiscovery.Count > 0
+            && document.Statements.All(s => s is PolicyDecl or DiscoveryStmt))
+        {
+            throw new CompileException("The script has only discovery statements ("
+                + string.Join(", ", skippedDiscovery) + "), and discovery statements are not "
+                + "compiled to a redaction policy yet.");
         }
 
         string? policyName = ResolvePolicyName(expectedName, declaredName);
@@ -145,7 +157,9 @@ public sealed class Compiler
             policyJson["metadata"] = new JsonObject { ["description"] = description };
         }
 
-        return new CompileResult(policyName, description, policyJson, ConditionWarnings(document));
+        var warnings = skippedDiscovery.Select(s => $"{s} was skipped: {DiscoveryWarning}").ToList();
+        warnings.AddRange(ConditionWarnings(document));
+        return new CompileResult(policyName, description, policyJson, warnings);
     }
 
     /// <summary>
@@ -593,6 +607,23 @@ public sealed class Compiler
     // PhiSQL writes equality as `=`; the Phileas condition grammar spells it `==`
     // (spec/v1.0/catalog/predicates.yaml, phileas_ops; RFC #58).
     private static string PhileasCompareOp(string op) => op == "=" ? "==" : op;
+
+    public const string DiscoveryWarning = "discovery statements are not compiled to a redaction policy yet.";
+
+    private static readonly Dictionary<string, string> DiscoveryVerbs = new(StringComparer.Ordinal)
+    {
+        ["FIND_PII"] = "FIND PII",
+        ["DISCOVER_ENTITIES"] = "DISCOVER ENTITIES",
+        ["SCAN"] = "SCAN",
+        ["SELECT_FINDINGS"] = "SELECT ... FROM findings",
+    };
+
+    /// <summary>Names a discovery statement and its line, e.g. <c>FIND PII at line 3</c>.</summary>
+    private static string DescribeDiscovery(DiscoveryStmt stmt)
+    {
+        string verb = DiscoveryVerbs.GetValueOrDefault(stmt.Verb, stmt.Verb);
+        return stmt.Line is int line ? $"{verb} at line {line}" : verb;
+    }
 
     public const string OrWarning = "WHERE uses OR, which only phileas-python evaluates today; "
         + "the Java and .NET Phileas runtimes do not support it yet (RFC #15).";

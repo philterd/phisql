@@ -270,20 +270,20 @@ class _AstBuilder(PhiSQLVisitor):
     # --- discoveryStmt -------------------------------------------------------
     #
     # Discovery statements parse (and are validated) by the generated parser but
-    # are not translated by the compiler; only the verb is retained, matching
-    # the Java reference's scope.
+    # are not translated by the compiler; only the verb and the line are
+    # retained, matching the Java reference's scope.
 
     def visitFindPiiStmt(self, ctx) -> ast.DiscoveryStmt:
-        return ast.DiscoveryStmt(verb="FIND_PII")
+        return ast.DiscoveryStmt(verb="FIND_PII", line=ctx.start.line)
 
     def visitDiscoverEntitiesStmt(self, ctx) -> ast.DiscoveryStmt:
-        return ast.DiscoveryStmt(verb="DISCOVER_ENTITIES")
+        return ast.DiscoveryStmt(verb="DISCOVER_ENTITIES", line=ctx.start.line)
 
     def visitScanStmt(self, ctx) -> ast.DiscoveryStmt:
-        return ast.DiscoveryStmt(verb="SCAN")
+        return ast.DiscoveryStmt(verb="SCAN", line=ctx.start.line)
 
     def visitSelectFindingsStmt(self, ctx) -> ast.DiscoveryStmt:
-        return ast.DiscoveryStmt(verb="SELECT_FINDINGS")
+        return ast.DiscoveryStmt(verb="SELECT_FINDINGS", line=ctx.start.line)
 
 
 def parse(source: str) -> ast.Document:

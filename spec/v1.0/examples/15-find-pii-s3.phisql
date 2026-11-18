@@ -2,6 +2,8 @@
 -- findings with a risk score above 7. Compiles to the discovery-query JSON
 -- in 15-find-pii-s3.json (executed by a Phinder-compatible engine; not a
 -- Phileas policy).
+-- This needs the discovery compiler, which has not landed yet. Until it
+-- does, the reference compilers report this file as a compile error (#71).
 
 FIND PII IN 's3://prod-data/customers/'
   WHERE entity_type IN ('SSN', 'CREDIT_CARD')

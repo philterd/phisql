@@ -57,6 +57,26 @@ public class CliTests : IDisposable
     }
 
     [Fact]
+    public void DiscoveryStatementWarningGoesToStderr()
+    {
+        string file = Write("mixed.phisql", "REDACT SSN WITH MASK;\nFIND PII IN 's3://bucket/';\n");
+        var (code, output, err) = Invoke(file);
+        Assert.Equal(Cli.ExitOk, code);
+        Assert.Contains("warning: FIND PII at line 2 was skipped: " + Compiler.DiscoveryWarning, err);
+        JsonNode.Parse(output);
+    }
+
+    [Fact]
+    public void DiscoveryOnlyScriptExitsWithCompileCode()
+    {
+        string file = Write("find.phisql", "FIND PII IN 's3://bucket/';\n");
+        var (code, output, err) = Invoke(file);
+        Assert.Equal(Cli.ExitCompileError, code);
+        Assert.Contains("only discovery statements (FIND PII at line 1)", err);
+        Assert.Equal("", output);
+    }
+
+    [Fact]
     public void ParseErrorExitsWithParseCode()
     {
         string file = Write("bad.phisql", "POLICY x\nREDACT SSN WITH MASK;\n");

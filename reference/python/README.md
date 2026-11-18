@@ -170,7 +170,9 @@ Like the Java reference, this compiler targets the redaction subset of PhiSQL
 SECTION, DETECT PHEYE, and the CONFIGURE forms) and emits Phileas JSON.
 Discovery statements (FIND PII, DISCOVER ENTITIES, SCAN, SELECT FROM findings)
 parse successfully but are not yet compiled; they target a separate
-discovery-query schema.
+discovery-query schema. Each one is skipped with a compile warning that names
+it and its line, and a script made only of discovery statements raises
+`CompileException`.
 
 ## License
 
