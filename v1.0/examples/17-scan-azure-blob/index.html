@@ -2372,8 +2372,10 @@
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1">-- clause is the broadest possible scan; the engine surfaces every entity</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1">-- it can detect with the configured detectors.</span>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1">-- Compiles to the JSON in 17-scan-azure-blob.json.</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">SCAN</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="s1">'azure://acmestorage.uploads/customer-files/'</span><span class="p">;</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1">-- This needs the discovery compiler, which has not landed yet. Until it</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="c1">-- does, the reference compilers report this file as a compile error (#71).</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">SCAN</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="s1">'azure://acmestorage.uploads/customer-files/'</span><span class="p">;</span>
 </code></pre></div>
 <h2 id="compiles-to">Compiles to<a class="headerlink" href="#compiles-to" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
