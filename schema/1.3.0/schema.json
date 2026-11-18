@@ -312,8 +312,19 @@
     "boundingBox": {
       "description": "A rectangular region to redact in an image or PDF page.",
       "type": "object",
-      "additionalProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/abstractFilterProperties"
+        }
+      ],
       "properties": {
+        "enabled": true,
+        "ignored": true,
+        "ignoredFiles": true,
+        "ignoredPatterns": true,
+        "windowSize": true,
+        "priority": true,
+        "id": true,
         "color": {
           "description": "Fill color for the redaction box. Accepts a named color (black, white, red, orange, yellow, green, blue, gray) or a 6-digit hex string matching ^#[0-9A-Fa-f]{6}$; an unrecognized or malformed value renders as black.",
           "type": "string"
@@ -339,44 +350,9 @@
           "type": "integer",
           "default": 1,
           "minimum": 1
-        },
-        "enabled": {
-          "description": "Whether this bounding box is active.",
-          "type": "boolean",
-          "default": true
-        },
-        "ignored": {
-          "description": "Specific values to ignore.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "uniqueItems": true
-        },
-        "ignoredFiles": {
-          "description": "Paths to files containing values to ignore.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "uniqueItems": true
-        },
-        "ignoredPatterns": {
-          "description": "Regex patterns whose matches are ignored.",
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/ignoredPattern"
-          }
-        },
-        "windowSize": {
-          "description": "Context window size (number of surrounding tokens to consider).",
-          "type": "integer"
-        },
-        "priority": {
-          "description": "Priority of this filter relative to others. Higher values take precedence.",
-          "type": "integer"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "identifiers": {
       "description": "Defines which types of sensitive information to detect and how to handle each type.",

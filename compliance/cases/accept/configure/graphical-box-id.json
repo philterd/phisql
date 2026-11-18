@@ -1,0 +1,22 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  },
+  "graphical": {
+    "boundingBoxes": [
+      {
+        "id": "signature",
+        "x": 10,
+        "y": 20,
+        "w": 100,
+        "h": 50
+      }
+    ]
+  }
+}

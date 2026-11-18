@@ -1,0 +1,2 @@
+REDACT SSN WITH MASK;
+CONFIGURE GRAPHICAL BOX (id = 'signature', x = 10, y = 20, w = 100, h = 50);
