@@ -13,7 +13,7 @@ As of v1.0.0 this project follows [Semantic Versioning](https://semver.org/): ad
 
 ### Changed
 
-- **A `parse-only` conformance case passes on exit 0 or exit 3** (#71). The Java and Python references now reject a script made only of discovery statements with a compile error instead of compiling it to `{"identifiers": {}}`, a policy Philter refuses to save. A `parse-only` case still fails on a parse error (exit 2), so the suite keeps checking that the discovery verbs parse without requiring an implementation to compile them. The discovery examples `15` to `19` in `spec/v1.0/examples/` now say they need the discovery compiler.
+- **A `parse-only` conformance case passes on exit 0 or exit 3** (#71). The Java, Python, and .NET references now reject a script made only of discovery statements with a compile error instead of compiling it to `{"identifiers": {}}`, a policy Philter refuses to save. A `parse-only` case still fails on a parse error (exit 2), so the suite keeps checking that the discovery verbs parse without requiring an implementation to compile them. The discovery examples `15` to `19` in `spec/v1.0/examples/` now say they need the discovery compiler.
 
 ### Notes
 

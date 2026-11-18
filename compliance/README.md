@@ -84,7 +84,7 @@ cases/
 `SCAN`, `SELECT ... FROM findings`). They are part of the v1.0 grammar but target
 a separate discovery-query schema rather than a Phileas policy, so the suite
 checks that they parse without pinning a compiled output. Until a discovery
-compiler exists, the Java and Python references reject a script made only of
+compiler exists, the Java, Python, and .NET references reject a script made only of
 discovery statements with a compile error (exit 3) rather than produce an empty
 policy (#71), so a parse-only case passes on exit 0 or exit 3 and fails on a
 parse error (exit 2).

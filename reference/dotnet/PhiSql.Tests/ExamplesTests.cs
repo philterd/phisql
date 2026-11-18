@@ -78,4 +78,12 @@ public class ExamplesTests
         Document doc = Parser.Parse(File.ReadAllText(path));
         Assert.Contains(doc.Statements, s => s is DiscoveryStmt);
     }
+
+    [Theory]
+    [MemberData(nameof(TestPaths.DiscoveryFiles), MemberType = typeof(TestPaths))]
+    public void DiscoveryExampleIsACompileError(string path)
+    {
+        var e = Assert.Throws<CompileException>(() => new Compiler().Compile(File.ReadAllText(path)));
+        Assert.StartsWith("The script has only discovery statements", e.Message);
+    }
 }

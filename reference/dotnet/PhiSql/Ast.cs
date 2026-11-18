@@ -207,4 +207,5 @@ public sealed class ConfigureStmt : IStatement
 public sealed class DiscoveryStmt : IStatement
 {
     public required string Verb { get; init; } // FIND_PII | DISCOVER_ENTITIES | SCAN | SELECT_FINDINGS
+    public int? Line { get; init; } // 1-based line the statement starts on
 }

@@ -68,9 +68,9 @@ EXIT_OK = 0
 EXIT_PARSE = 2
 EXIT_SEMANTIC = 3
 
-# A parse-only case passes on either code that shows the input parsed. The Java
-# and Python references reject a script made only of discovery statements with a
-# compile error (#71), since it has no redaction policy to produce.
+# A parse-only case passes on either code that shows the input parsed. The Java,
+# Python, and .NET references reject a script made only of discovery statements
+# with a compile error (#71), since it has no redaction policy to produce.
 PARSE_ONLY_EXITS = (EXIT_OK, EXIT_SEMANTIC)
 
 # The canonical redaction policy schema. Accept-case output must validate

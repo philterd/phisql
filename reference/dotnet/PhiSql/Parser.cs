@@ -347,18 +347,19 @@ public sealed class Parser
         // --- discoveryStmt ---------------------------------------------------
         //
         // Discovery statements parse (and are validated) by the generated parser
-        // but are not translated by the compiler; only the verb is retained.
+        // but are not translated by the compiler; only the verb and the line are
+        // retained.
 
         public override object? VisitFindPiiStmt(PhiSQLParser.FindPiiStmtContext ctx)
-            => new DiscoveryStmt { Verb = "FIND_PII" };
+            => new DiscoveryStmt { Verb = "FIND_PII", Line = ctx.Start.Line };
 
         public override object? VisitDiscoverEntitiesStmt(PhiSQLParser.DiscoverEntitiesStmtContext ctx)
-            => new DiscoveryStmt { Verb = "DISCOVER_ENTITIES" };
+            => new DiscoveryStmt { Verb = "DISCOVER_ENTITIES", Line = ctx.Start.Line };
 
         public override object? VisitScanStmt(PhiSQLParser.ScanStmtContext ctx)
-            => new DiscoveryStmt { Verb = "SCAN" };
+            => new DiscoveryStmt { Verb = "SCAN", Line = ctx.Start.Line };
 
         public override object? VisitSelectFindingsStmt(PhiSQLParser.SelectFindingsStmtContext ctx)
-            => new DiscoveryStmt { Verb = "SELECT_FINDINGS" };
+            => new DiscoveryStmt { Verb = "SELECT_FINDINGS", Line = ctx.Start.Line };
     }
 }
