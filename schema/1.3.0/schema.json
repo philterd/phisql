@@ -399,6 +399,10 @@
           "description": "Detects DEA registration numbers (two letters, or a letter and 9, followed by seven digits, validated by the check digit, format AB1234563).",
           "$ref": "#/$defs/filterDeaNumber"
         },
+        "deviceIdentifier": {
+          "description": "Detects medical device identifiers and serial numbers (HIPAA Safe Harbor identifier (M)): GS1 and HIBCC UDIs by their check digit or character, with no cue word, and serial numbers that follow a cue word such as 'S/N' within windowSize tokens. patterns replaces the default serial number pattern; the UDI checks always apply.",
+          "$ref": "#/$defs/filterDeviceIdentifier"
+        },
         "dictionaries": {
           "description": "Custom dictionary filters. Each entry defines a set of terms to detect.",
           "type": "array",
@@ -421,6 +425,10 @@
         "firstName": {
           "description": "Detects first names using dictionary matching.",
           "$ref": "#/$defs/filterFirstName"
+        },
+        "healthPlanMemberId": {
+          "description": "Detects health plan beneficiary and member IDs (HIPAA Safe Harbor identifier (I)) that follow a cue word such as 'Member ID' within windowSize tokens.",
+          "$ref": "#/$defs/filterHealthPlanMemberId"
         },
         "hospital": {
           "description": "Detects hospital names using dictionary matching.",
@@ -573,6 +581,47 @@
         "id": {
           "description": "Optional identifier for this filter, assigned by the policy author or generated, so the filter can be referenced in logs and diagnostics without printing content that may be PII. Opaque to redaction behavior: it never changes how a document is filtered. Must not itself contain PII.",
           "type": "string"
+        }
+      }
+    },
+    "cueWordFilterProperties": {
+      "description": "Options shared by filters whose values only count next to a cue word, such as a member ID after 'Member ID'. A value matches only when a cue word appears within windowSize tokens before it. Cue words match case-insensitively as whole words, a multi-word cue word as a phrase, and may be followed by punctuation such as ':' or '#'. The cue word itself is not part of the match.",
+      "type": "object",
+      "properties": {
+        "patterns": {
+          "description": "Java-compatible regular expressions for the value. When set, they replace the filter's default pattern instead of adding to it. Each pattern gets the same load-time check and match timeout as the identifier filter's pattern.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "cueWords": {
+          "description": "Cue words for this filter. They are added to the filter's default cue words unless defaultCueWords is false.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "defaultCueWords": {
+          "description": "Whether the filter's default cue words are used along with cueWords. false is only allowed with at least one entry in cueWords, since otherwise no value could follow a cue word.",
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "if": {
+        "properties": {
+          "defaultCueWords": { "const": false }
+        },
+        "required": ["defaultCueWords"]
+      },
+      "then": {
+        "required": ["cueWords"],
+        "properties": {
+          "cueWords": { "minItems": 1 }
         }
       }
     },
@@ -1237,6 +1286,34 @@
       },
       "additionalProperties": false
     },
+    "filterDeviceIdentifier": {
+      "description": "Detects medical device identifiers and serial numbers (HIPAA Safe Harbor identifier (M)): GS1 and HIBCC UDIs by their check digit or character, with no cue word, and serial numbers that follow a cue word such as 'S/N' within windowSize tokens. patterns replaces the default serial number pattern; the UDI checks always apply.",
+      "type": "object",
+      "allOf": [
+        { "$ref": "#/$defs/abstractFilterProperties" },
+        { "$ref": "#/$defs/cueWordFilterProperties" }
+      ],
+      "properties": {
+        "enabled": true,
+        "ignored": true,
+        "ignoredFiles": true,
+        "ignoredPatterns": true,
+        "windowSize": true,
+        "priority": true,
+        "id": true,
+        "patterns": true,
+        "cueWords": true,
+        "defaultCueWords": true,
+        "deviceIdentifierFilterStrategies": {
+          "description": "Strategies for handling detected device identifiers and serial numbers. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/baseFilterStrategy"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
     "filterDriversLicense": {
       "description": "Detects driver's license numbers.",
       "type": "object",
@@ -1359,6 +1436,34 @@
           "description": "Only match capitalized variants of first names.",
           "type": "boolean",
           "default": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "filterHealthPlanMemberId": {
+      "description": "Detects health plan beneficiary and member IDs (HIPAA Safe Harbor identifier (I)) that follow a cue word such as 'Member ID' within windowSize tokens.",
+      "type": "object",
+      "allOf": [
+        { "$ref": "#/$defs/abstractFilterProperties" },
+        { "$ref": "#/$defs/cueWordFilterProperties" }
+      ],
+      "properties": {
+        "enabled": true,
+        "ignored": true,
+        "ignoredFiles": true,
+        "ignoredPatterns": true,
+        "windowSize": true,
+        "priority": true,
+        "id": true,
+        "patterns": true,
+        "cueWords": true,
+        "defaultCueWords": true,
+        "healthPlanMemberIdFilterStrategies": {
+          "description": "Strategies for handling detected health plan member IDs. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/baseFilterStrategy"
+          }
         }
       },
       "additionalProperties": false

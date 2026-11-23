@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "deviceIdentifier": {
+      "deviceIdentifierFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  }
+}
