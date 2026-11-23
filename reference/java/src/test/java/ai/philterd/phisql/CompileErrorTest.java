@@ -16,8 +16,9 @@
 
 package ai.philterd.phisql;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -27,6 +28,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * a {@link Compiler.CompileException} with a useful message.
  */
 class CompileErrorTest {
+
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+
+    private static JsonNode json(CompileResult result) {
+        return MAPPER.readTree(result.toJsonString());
+    }
 
     @Test
     void rejectsUnknownEntityType() {
@@ -45,8 +52,8 @@ class CompileErrorTest {
         // it passes through to the Phileas JSON by its schema property name, so
         // any strategy field (salt, condition, truncateDirection, ...) is settable.
         Compiler compiler = new Compiler();
-        JsonNode strategy = compiler.compile("REDACT SSN WITH MASK(salt=TRUE);")
-                .policyJson().path("identifiers").path("ssn")
+        JsonNode strategy = json(compiler.compile("REDACT SSN WITH MASK(salt=TRUE);"))
+                .path("identifiers").path("ssn")
                 .path("ssnFilterStrategies").path(0);
         assertTrue(strategy.path("salt").asBoolean(),
                 "Uncatalogued strategy arg should pass through to JSON: " + strategy);
@@ -78,10 +85,10 @@ class CompileErrorTest {
     @Test
     void allowsDateOnlyStrategyOnDate() {
         // Positive control: a date-only strategy on DATE compiles.
-        JsonNode strategy = new Compiler().compile("REDACT DATE WITH SHIFT(days=30);")
-                .policyJson().path("identifiers").path("date")
+        JsonNode strategy = json(new Compiler().compile("REDACT DATE WITH SHIFT(days=30);"))
+                .path("identifiers").path("date")
                 .path("dateFilterStrategies").path(0);
-        assertTrue(strategy.path("strategy").asText().equals("SHIFT"),
+        assertTrue(strategy.path("strategy").asString().equals("SHIFT"),
                 "DATE + SHIFT should compile: " + strategy);
     }
 
@@ -101,10 +108,10 @@ class CompileErrorTest {
     @Test
     void allowsStaticReplaceWithValue() {
         // Positive control: STATIC_REPLACE with a value compiles.
-        JsonNode strategy = new Compiler().compile("REDACT SURNAME WITH STATIC_REPLACE(value='Customer');")
-                .policyJson().path("identifiers").path("surname")
+        JsonNode strategy = json(new Compiler().compile("REDACT SURNAME WITH STATIC_REPLACE(value='Customer');"))
+                .path("identifiers").path("surname")
                 .path("surnameFilterStrategies").path(0);
-        assertTrue(strategy.path("staticReplacement").asText().equals("Customer"),
+        assertTrue(strategy.path("staticReplacement").asString().equals("Customer"),
                 "STATIC_REPLACE with value should compile: " + strategy);
     }
 
@@ -126,10 +133,10 @@ class CompileErrorTest {
     @Test
     void allowsTwoDistinctGenerators() {
         // Positive control: distinct names both land in the generators block.
-        JsonNode generators = new Compiler().compile(
+        JsonNode generators = json(new Compiler().compile(
                 "DEFINE GENERATOR 'a' TYPE 'ollama' OPTIONS (prompt = '{{token}}', timeoutMs = 1000);\n"
-                + "DEFINE GENERATOR 'b' TYPE 'ollama' OPTIONS (prompt = '{{token}}', timeoutMs = 1000);")
-                .policyJson().path("generators");
+                + "DEFINE GENERATOR 'b' TYPE 'ollama' OPTIONS (prompt = '{{token}}', timeoutMs = 1000);"))
+                .path("generators");
         assertTrue(generators.has("a") && generators.has("b"),
                 "Both generators should be present: " + generators);
     }

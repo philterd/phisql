@@ -16,10 +16,10 @@
 
 package ai.philterd.phisql;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -67,7 +67,7 @@ class CliTest {
         assertEquals(Cli.EXIT_OK, r.code(), r.err());
         JsonNode json = MAPPER.readTree(r.out());
         assertEquals("MASK",
-                json.path("identifiers").path("ssn").path("ssnFilterStrategies").get(0).path("strategy").asText());
+                json.path("identifiers").path("ssn").path("ssnFilterStrategies").get(0).path("strategy").asString());
     }
 
     @Test

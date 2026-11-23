@@ -17,6 +17,7 @@
 package ai.philterd.phisql;
 
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
@@ -28,9 +29,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class ConditionTest {
 
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+
     private static String condition(CompileResult result) {
-        return result.policyJson().path("identifiers").path("ssn")
-                .path("ssnFilterStrategies").get(0).path("condition").asText();
+        return MAPPER.readTree(result.toJsonString()).path("identifiers").path("ssn")
+                .path("ssnFilterStrategies").get(0).path("condition").asString();
     }
 
     @Test

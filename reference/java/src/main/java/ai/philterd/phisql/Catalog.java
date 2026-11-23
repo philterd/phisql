@@ -16,8 +16,9 @@
 
 package ai.philterd.phisql;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.dataformat.yaml.YAMLMapper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -55,14 +56,13 @@ public final class Catalog {
     public static Catalog loadDefault() {
         try {
             return load(RESOURCE_PREFIX);
-        } catch (IOException e) {
+        } catch (IOException | JacksonException e) {
             throw new IllegalStateException("Failed to load PhiSQL catalog", e);
         }
     }
 
     private static Catalog load(String prefix) throws IOException {
-        YAMLMapper yaml = (YAMLMapper) new YAMLMapper().findAndRegisterModules();
-        ObjectMapper mapper = (ObjectMapper) yaml;
+        ObjectMapper mapper = YAMLMapper.builder().findAndAddModules().build();
 
         Map<String, EntityType> entities = new LinkedHashMap<>();
         try (InputStream in = open(prefix + "entity-types.yaml")) {

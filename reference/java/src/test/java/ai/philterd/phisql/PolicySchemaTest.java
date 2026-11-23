@@ -16,9 +16,9 @@
 
 package ai.philterd.phisql;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
@@ -49,12 +49,12 @@ class PolicySchemaTest {
         JsonNode root = new ObjectMapper().readTree(schema);
 
         // The schema's own version field must match what PolicySchema reports.
-        assertEquals(PolicySchema.getSupportedSchemaVersion(), root.path("version").asText(),
+        assertEquals(PolicySchema.getSupportedSchemaVersion(), root.path("version").asString(),
                 "schema 'version' must match the bundled/reported version");
 
         // The $id encodes the same version in its path.
-        assertTrue(root.path("$id").asText().contains("/" + PolicySchema.getSupportedSchemaVersion() + "/"),
-                "schema '$id' should embed the version: " + root.path("$id").asText());
+        assertTrue(root.path("$id").asString().contains("/" + PolicySchema.getSupportedSchemaVersion() + "/"),
+                "schema '$id' should embed the version: " + root.path("$id").asString());
     }
 
     @Test
@@ -67,7 +67,7 @@ class PolicySchemaTest {
         JsonNode enumNode = root.path("$defs").path("validatorName").path("enum");
         assertTrue(enumNode.isArray(), "validatorName should define an enum");
         java.util.Set<String> names = new java.util.HashSet<>();
-        enumNode.forEach(n -> names.add(n.asText()));
+        enumNode.forEach(n -> names.add(n.asString()));
         assertEquals(java.util.Set.of(
                         "luhn", "mod11", "mod97", "mod23-letter", "aba", "verhoeff", "damm",
                         "es-cif", "de-steuerid", "de-personalausweis", "bic-structural"),
