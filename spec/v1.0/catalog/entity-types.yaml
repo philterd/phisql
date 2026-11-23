@@ -78,6 +78,11 @@ entities:
     phileas_strategies_field: deaNumberFilterStrategies
     description: DEA registration numbers (two letters, or a letter and 9, followed by seven digits, validated by the check digit, format AB1234563).
 
+  - name: DEVICE_IDENTIFIER
+    phileas_field: deviceIdentifier
+    phileas_strategies_field: deviceIdentifierFilterStrategies
+    description: Medical device identifiers and serial numbers (GS1 and HIBCC UDIs validated by their check digit or character, and serial numbers that follow a cue word such as S/N).
+
   - name: DRIVERS_LICENSE
     phileas_field: driversLicense
     phileas_strategies_field: driversLicenseFilterStrategies
@@ -97,6 +102,11 @@ entities:
     phileas_field: firstName
     phileas_strategies_field: firstNameFilterStrategies
     description: Person first names (dictionary + fuzzy).
+
+  - name: HEALTH_PLAN_MEMBER_ID
+    phileas_field: healthPlanMemberId
+    phileas_strategies_field: healthPlanMemberIdFilterStrategies
+    description: Health plan beneficiary and member IDs that follow a cue word such as Member ID.
 
   - name: HOSPITAL
     phileas_field: hospital

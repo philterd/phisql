@@ -1,0 +1,30 @@
+{
+  "identifiers": {
+    "healthPlanMemberId": {
+      "healthPlanMemberIdFilterStrategies": [
+        {
+          "strategy": "LAST_4"
+        }
+      ],
+      "patterns": [
+        "[A-Z]{3}[0-9]{9}",
+        "[A-Z][0-9]{8}-[0-9]{2}"
+      ],
+      "cueWords": [
+        "Plan ID"
+      ],
+      "windowSize": 5
+    },
+    "deviceIdentifier": {
+      "deviceIdentifierFilterStrategies": [
+        {
+          "strategy": "REDACT"
+        }
+      ],
+      "cueWords": [
+        "Implant ID"
+      ],
+      "defaultCueWords": true
+    }
+  }
+}

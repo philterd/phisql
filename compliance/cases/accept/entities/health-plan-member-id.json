@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "healthPlanMemberId": {
+      "healthPlanMemberIdFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  }
+}
