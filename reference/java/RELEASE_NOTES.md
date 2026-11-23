@@ -9,6 +9,12 @@ The implementation version is independent of the PhiSQL policy schema version it
 ### Changed
 
 - **Discovery statements are reported instead of skipped silently** (#71). `FIND PII`, `DISCOVER ENTITIES`, `SCAN`, and `SELECT ... FROM findings` are still not compiled, but each one now adds a compile warning that names it and its line (`FIND PII at line 3 was skipped: discovery statements are not compiled to a redaction policy yet.`), which the CLI prints to stderr. A script made only of discovery statements, with or without a `POLICY` declaration, now raises `CompileException` (CLI exit 3) instead of compiling to `{"identifiers": {}}`, which Philter refuses to save.
+- **Jackson 3** (#77). The compiler and catalog use Jackson 3 (`tools.jackson.core:jackson-databind` and `tools.jackson.dataformat:jackson-dataformat-yaml` 3.3.0) instead of Jackson 2, so a project already on Jackson 3 no longer gets Jackson 2 through phisql. The only `com.fasterxml.jackson` artifact left is `jackson-annotations`, which Jackson 3 itself depends on. The YAML reader moves from SnakeYAML to SnakeYAML Engine. Compiled policy JSON and the `toJsonString()` formatting are unchanged.
+- **The `CompileResult` constructors are package-private** (#77). They took a Jackson `ObjectNode`, and only `Compiler` creates a `CompileResult`.
+
+### Removed
+
+- **`CompileResult.policyJson()`** (#77). It returned a Jackson `ObjectNode`, which tied callers to the Jackson version phisql uses. Call `toJsonString()` instead; it returns the same policy as a pretty-printed JSON string. No Jackson type is part of the public API now, so later Jackson upgrades do not affect callers.
 
 ## 1.6.0 - 2026-10-21
 

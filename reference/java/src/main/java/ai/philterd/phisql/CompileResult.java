@@ -16,10 +16,10 @@
 
 package ai.philterd.phisql;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectWriter;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.util.List;
 
@@ -35,7 +35,8 @@ import java.util.List;
  * a description elsewhere (such as a sibling {@code <name>.md} file). The compiler
  * does not write files; that is the caller's choice.
  *
- * <p>{@link #policyJson()} is the compiled Phileas JSON policy.
+ * <p>{@link #toJsonString()} is the compiled Phileas JSON policy. The JSON library
+ * the compiler uses to build it is an internal detail and is not part of this API.
  *
  * <p>{@link #warnings()} lists problems that do not stop compilation, such as a
  * {@code WHERE} clause that not every Phileas runtime can evaluate yet.
@@ -50,11 +51,11 @@ public final class CompileResult {
     private final ObjectNode policyJson;
     private final List<String> warnings;
 
-    public CompileResult(String policyName, String description, ObjectNode policyJson) {
+    CompileResult(String policyName, String description, ObjectNode policyJson) {
         this(policyName, description, policyJson, List.of());
     }
 
-    public CompileResult(String policyName, String description, ObjectNode policyJson, List<String> warnings) {
+    CompileResult(String policyName, String description, ObjectNode policyJson, List<String> warnings) {
         this.policyName = policyName;
         this.description = description;
         this.policyJson = policyJson;
@@ -69,10 +70,6 @@ public final class CompileResult {
         return description;
     }
 
-    public ObjectNode policyJson() {
-        return policyJson;
-    }
-
     /** Returns the compile warnings, in the order found; empty when there are none. */
     public List<String> warnings() {
         return warnings;
@@ -82,7 +79,7 @@ public final class CompileResult {
     public String toJsonString() {
         try {
             return PRETTY.writeValueAsString(policyJson);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new IllegalStateException("Failed to serialize compiled policy", e);
         }
     }

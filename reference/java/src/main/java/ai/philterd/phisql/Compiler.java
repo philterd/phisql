@@ -17,11 +17,11 @@
 package ai.philterd.phisql;
 
 import ai.philterd.phisql.grammar.PhiSQLParser;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -173,9 +173,7 @@ public final class Compiler {
 
         JsonNode identifiers = policyJson.get("identifiers");
         if (identifiers == null) return;
-        java.util.Iterator<java.util.Map.Entry<String, JsonNode>> fields = identifiers.fields();
-        while (fields.hasNext()) {
-            java.util.Map.Entry<String, JsonNode> entry = fields.next();
+        for (java.util.Map.Entry<String, JsonNode> entry : identifiers.properties()) {
             String key = entry.getKey();
             if (key.equals(dateField)) continue;
 
@@ -185,12 +183,10 @@ public final class Compiler {
 
             for (JsonNode filt : filters) {
                 if (!filt.isObject()) continue;
-                java.util.Iterator<java.util.Map.Entry<String, JsonNode>> ff = filt.fields();
-                while (ff.hasNext()) {
-                    java.util.Map.Entry<String, JsonNode> fe = ff.next();
+                for (java.util.Map.Entry<String, JsonNode> fe : filt.properties()) {
                     if (!(fe.getKey().endsWith("FilterStrategies") && fe.getValue().isArray())) continue;
                     for (JsonNode strat : fe.getValue()) {
-                        String enumVal = strat.path("strategy").asText(null);
+                        String enumVal = strat.path("strategy").asString(null);
                         if (enumVal != null && dateOnly.contains(enumVal)) {
                             String target = catalog.entityNameForField(key);
                             if (target == null) target = key;
@@ -293,10 +289,10 @@ public final class Compiler {
                     : MAPPER.getNodeFactory().numberNode(Integer.parseInt(text));
         }
         if (literal.STRING_LITERAL() != null) {
-            return MAPPER.getNodeFactory().textNode(unquoteString(literal.getText()));
+            return MAPPER.getNodeFactory().stringNode(unquoteString(literal.getText()));
         }
         // Bare identifier: treated as a string value.
-        return MAPPER.getNodeFactory().textNode(literal.getText());
+        return MAPPER.getNodeFactory().stringNode(literal.getText());
     }
 
     /** Sets key=value, merging into an existing object (so DETECT's
@@ -346,7 +342,7 @@ public final class Compiler {
                 : identifiers.putArray("identifiers");
         for (int i = 0; i < list.size(); i++) {
             ObjectNode candidate = (ObjectNode) list.get(i);
-            if (classification.equals(candidate.path("classification").asText())) {
+            if (classification.equals(candidate.path("classification").asString())) {
                 return candidate;
             }
         }
@@ -514,7 +510,7 @@ public final class Compiler {
         ObjectNode entry = null;
         for (int i = 0; i < identifierList.size(); i++) {
             ObjectNode candidate = (ObjectNode) identifierList.get(i);
-            if (classification.equals(candidate.path("classification").asText())) {
+            if (classification.equals(candidate.path("classification").asString())) {
                 entry = candidate;
                 break;
             }
@@ -736,7 +732,7 @@ public final class Compiler {
             ObjectNode entry = null;
             for (int i = 0; i < identifierList.size(); i++) {
                 ObjectNode candidate = (ObjectNode) identifierList.get(i);
-                if (classification.equals(candidate.path("classification").asText())) {
+                if (classification.equals(candidate.path("classification").asString())) {
                     entry = candidate;
                     break;
                 }

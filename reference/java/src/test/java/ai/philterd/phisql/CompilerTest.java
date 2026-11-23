@@ -16,10 +16,10 @@
 
 package ai.philterd.phisql;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -90,7 +90,7 @@ class CompilerTest {
                 String phisql = Files.readString(source);
                 CompileResult result = compiler.compile(phisql);
 
-                JsonNode actualJson = result.policyJson();
+                JsonNode actualJson = MAPPER.readTree(result.toJsonString());
                 JsonNode expectedJson = MAPPER.readTree(expected.toFile());
 
                 assertEquals(

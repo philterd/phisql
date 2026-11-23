@@ -17,6 +17,7 @@
 package ai.philterd.phisql;
 
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
@@ -58,8 +59,8 @@ class DiscoveryTest {
                         + "REDACT SSN WITH MASK WHERE CONFIDENCE < 0.2 OR CONFIDENCE > 0.9;\n"
                         + "\n"
                         + "DISCOVER ENTITIES IN 'gs://archive/';\n");
-        assertEquals("MASK", r.policyJson().path("identifiers").path("ssn")
-                .path("ssnFilterStrategies").get(0).path("strategy").asText());
+        assertEquals("MASK", new ObjectMapper().readTree(r.toJsonString()).path("identifiers").path("ssn")
+                .path("ssnFilterStrategies").get(0).path("strategy").asString());
         assertEquals(List.of(
                 "FIND PII at line 1 was skipped: " + Compiler.DISCOVERY_WARNING,
                 "DISCOVER ENTITIES at line 4 was skipped: " + Compiler.DISCOVERY_WARNING,
