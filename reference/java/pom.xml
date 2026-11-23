@@ -62,7 +62,8 @@
         <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <antlr.version>4.13.2</antlr.version>
-        <jackson.version>3.3.0</jackson.version>
+        <!-- The release Spring Boot manages. -->
+        <jackson.version>3.1.8</jackson.version>
         <junit.version>5.10.2</junit.version>
         <!--
             Version of the canonical redaction policy schema bundled into this
