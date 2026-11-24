@@ -143,6 +143,11 @@ entities:
     phileas_strategies_field: medicalConditionFilterStrategies
     description: Medical conditions and diagnoses.
 
+  - name: MEDICAL_RECORD_NUMBER
+    phileas_field: medicalRecordNumber
+    phileas_strategies_field: medicalRecordNumberFilterStrategies
+    description: Medical record numbers that follow a cue word such as MRN.
+
   - name: NPI
     phileas_field: npi
     phileas_strategies_field: npiFilterStrategies

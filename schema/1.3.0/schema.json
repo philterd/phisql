@@ -483,6 +483,10 @@
           "description": "Detects medical conditions using PhEye AI-based detection.",
           "$ref": "#/$defs/filterMedicalCondition"
         },
+        "medicalRecordNumber": {
+          "description": "Detects medical record numbers (HIPAA Safe Harbor identifier (H)) that follow a cue word such as 'MRN' within windowSize tokens.",
+          "$ref": "#/$defs/filterMedicalRecordNumber"
+        },
         "npi": {
           "description": "Detects National Provider Identifiers (ten digits beginning with 1 or 2, validated by the NPI check digit, format 1234567893).",
           "$ref": "#/$defs/filterNpi"
@@ -1761,6 +1765,34 @@
             "type": "number",
             "minimum": 0,
             "maximum": 1
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "filterMedicalRecordNumber": {
+      "description": "Detects medical record numbers (HIPAA Safe Harbor identifier (H)) that follow a cue word such as 'MRN' within windowSize tokens.",
+      "type": "object",
+      "allOf": [
+        { "$ref": "#/$defs/abstractFilterProperties" },
+        { "$ref": "#/$defs/cueWordFilterProperties" }
+      ],
+      "properties": {
+        "enabled": true,
+        "ignored": true,
+        "ignoredFiles": true,
+        "ignoredPatterns": true,
+        "windowSize": true,
+        "priority": true,
+        "id": true,
+        "patterns": true,
+        "cueWords": true,
+        "defaultCueWords": true,
+        "medicalRecordNumberFilterStrategies": {
+          "description": "Strategies for handling detected medical record numbers. Strategies are evaluated in order, and the first one with no condition or a satisfied condition is applied. If every strategy has a condition and none is satisfied, the value is left unchanged. If no strategies are given, the value is redacted with the default format. To transform every detected value, end with a strategy that has no condition.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/baseFilterStrategy"
           }
         }
       },
