@@ -140,4 +140,41 @@ class CompileErrorTest {
         assertTrue(generators.has("a") && generators.has("b"),
                 "Both generators should be present: " + generators);
     }
+
+    @Test
+    void compilesReviewSamplingRate() {
+        JsonNode review = json(new Compiler().compile(
+                "REDACT SSN WITH MASK;\nCONFIGURE review (samplingRate = 0.10);"))
+                .path("config").path("review");
+        assertTrue(review.path("samplingRate").asDouble() == 0.1,
+                "CONFIGURE REVIEW should write config.review: " + review);
+    }
+
+    @Test
+    void reviewIsNotReserved() {
+        // REVIEW is matched contextually, so it stays usable as an identifier.
+        JsonNode policy = json(new Compiler().compile("POLICY review;\nREDACT SSN WITH MASK;"));
+        assertTrue(policy.path("identifiers").has("ssn"), "POLICY review should compile: " + policy);
+    }
+
+    @Test
+    void rejectsSamplingRateOutOfRange() {
+        for (String rate : new String[] {"1.5", "-0.1", "'half'"}) {
+            Compiler.CompileException ex = assertThrows(
+                    Compiler.CompileException.class,
+                    () -> new Compiler().compile(
+                            "REDACT SSN WITH MASK;\nCONFIGURE REVIEW (samplingRate = " + rate + ");"));
+            assertTrue(ex.getMessage().contains("samplingRate must be a number from 0.0 to 1.0"),
+                    "Expected a samplingRate range error: " + ex.getMessage());
+        }
+    }
+
+    @Test
+    void rejectsUnknownConfigBlock() {
+        Compiler.CompileException ex = assertThrows(
+                Compiler.CompileException.class,
+                () -> new Compiler().compile("REDACT SSN WITH MASK;\nCONFIGURE AUDIT (samplingRate = 0.1);"));
+        assertTrue(ex.getMessage().contains("Unknown config block: AUDIT"),
+                "Expected an unknown-block error: " + ex.getMessage());
+    }
 }

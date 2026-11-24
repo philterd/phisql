@@ -226,6 +226,18 @@ public sealed class Compiler
             JsonObject config = GetOrCreateObject(policyJson, "config");
             ApplySettings(GetOrCreateObject(config, block), ctx.Settings!);
         }
+        else if (ctx.BlockName is not null)
+        {
+            // A block named by an identifier, so the name is not a reserved keyword.
+            if (!string.Equals(ctx.BlockName, "REVIEW", StringComparison.OrdinalIgnoreCase))
+                throw new CompileException("Unknown config block: " + ctx.BlockName);
+            JsonObject review = GetOrCreateObject(GetOrCreateObject(policyJson, "config"), "review");
+            ApplySettings(review, ctx.Settings!);
+            JsonNode? rate = review["samplingRate"];
+            if (rate is not null && !IsRate(rate))
+                throw new CompileException(
+                    "samplingRate must be a number from 0.0 to 1.0: " + rate.ToJsonString());
+        }
         else
         {
             // GRAPHICAL BOX ( ... ): append a fixed bounding box.
@@ -235,6 +247,16 @@ public sealed class Compiler
             boxes.Add(box);
             ApplySettings(box, ctx.Settings!);
         }
+    }
+
+    private static bool IsRate(JsonNode node)
+    {
+        if (node is not JsonValue value) return false;
+        double d;
+        if (value.TryGetValue(out double asDouble)) d = asDouble;
+        else if (value.TryGetValue(out long asLong)) d = asLong;
+        else return false;
+        return d >= 0 && d <= 1;
     }
 
     // --- OPTIONS / settings --------------------------------------------------

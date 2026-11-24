@@ -6,6 +6,10 @@ The implementation version is independent of the PhiSQL policy schema version it
 
 ## Unreleased
 
+### Added
+
+- **`CONFIGURE REVIEW (samplingRate = ...)`** (#84). Compiles to `config.review.samplingRate`, the probability that a filter request is selected for human spot review. `REVIEW` is matched as an identifier, so it is not a reserved keyword; any other identifier after `CONFIGURE` is a compile error (`Unknown config block`). A `samplingRate` outside `0.0` to `1.0`, or one that is not a number, is a compile error. Selection happens in the Phileas runtime, not here. See the repository [release notes](../../RELEASE_NOTES.md).
+
 ### Changed
 
 - **Discovery statements are reported instead of skipped silently** (#71). `FIND PII`, `DISCOVER ENTITIES`, `SCAN`, and `SELECT ... FROM findings` are still not compiled, but each one now adds a compile warning that names it and its line (`FIND PII at line 3 was skipped: discovery statements are not compiled to a redaction policy yet.`), which the CLI prints to stderr. A script made only of discovery statements, with or without a `POLICY` declaration, now raises `CompileException` (CLI exit 3) instead of compiling to `{"identifiers": {}}`, which Philter refuses to save.

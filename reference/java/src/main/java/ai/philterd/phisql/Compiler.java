@@ -209,8 +209,9 @@ public final class Compiler {
      * policy's top-level {@code crypto}/{@code fpe} blocks, with secrets stored
      * as {@code env:} references Phileas resolves at runtime (never inline). The
      * SPLITTING/PDF/POSTFILTERS/ANALYSIS forms write the corresponding
-     * {@code config} sub-block, and GRAPHICAL BOX appends a fixed bounding box
-     * to {@code graphical.boundingBoxes}.
+     * {@code config} sub-block, REVIEW writes {@code config.review}, and
+     * GRAPHICAL BOX appends a fixed bounding box to
+     * {@code graphical.boundingBoxes}.
      */
     private void compileConfigure(PhiSQLParser.ConfigureStmtContext ctx, ObjectNode policyJson) {
         if (ctx.cryptoKeyEnv != null) {
@@ -231,6 +232,18 @@ public final class Compiler {
             };
             ObjectNode config = getOrCreateObject(policyJson, "config");
             applySettings(getOrCreateObject(config, block), ctx.settingList());
+        } else if (ctx.blockName != null) {
+            // A block named by an identifier, so the name is not a reserved keyword.
+            if (!ctx.blockName.getText().equalsIgnoreCase("REVIEW")) {
+                throw new CompileException("Unknown config block: " + ctx.blockName.getText());
+            }
+            ObjectNode review = getOrCreateObject(getOrCreateObject(policyJson, "config"), "review");
+            applySettings(review, ctx.settingList());
+            JsonNode rate = review.get("samplingRate");
+            if (rate != null && (!rate.isNumber() || rate.asDouble() < 0 || rate.asDouble() > 1)) {
+                throw new CompileException(
+                        "samplingRate must be a number from 0.0 to 1.0: " + rate);
+            }
         } else {
             // GRAPHICAL BOX ( ... ): append a fixed bounding box.
             ObjectNode graphical = getOrCreateObject(policyJson, "graphical");

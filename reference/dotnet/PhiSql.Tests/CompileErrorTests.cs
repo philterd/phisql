@@ -94,4 +94,49 @@ public class CompileErrorTests
         Assert.NotNull(generators["a"]);
         Assert.NotNull(generators["b"]);
     }
+
+    [Fact]
+    public void CompilesReviewSamplingRate()
+    {
+        var review = new Compiler().Compile("REDACT SSN WITH MASK;\nCONFIGURE review (samplingRate = 0.10);")
+            .PolicyJson["config"]!["review"]!;
+        Assert.Equal(0.1, review["samplingRate"]!.GetValue<double>());
+    }
+
+    [Fact]
+    public void ReviewIsNotReserved()
+    {
+        // REVIEW is matched contextually, so it stays usable as an identifier.
+        var policy = new Compiler().Compile("POLICY review;\nREDACT SSN WITH MASK;").PolicyJson;
+        Assert.NotNull(policy["identifiers"]!["ssn"]);
+    }
+
+    [Theory]
+    [InlineData("1.5")]
+    [InlineData("-0.1")]
+    [InlineData("2")]
+    [InlineData("'half'")]
+    [InlineData("TRUE")]
+    public void RejectsSamplingRateOutOfRange(string rate)
+    {
+        var ex = Assert.Throws<CompileException>(() => new Compiler().Compile(
+            "REDACT SSN WITH MASK;\nCONFIGURE REVIEW (samplingRate = " + rate + ");"));
+        Assert.Contains("samplingRate must be a number from 0.0 to 1.0", ex.Message);
+    }
+
+    [Fact]
+    public void AcceptsIntegerSamplingRate()
+    {
+        var review = new Compiler().Compile("REDACT SSN WITH MASK;\nCONFIGURE REVIEW (samplingRate = 1);")
+            .PolicyJson["config"]!["review"]!;
+        Assert.Equal(1, review["samplingRate"]!.GetValue<long>());
+    }
+
+    [Fact]
+    public void RejectsUnknownConfigBlock()
+    {
+        var ex = Assert.Throws<CompileException>(() => new Compiler().Compile(
+            "REDACT SSN WITH MASK;\nCONFIGURE AUDIT (samplingRate = 0.1);"));
+        Assert.Contains("Unknown config block: AUDIT", ex.Message);
+    }
 }

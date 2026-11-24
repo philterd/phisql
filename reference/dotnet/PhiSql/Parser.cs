@@ -120,6 +120,11 @@ public sealed class Parser
                 stmt.GraphicalBox = true;
                 stmt.Settings = V<List<Setting>>(ctx.settingList());
             }
+            else if (ctx.blockName is not null) // identifier-named block, e.g. REVIEW
+            {
+                stmt.BlockName = ctx.blockName.Text;
+                stmt.Settings = V<List<Setting>>(ctx.settingList());
+            }
             else // config block: SPLITTING | PDF | POSTFILTERS | ANALYSIS
             {
                 stmt.ConfigBlock = ctx.configBlock.Text.ToUpperInvariant();

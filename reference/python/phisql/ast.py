@@ -202,6 +202,7 @@ class ConfigureStmt:
     fpe_key_env_raw: Optional[str] = None
     fpe_tweak_env_raw: Optional[str] = None
     config_block: Optional[str] = None     # SPLITTING/PDF/POSTFILTERS/ANALYSIS
+    block_name: Optional[str] = None       # identifier-named block (REVIEW), as written
     graphical_box: bool = False
     settings: Optional[List] = None        # list[Setting] for config/graphical forms
 

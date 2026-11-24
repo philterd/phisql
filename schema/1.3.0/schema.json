@@ -99,6 +99,10 @@
         "analysis": {
           "description": "Settings for analysis features.",
           "$ref": "#/$defs/analysis"
+        },
+        "review": {
+          "description": "Settings for selecting filter requests for human review.",
+          "$ref": "#/$defs/review"
         }
       }
     },
@@ -219,6 +223,20 @@
           "description": "Enable span disambiguation: the context-vector step that resolves which type an ambiguously-typed span is (for example SSN vs. phone number). Default true (current behavior). When false, this policy skips the disambiguation step. Subject to the global feature also being enabled: a policy can turn disambiguation off but not force it on when it is disabled globally.",
           "type": "boolean",
           "default": true
+        }
+      }
+    },
+    "review": {
+      "description": "Settings for selecting filter requests for human review.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "samplingRate": {
+          "description": "Probability, from 0.0 to 1.0, that a filter request is selected for human spot review, independent of what was detected. Selection is per request and stateless: a request is selected when a value drawn uniformly from [0, 1) is below the rate, drawn once per request even when the input is split into chunks. No count is kept per policy or shared between nodes, so the achieved rate converges on the configured one but is not exact for small volumes. Selection never changes the redacted output; the runtime reports it with the filter result (reviewSampled). Default 0.0 (no sampling).",
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0
         }
       }
     },

@@ -109,3 +109,30 @@ def test_allows_two_distinct_generators():
         .policy_json()["generators"]
     )
     assert set(generators) == {"a", "b"}
+
+
+def test_compiles_review_sampling_rate():
+    review = (
+        Compiler().compile("REDACT SSN WITH MASK;\nCONFIGURE review (samplingRate = 0.10);")
+        .policy_json()["config"]["review"]
+    )
+    assert review == {"samplingRate": 0.1}
+
+
+def test_review_is_not_reserved():
+    # REVIEW is matched contextually, so it stays usable as an identifier.
+    policy = Compiler().compile("POLICY review;\nREDACT SSN WITH MASK;").policy_json()
+    assert "ssn" in policy["identifiers"]
+
+
+@pytest.mark.parametrize("rate", ["1.5", "-0.1", "'half'", "TRUE"])
+def test_rejects_sampling_rate_out_of_range(rate):
+    with pytest.raises(CompileException) as exc:
+        Compiler().compile(f"REDACT SSN WITH MASK;\nCONFIGURE REVIEW (samplingRate = {rate});")
+    assert "samplingRate must be a number from 0.0 to 1.0" in str(exc.value)
+
+
+def test_rejects_unknown_config_block():
+    with pytest.raises(CompileException) as exc:
+        Compiler().compile("REDACT SSN WITH MASK;\nCONFIGURE AUDIT (samplingRate = 0.1);")
+    assert "Unknown config block: AUDIT" in str(exc.value)

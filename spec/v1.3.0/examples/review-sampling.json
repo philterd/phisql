@@ -1,0 +1,30 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [
+        {
+          "strategy": "LAST_4"
+        }
+      ]
+    },
+    "creditCard": {
+      "creditCardFilterStrategies": [
+        {
+          "strategy": "LAST_4"
+        }
+      ]
+    },
+    "emailAddress": {
+      "emailAddressFilterStrategies": [
+        {
+          "strategy": "REDACT"
+        }
+      ]
+    }
+  },
+  "config": {
+    "review": {
+      "samplingRate": 0.25
+    }
+  }
+}

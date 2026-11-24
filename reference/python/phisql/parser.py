@@ -91,6 +91,9 @@ class _AstBuilder(PhiSQLVisitor):
         elif ctx.GRAPHICAL() is not None:
             stmt.graphical_box = True
             stmt.settings = self.visit(ctx.settingList())
+        elif ctx.blockName is not None:  # identifier-named block, e.g. REVIEW
+            stmt.block_name = ctx.blockName.text
+            stmt.settings = self.visit(ctx.settingList())
         else:  # config block: SPLITTING | PDF | POSTFILTERS | ANALYSIS
             stmt.config_block = ctx.configBlock.text.upper()
             stmt.settings = self.visit(ctx.settingList())

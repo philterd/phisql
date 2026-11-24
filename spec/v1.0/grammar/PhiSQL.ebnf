@@ -40,7 +40,12 @@ configure stmt   = "CONFIGURE"
                          , "TWEAK" , "FROM" , "ENV" , string literal
                    | ( "SPLITTING" | "PDF" | "POSTFILTERS" | "ANALYSIS" )
                          , "(" , setting list , ")"
-                   | "GRAPHICAL" , "BOX" , "(" , setting list , ")" ) ;
+                   | "GRAPHICAL" , "BOX" , "(" , setting list , ")"
+                   | id , "(" , setting list , ")" ) ;
+
+(* The last configure form names its block with an identifier rather than a
+   keyword, so the name is not reserved. The only such block is REVIEW
+   (case-insensitive); any other name is a compile error. *)
 
 setting list     = setting , { "," , setting } ;
 

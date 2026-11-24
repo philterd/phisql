@@ -57,3 +57,27 @@ description_clause:
     description elsewhere (such as a sibling <basename>.md file) read. Before
     schema 1.3.0 the schema had no description field and CompileResult was the
     only destination.
+
+review_sampling:
+  syntax: CONFIGURE REVIEW ( samplingRate = <number> )
+  destination: config.review.samplingRate
+  description: |
+    The probability, from 0.0 to 1.0, that a filter request is selected for
+    human spot review, independent of what was detected. A span-level review
+    flag cannot catch a value that was never detected; a random sample of
+    whole requests can. The default, 0.0, selects nothing.
+  selection: |
+    Per request and stateless: a request is selected when a value drawn
+    uniformly from [0, 1) is below the rate. The draw happens once per
+    request, even when the input is split into chunks. No count is kept per
+    policy or shared between nodes, so the achieved rate converges on the
+    configured one but is not exact for small volumes.
+  output: |
+    Selection never changes the redacted output. The runtime reports it on
+    the filter result (reviewSampled), so filter and explain results both
+    carry it. How a server surfaces it to callers is outside this spec.
+  keyword: |
+    REVIEW is matched as an identifier, not a reserved keyword, so it stays
+    usable as a policy name or setting key. Any other identifier in that
+    position is a compile error.
+  on_out_of_range: compile_error

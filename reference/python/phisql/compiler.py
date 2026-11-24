@@ -212,6 +212,18 @@ class Compiler:
             block = _CONFIG_BLOCKS[ctx.config_block]
             config = _get_or_create_object(policy_json, "config")
             self._apply_settings(_get_or_create_object(config, block), ctx.settings)
+        elif ctx.block_name is not None:
+            # A block named by an identifier, so the name is not a reserved keyword.
+            if ctx.block_name.upper() != "REVIEW":
+                raise CompileException(f"Unknown config block: {ctx.block_name}")
+            review = _get_or_create_object(_get_or_create_object(policy_json, "config"), "review")
+            self._apply_settings(review, ctx.settings)
+            rate = review.get("samplingRate")
+            if rate is not None and (isinstance(rate, bool) or not isinstance(rate, (int, float))
+                                     or not 0 <= rate <= 1):
+                raise CompileException(
+                    f"samplingRate must be a number from 0.0 to 1.0: {json.dumps(rate)}"
+                )
         else:
             # GRAPHICAL BOX ( ... ): append a fixed bounding box.
             graphical = _get_or_create_object(policy_json, "graphical")
