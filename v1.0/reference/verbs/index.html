@@ -2438,6 +2438,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/review-sampling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    review-sampling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -2640,16 +2668,17 @@
 </code></pre></div>
 <p><strong>Examples:</strong> <a href="../../examples/01-ssn-only/">01-ssn-only</a>, <a href="../../examples/02-hipaa-safe-harbor/">02-hipaa-safe-harbor</a>, <a href="../../examples/03-pci-dss-scope-reduction/">03-pci-dss-scope-reduction</a>, <a href="../../examples/04-frbp-9037/">04-frbp-9037</a>, <a href="../../examples/05-support-tickets-with-allowlist/">05-support-tickets-with-allowlist</a>, <a href="../../examples/06-multi-strategy-on-one-entity/">06-multi-strategy-on-one-entity</a>, <a href="../../examples/07-format-preserving-encryption/">07-format-preserving-encryption</a>, <a href="../../examples/08-multiple-confidence-thresholds/">08-multiple-confidence-thresholds</a>, <a href="../../examples/09-ignore-pattern-policy-wide/">09-ignore-pattern-policy-wide</a>, <a href="../../examples/10-mask-with-format-argument/">10-mask-with-format-argument</a>, <a href="../../examples/11-policy-wide-ignore-terms/">11-policy-wide-ignore-terms</a>, <a href="../../examples/12-date-shift/">12-date-shift</a></p>
 <h2 id="configure">CONFIGURE<a class="headerlink" href="#configure" title="Permanent link">&para;</a></h2>
-<p>Sets document-wide configuration: encryption keys (read from environment variables), and splitting, PDF, post-filter, analysis, and graphical-redaction settings.</p>
+<p>Sets document-wide configuration: encryption keys (read from environment variables), and splitting, PDF, post-filter, analysis, review sampling, and graphical-redaction settings.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">configure stmt   </span><span class="o">=</span> <span class="s2">"CONFIGURE"</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>                 <span class="p">,</span> <span class="p">(</span> <span class="s2">"CRYPTO"</span> <span class="p">,</span> <span class="s2">"KEY"</span> <span class="p">,</span> <span class="s2">"FROM"</span> <span class="p">,</span> <span class="s2">"ENV"</span> <span class="p">,</span> <span class="k">string literal</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>                   <span class="p">|</span> <span class="s2">"FPE"</span> <span class="p">,</span> <span class="s2">"KEY"</span> <span class="p">,</span> <span class="s2">"FROM"</span> <span class="p">,</span> <span class="s2">"ENV"</span> <span class="p">,</span> <span class="k">string literal</span>
 <a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>                         <span class="p">,</span> <span class="s2">"TWEAK"</span> <span class="p">,</span> <span class="s2">"FROM"</span> <span class="p">,</span> <span class="s2">"ENV"</span> <span class="p">,</span> <span class="k">string literal</span>
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>                   <span class="p">|</span> <span class="p">(</span> <span class="s2">"SPLITTING"</span> <span class="p">|</span> <span class="s2">"PDF"</span> <span class="p">|</span> <span class="s2">"POSTFILTERS"</span> <span class="p">|</span> <span class="s2">"ANALYSIS"</span> <span class="p">)</span>
 <a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>                         <span class="p">,</span> <span class="s2">"("</span> <span class="p">,</span> <span class="k">setting list </span><span class="p">,</span> <span class="s2">")"</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>                   <span class="p">|</span> <span class="s2">"GRAPHICAL"</span> <span class="p">,</span> <span class="s2">"BOX"</span> <span class="p">,</span> <span class="s2">"("</span> <span class="p">,</span> <span class="k">setting list </span><span class="p">,</span> <span class="s2">")"</span> <span class="p">)</span> <span class="p">;</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>                   <span class="p">|</span> <span class="s2">"GRAPHICAL"</span> <span class="p">,</span> <span class="s2">"BOX"</span> <span class="p">,</span> <span class="s2">"("</span> <span class="p">,</span> <span class="k">setting list </span><span class="p">,</span> <span class="s2">")"</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>                   <span class="p">|</span> <span class="k">id </span><span class="p">,</span> <span class="s2">"("</span> <span class="p">,</span> <span class="k">setting list </span><span class="p">,</span> <span class="s2">")"</span> <span class="p">)</span> <span class="p">;</span>
 </code></pre></div>
-<p><strong>Examples:</strong> <a href="../../examples/20-crypto-encryption/">20-crypto-encryption</a>, <a href="../../examples/24-config-settings/">24-config-settings</a>, <a href="../../examples/25-graphical-boundingbox/">25-graphical-boundingbox</a>, <a href="../../examples/pdf-strategy-color/">pdf-strategy-color</a>, <a href="../../examples/span-disambiguation/">span-disambiguation</a>, <a href="../../examples/splitting-overlap/">splitting-overlap</a>, <a href="../../examples/graphical-box-id/">graphical-box-id</a></p>
+<p><strong>Examples:</strong> <a href="../../examples/20-crypto-encryption/">20-crypto-encryption</a>, <a href="../../examples/24-config-settings/">24-config-settings</a>, <a href="../../examples/25-graphical-boundingbox/">25-graphical-boundingbox</a>, <a href="../../examples/pdf-strategy-color/">pdf-strategy-color</a>, <a href="../../examples/span-disambiguation/">span-disambiguation</a>, <a href="../../examples/splitting-overlap/">splitting-overlap</a>, <a href="../../examples/graphical-box-id/">graphical-box-id</a>, <a href="../../examples/review-sampling/">review-sampling</a></p>
 <h2 id="redact">REDACT<a class="headerlink" href="#redact" title="Permanent link">&para;</a></h2>
 <p>Applies a strategy to one or more entity types, optionally gated by a <code>WHERE</code> predicate and tuned with per-filter <code>OPTIONS</code>.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">redact stmt      </span><span class="o">=</span> <span class="s2">"REDACT"</span> <span class="p">,</span> <span class="k">entity list</span>
