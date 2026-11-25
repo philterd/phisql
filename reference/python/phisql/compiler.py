@@ -230,6 +230,12 @@ class Compiler:
                 email = _get_or_create_object(_get_or_create_object(policy_json, "config"), "email")
                 self._apply_settings(email, ctx.settings)
                 _validate_email(email)
+            elif name in ("WORD", "EXCEL"):
+                block = name.lower()
+                settings = _get_or_create_object(_get_or_create_object(policy_json, "config"), block)
+                self._apply_settings(settings, ctx.settings)
+                _validate_document_settings(block, settings,
+                                            _WORD_SETTINGS if name == "WORD" else _EXCEL_SETTINGS)
             else:
                 raise CompileException(f"Unknown config block: {ctx.block_name}")
         else:
@@ -732,3 +738,41 @@ def _validate_email(email: dict) -> None:
                 raise CompileException(f"inlineImages must be one of keep, remove: {json.dumps(value)}")
         else:
             raise CompileException(f"Unknown email setting: {key}")
+
+
+# config.word and config.excel settings and their allowed values; an empty tuple
+# marks a boolean setting.
+_WORD_SETTINGS = {
+    "headersFooters": ("redact", "keep"),
+    "comments": ("remove", "redact"),
+    "trackedChanges": ("accept", "redact"),
+    "hiddenText": ("remove", "redact"),
+    "charts": ("redact", "keep"),
+    "uninspectableObjects": ("remove", "keep"),
+    "removeDocumentProperties": (),
+    "highlight": (),
+}
+
+_EXCEL_SETTINGS = {
+    "printHeadersFooters": ("redact", "keep"),
+    "charts": ("redact", "keep"),
+    "formulaCaches": ("redact", "keep"),
+    "pivotCaches": ("redact", "keep"),
+    "uninspectableObjects": ("remove", "keep"),
+    "removeDocumentProperties": (),
+}
+
+
+def _validate_document_settings(block: str, settings: dict, allowed: dict) -> None:
+    """Checks config.word or config.excel, as _validate_email does for email."""
+    for key, value in settings.items():
+        if key not in allowed:
+            raise CompileException(f"Unknown {block} setting: {key}")
+        values = allowed[key]
+        if not values:
+            if not isinstance(value, bool):
+                raise CompileException(f"{block} setting {key} must be TRUE or FALSE: {json.dumps(value)}")
+        elif not isinstance(value, str) or value not in values:
+            raise CompileException(
+                f"{block} setting {key} must be one of {', '.join(values)}: {json.dumps(value)}"
+            )

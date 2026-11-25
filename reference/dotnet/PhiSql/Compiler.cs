@@ -247,6 +247,13 @@ public sealed class Compiler
                 ApplySettings(email, ctx.Settings!);
                 ValidateEmail(email);
             }
+            else if (name is "WORD" or "EXCEL")
+            {
+                string block = name.ToLowerInvariant();
+                JsonObject settings = GetOrCreateObject(GetOrCreateObject(policyJson, "config"), block);
+                ApplySettings(settings, ctx.Settings!);
+                ValidateDocumentSettings(block, settings, name == "WORD" ? WordSettings : ExcelSettings);
+            }
             else
             {
                 throw new CompileException("Unknown config block: " + ctx.BlockName);
@@ -284,6 +291,51 @@ public sealed class Compiler
                     break;
                 default:
                     throw new CompileException("Unknown leftoverCheck setting: " + key);
+            }
+        }
+    }
+
+    // config.word and config.excel settings and their allowed values; an empty
+    // array marks a boolean setting.
+    private static readonly Dictionary<string, string[]> WordSettings = new()
+    {
+        ["headersFooters"] = new[] { "redact", "keep" },
+        ["comments"] = new[] { "remove", "redact" },
+        ["trackedChanges"] = new[] { "accept", "redact" },
+        ["hiddenText"] = new[] { "remove", "redact" },
+        ["charts"] = new[] { "redact", "keep" },
+        ["uninspectableObjects"] = new[] { "remove", "keep" },
+        ["removeDocumentProperties"] = Array.Empty<string>(),
+        ["highlight"] = Array.Empty<string>(),
+    };
+
+    private static readonly Dictionary<string, string[]> ExcelSettings = new()
+    {
+        ["printHeadersFooters"] = new[] { "redact", "keep" },
+        ["charts"] = new[] { "redact", "keep" },
+        ["formulaCaches"] = new[] { "redact", "keep" },
+        ["pivotCaches"] = new[] { "redact", "keep" },
+        ["uninspectableObjects"] = new[] { "remove", "keep" },
+        ["removeDocumentProperties"] = Array.Empty<string>(),
+    };
+
+    // Checks config.word or config.excel, as ValidateEmail does for email.
+    private static void ValidateDocumentSettings(
+        string block, JsonObject settings, Dictionary<string, string[]> allowed)
+    {
+        foreach (var (key, value) in settings)
+        {
+            if (!allowed.TryGetValue(key, out string[]? values))
+                throw new CompileException("Unknown " + block + " setting: " + key);
+            if (values.Length == 0)
+            {
+                if (value is not JsonValue v || v.GetValueKind() is not (JsonValueKind.True or JsonValueKind.False))
+                    throw new CompileException(block + " setting " + key + " must be TRUE or FALSE: " + Json(value));
+            }
+            else if (!IsOneOf(value, values))
+            {
+                throw new CompileException(
+                    block + " setting " + key + " must be one of " + string.Join(", ", values) + ": " + Json(value));
             }
         }
     }

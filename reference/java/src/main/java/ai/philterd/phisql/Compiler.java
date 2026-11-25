@@ -28,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -209,8 +210,9 @@ public final class Compiler {
      * policy's top-level {@code crypto}/{@code fpe} blocks, with secrets stored
      * as {@code env:} references Phileas resolves at runtime (never inline). The
      * SPLITTING/PDF/POSTFILTERS/ANALYSIS forms write the corresponding
-     * {@code config} sub-block, REVIEW and EMAIL write {@code config.review}
-     * and {@code config.email}, and
+     * {@code config} sub-block, REVIEW, EMAIL, WORD, and EXCEL write
+     * {@code config.review}, {@code config.email}, {@code config.word}, and
+     * {@code config.excel}, and
      * GRAPHICAL BOX appends a fixed bounding box to
      * {@code graphical.boundingBoxes}.
      */
@@ -252,6 +254,12 @@ public final class Compiler {
                 ObjectNode email = getOrCreateObject(getOrCreateObject(policyJson, "config"), "email");
                 applySettings(email, ctx.settingList());
                 validateEmail(email);
+            } else if (name.equals("WORD") || name.equals("EXCEL")) {
+                String block = name.toLowerCase(Locale.ROOT);
+                ObjectNode settings = getOrCreateObject(getOrCreateObject(policyJson, "config"), block);
+                applySettings(settings, ctx.settingList());
+                validateDocumentSettings(block, settings,
+                        name.equals("WORD") ? WORD_SETTINGS : EXCEL_SETTINGS);
             } else {
                 throw new CompileException("Unknown config block: " + ctx.blockName.getText());
             }
@@ -286,6 +294,49 @@ public final class Compiler {
                     }
                 }
                 default -> throw new CompileException("Unknown leftoverCheck setting: " + key);
+            }
+        }
+    }
+
+    /** Marks a boolean setting in {@link #WORD_SETTINGS} and {@link #EXCEL_SETTINGS}. */
+    private static final List<String> BOOLEAN = List.of();
+
+    /** {@code config.word} settings and their allowed values, or {@link #BOOLEAN}. */
+    private static final Map<String, List<String>> WORD_SETTINGS = Map.of(
+            "headersFooters", List.of("redact", "keep"),
+            "comments", List.of("remove", "redact"),
+            "trackedChanges", List.of("accept", "redact"),
+            "hiddenText", List.of("remove", "redact"),
+            "charts", List.of("redact", "keep"),
+            "uninspectableObjects", List.of("remove", "keep"),
+            "removeDocumentProperties", BOOLEAN,
+            "highlight", BOOLEAN);
+
+    /** {@code config.excel} settings and their allowed values, or {@link #BOOLEAN}. */
+    private static final Map<String, List<String>> EXCEL_SETTINGS = Map.of(
+            "printHeadersFooters", List.of("redact", "keep"),
+            "charts", List.of("redact", "keep"),
+            "formulaCaches", List.of("redact", "keep"),
+            "pivotCaches", List.of("redact", "keep"),
+            "uninspectableObjects", List.of("remove", "keep"),
+            "removeDocumentProperties", BOOLEAN);
+
+    /** Checks {@code config.word} or {@code config.excel}, as {@link #validateEmail} does for email. */
+    private static void validateDocumentSettings(String block, ObjectNode settings,
+                                                 Map<String, List<String>> allowed) {
+        for (String key : settings.propertyNames()) {
+            JsonNode value = settings.get(key);
+            List<String> values = allowed.get(key);
+            if (values == null) {
+                throw new CompileException("Unknown " + block + " setting: " + key);
+            }
+            if (values.isEmpty()) {
+                if (!value.isBoolean()) {
+                    throw new CompileException(block + " setting " + key + " must be TRUE or FALSE: " + value);
+                }
+            } else if (!value.isString() || !values.contains(value.asString())) {
+                throw new CompileException(block + " setting " + key + " must be one of "
+                        + String.join(", ", values) + ": " + value);
             }
         }
     }

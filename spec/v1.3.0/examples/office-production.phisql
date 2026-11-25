@@ -1,0 +1,27 @@
+-- Producing Word and Excel files in e-discovery, where reviewers' comments and
+-- tracked changes are part of the record and must stay visible. Comments, revisions
+-- (including deleted text), and hidden text are kept and redacted rather than
+-- removed, and each replacement is highlighted for the reviewing attorney. In
+-- workbooks, formula and pivot caches are redacted so a cached copy of a value does
+-- not survive. Author names and authorship properties are always cleared, whatever
+-- the policy says. WORD and EXCEL are matched contextually and are not reserved
+-- keywords.
+-- Added to schema 1.3.0 in place (additive). Compiles to office-production.json.
+
+POLICY office_production;
+
+REDACT SSN, CREDIT_CARD WITH LAST_4;
+REDACT EMAIL_ADDRESS, PHONE_NUMBER WITH REDACT;
+
+CONFIGURE WORD (
+  comments = 'redact',
+  trackedChanges = 'redact',
+  hiddenText = 'redact',
+  highlight = TRUE
+);
+
+CONFIGURE EXCEL (
+  formulaCaches = 'redact',
+  pivotCaches = 'redact',
+  removeDocumentProperties = TRUE
+);

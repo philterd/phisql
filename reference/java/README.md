@@ -14,6 +14,48 @@ The parser is generated from [`spec/v1.0/grammar/PhiSQL.g4`](../../spec/v1.0/gra
 </dependency>
 ```
 
+### Snapshots
+
+Every push to `main` publishes a `-SNAPSHOT` build to the Maven Central snapshot repository. Maven does not resolve snapshots from Central by default, so add the repository to your `pom.xml`:
+
+```xml
+<repositories>
+    <repository>
+        <id>central-snapshots</id>
+        <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+        <releases><enabled>false</enabled></releases>
+        <snapshots><enabled>true</enabled></snapshots>
+    </repository>
+</repositories>
+```
+
+Then depend on the development version in [`pom.xml`](pom.xml) (currently `1.7.0-SNAPSHOT`):
+
+```xml
+<dependency>
+    <groupId>ai.philterd</groupId>
+    <artifactId>phisql</artifactId>
+    <version>1.7.0-SNAPSHOT</version>
+</dependency>
+```
+
+With Gradle:
+
+```kotlin
+repositories {
+    mavenCentral()
+    maven("https://central.sonatype.com/repository/maven-snapshots/") {
+        mavenContent { snapshotsOnly() }
+    }
+}
+
+dependencies {
+    implementation("ai.philterd:phisql:1.7.0-SNAPSHOT")
+}
+```
+
+Snapshots are mutable and are pruned periodically. Use a release version for any build you need to reproduce.
+
 ## Build
 
 ```sh

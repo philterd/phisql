@@ -1,0 +1,3 @@
+REDACT SSN WITH MASK;
+CONFIGURE WORD (comments = 'redact', trackedChanges = 'redact', highlight = TRUE);
+CONFIGURE EXCEL (formulaCaches = 'keep');

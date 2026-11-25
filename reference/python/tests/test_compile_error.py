@@ -202,3 +202,46 @@ def test_rejects_invalid_leftover_check(settings, message):
     with pytest.raises(CompileException) as exc:
         Compiler().compile(f"REDACT SSN WITH MASK;\nCONFIGURE REVIEW ({settings});")
     assert message in str(exc.value)
+
+
+def test_compiles_word_and_excel_config():
+    config = (
+        Compiler().compile(
+            "REDACT SSN WITH MASK;\nCONFIGURE word (comments = 'redact', trackedChanges = 'redact',"
+            " removeDocumentProperties = FALSE, highlight = TRUE);\n"
+            "CONFIGURE Excel (formulaCaches = 'keep', uninspectableObjects = 'keep');"
+        )
+        .policy_json()["config"]
+    )
+    assert config["word"] == {
+        "comments": "redact",
+        "trackedChanges": "redact",
+        "removeDocumentProperties": False,
+        "highlight": True,
+    }
+    assert config["excel"] == {"formulaCaches": "keep", "uninspectableObjects": "keep"}
+
+
+@pytest.mark.parametrize("name", ["word", "excel"])
+def test_word_and_excel_are_not_reserved(name):
+    policy = Compiler().compile(f"POLICY {name};\nREDACT SSN WITH MASK;").policy_json()
+    assert "ssn" in policy["identifiers"]
+
+
+@pytest.mark.parametrize(
+    "block,settings,message",
+    [
+        ("WORD", "comment = 'remove'", "Unknown word setting: comment"),
+        ("WORD", "comments = 'strip'", "word setting comments must be one of remove, redact"),
+        ("WORD", "trackedChanges = 'reject'", "word setting trackedChanges must be one of accept, redact"),
+        ("WORD", "headersFooters = TRUE", "word setting headersFooters must be one of redact, keep"),
+        ("WORD", "highlight = 'yes'", "word setting highlight must be TRUE or FALSE"),
+        ("EXCEL", "comments = 'remove'", "Unknown excel setting: comments"),
+        ("EXCEL", "formulaCaches = 'remove'", "excel setting formulaCaches must be one of redact, keep"),
+        ("EXCEL", "removeDocumentProperties = 1", "excel setting removeDocumentProperties must be TRUE or FALSE"),
+    ],
+)
+def test_rejects_invalid_word_and_excel_config(block, settings, message):
+    with pytest.raises(CompileException) as exc:
+        Compiler().compile(f"REDACT SSN WITH MASK;\nCONFIGURE {block} ({settings});")
+    assert message in str(exc.value)

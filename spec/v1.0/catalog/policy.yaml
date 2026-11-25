@@ -78,8 +78,9 @@ review_sampling:
     carry it. How a server surfaces it to callers is outside this spec.
   keyword: |
     REVIEW is matched as an identifier, not a reserved keyword, so it stays
-    usable as a policy name or setting key. REVIEW and EMAIL are the only
-    identifiers accepted in that position; any other is a compile error.
+    usable as a policy name or setting key. REVIEW, EMAIL, WORD, and EXCEL
+    are the only identifiers accepted in that position; any other is a
+    compile error.
   on_out_of_range: compile_error
 
 leftover_check:
@@ -266,3 +267,171 @@ email:
     - An unknown key in the block or in headers.
     - A header setting that is not TRUE or FALSE.
     - An attachments or inlineImages value outside its list.
+
+word:
+  syntax: |
+    CONFIGURE WORD (
+      headersFooters = 'redact' | 'keep',
+      comments = 'remove' | 'redact',
+      trackedChanges = 'accept' | 'redact',
+      hiddenText = 'remove' | 'redact',
+      charts = 'redact' | 'keep',
+      uninspectableObjects = 'remove' | 'keep',
+      removeDocumentProperties = <bool>,
+      highlight = <bool>
+    )
+  destination: config.word
+  applies_to: [.docx, .rtf]
+  description: |
+    How the parts of a Word (.docx) or Rich Text (.rtf) document outside its
+    body text are handled. Every setting is optional, and the defaults are
+    Philter Desktop's, which remove rather than redact wherever both are
+    possible: a removed comment or an accepted deletion leaves nothing for a
+    detector to miss. In a runtime without Word or RTF support the block has
+    no effect. Worksheet selection and per-column rules for .xlsx are a
+    separate proposal (philterd/phisql#80).
+  settings:
+    headersFooters:
+      default: redact
+      values:
+        redact: |
+          Redacts the text of running headers and footers. Images and page
+          numbers in them are left as they are.
+        keep: Leaves headers and footers unscanned.
+    comments:
+      default: remove
+      values:
+        remove: Deletes every comment, with its author.
+        redact: Keeps comments and redacts their text.
+    trackedChanges:
+      default: accept
+      values:
+        accept: |
+          Accepts every insertion and deletion and removes the revision
+          history, so deleted text is gone.
+        redact: |
+          Keeps the revisions and redacts their text, including deleted text.
+    hiddenText:
+      default: remove
+      values:
+        remove: Deletes text marked hidden.
+        redact: Keeps hidden text and redacts it like visible text.
+    charts:
+      default: redact
+      values:
+        redact: Redacts chart titles, labels, and cached data values.
+        keep: Leaves charts as they are.
+    uninspectableObjects:
+      default: remove
+      values:
+        remove: |
+          Deletes embedded objects the runtime cannot read (legacy OLE
+          objects, other programs' files).
+        keep: Leaves them and reports them as uninspected.
+    removeDocumentProperties:
+      default: true
+      effect: |
+        Clears the document properties beyond the always-cleared authorship
+        fields: title, subject, keywords, categories, the comments field, and
+        custom properties. FALSE clears only the authorship fields; it never
+        keeps authorship.
+    highlight:
+      default: false
+      effect: Wraps each replacement in a highlight so a reviewer can find it.
+  always_redacted: |
+    Body text, footnotes, and endnotes, by the policy's identifiers. Embedded
+    Word and Excel documents are redacted in place with the same policy,
+    whatever uninspectableObjects says. Not configurable.
+  authorship: |
+    Author names and the authorship properties are always cleared, whatever
+    the policy: dc:creator, cp:lastModifiedBy, Company, Manager, comment and
+    revision authors, and word/people.xml. No setting turns this off, and
+    removeDocumentProperties can only add to what is cleared
+    (philterd/phileas#522).
+  rtf: |
+    For .rtf, each setting applies where the format has the corresponding
+    part: headersFooters to \header and \footer groups, comments to
+    \annotation groups, trackedChanges to \revised and \deleted text,
+    hiddenText to \v text, uninspectableObjects to \object groups, and
+    removeDocumentProperties to the \info group. charts and highlight have no
+    RTF counterpart and are ignored for it.
+  keyword: |
+    WORD is matched as an identifier, not a reserved keyword.
+  on_invalid: compile_error
+  compile_errors:
+    - An unknown key in the block.
+    - A value outside a setting's list.
+    - A removeDocumentProperties or highlight value that is not TRUE or FALSE.
+
+excel:
+  syntax: |
+    CONFIGURE EXCEL (
+      printHeadersFooters = 'redact' | 'keep',
+      charts = 'redact' | 'keep',
+      formulaCaches = 'redact' | 'keep',
+      pivotCaches = 'redact' | 'keep',
+      uninspectableObjects = 'remove' | 'keep',
+      removeDocumentProperties = <bool>
+    )
+  destination: config.excel
+  applies_to: [.xlsx]
+  description: |
+    How the parts of an Excel (.xlsx) workbook outside its cell text are
+    handled. Every setting is optional, and the defaults are Philter
+    Desktop's. In a runtime without Excel support the block has no effect.
+    Worksheet selection and per-column rules are a separate proposal
+    (philterd/phisql#80).
+  settings:
+    printHeadersFooters:
+      default: redact
+      values:
+        redact: Redacts print headers and footers.
+        keep: Leaves print headers and footers unscanned.
+    charts:
+      default: redact
+      values:
+        redact: Redacts chart titles, labels, and cached data values.
+        keep: Leaves charts as they are.
+    formulaCaches:
+      default: redact
+      values:
+        redact: |
+          A formula whose cached result holds a detected value becomes a
+          static redacted value; the remaining cached results are cleared and
+          the workbook is set to recalculate on open.
+        keep: |
+          Leaves cached results as they are, so a cached copy of a redacted
+          value may remain.
+    pivotCaches:
+      default: redact
+      values:
+        redact: |
+          Redacts the pivot cache's copy of the source data and sets it to
+          refresh on open.
+        keep: Leaves the pivot cache as it is.
+    uninspectableObjects:
+      default: remove
+      values:
+        remove: |
+          Deletes embedded objects the runtime cannot read (legacy OLE
+          objects, other programs' files).
+        keep: Leaves them and reports them as uninspected.
+    removeDocumentProperties:
+      default: true
+      effect: As for word.
+  always_redacted: |
+    Cell text and comments (legacy notes and threaded comments), by the
+    policy's identifiers. Embedded Word and Excel documents are redacted in
+    place with the same policy, whatever uninspectableObjects says. Not
+    configurable.
+  authorship: |
+    Author names and the authorship properties are always cleared, whatever
+    the policy: dc:creator, cp:lastModifiedBy, Company, Manager, comment
+    authors, and persons. No setting turns this off (philterd/phileas#522).
+  keyword: |
+    EXCEL is matched as an identifier, not a reserved keyword.
+  on_invalid: compile_error
+  compile_errors:
+    - An unknown key in the block.
+    - A value outside a setting's list.
+    - A removeDocumentProperties value that is not TRUE or FALSE.

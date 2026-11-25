@@ -1,0 +1,21 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  },
+  "config": {
+    "word": {
+      "comments": "redact",
+      "trackedChanges": "redact",
+      "highlight": true
+    },
+    "excel": {
+      "formulaCaches": "keep"
+    }
+  }
+}

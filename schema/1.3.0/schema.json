@@ -107,6 +107,14 @@
         "email": {
           "description": "Settings for redacting email messages beyond their text: headers removed outright, attachments, and inline images.",
           "$ref": "#/$defs/email"
+        },
+        "word": {
+          "description": "Settings for Word (.docx) and Rich Text (.rtf) documents beyond their body text: headers and footers, comments, tracked changes, hidden text, charts, embedded objects, and document properties.",
+          "$ref": "#/$defs/word"
+        },
+        "excel": {
+          "description": "Settings for Excel (.xlsx) workbooks beyond their cell text: print headers and footers, charts, formula and pivot caches, embedded objects, and document properties.",
+          "$ref": "#/$defs/excel"
         }
       }
     },
@@ -306,6 +314,101 @@
           "type": "string",
           "enum": ["keep", "remove"],
           "default": "keep"
+        }
+      }
+    },
+    "word": {
+      "description": "Settings for the parts of a Word (.docx) or Rich Text (.rtf) document outside its body text. Body text, footnotes, and endnotes are always redacted by the policy's identifiers. Author names and the authorship properties (dc:creator, cp:lastModifiedBy, Company, Manager, comment and revision authors, word/people.xml) are always cleared, and no setting keeps them. For .rtf, each setting applies where the format has the corresponding part; charts and highlight have no RTF counterpart and are ignored for it. In runtimes without Word or RTF support this block has no effect.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "headersFooters": {
+          "description": "redact redacts the text of running headers and footers. keep leaves them unscanned. Images and page numbers in them are left as they are.",
+          "type": "string",
+          "enum": ["redact", "keep"],
+          "default": "redact"
+        },
+        "comments": {
+          "description": "remove deletes every comment, with its author. redact keeps comments and redacts their text.",
+          "type": "string",
+          "enum": ["remove", "redact"],
+          "default": "remove"
+        },
+        "trackedChanges": {
+          "description": "accept accepts every insertion and deletion and removes the revision history, so deleted text is gone. redact keeps the revisions and redacts their text, including deleted text.",
+          "type": "string",
+          "enum": ["accept", "redact"],
+          "default": "accept"
+        },
+        "hiddenText": {
+          "description": "remove deletes text marked hidden. redact keeps it and redacts it like visible text.",
+          "type": "string",
+          "enum": ["remove", "redact"],
+          "default": "remove"
+        },
+        "charts": {
+          "description": "redact redacts chart titles, labels, and cached data values. keep leaves them as they are.",
+          "type": "string",
+          "enum": ["redact", "keep"],
+          "default": "redact"
+        },
+        "uninspectableObjects": {
+          "description": "What happens to embedded objects the runtime cannot read (legacy OLE objects, other programs' files). remove deletes them. keep leaves them and reports them as uninspected. Embedded Word and Excel documents are always redacted in place.",
+          "type": "string",
+          "enum": ["remove", "keep"],
+          "default": "remove"
+        },
+        "removeDocumentProperties": {
+          "description": "Clears the document properties beyond the always-cleared authorship fields: title, subject, keywords, categories, the comments field, and custom properties. false clears only the authorship fields; it never keeps authorship.",
+          "type": "boolean",
+          "default": true
+        },
+        "highlight": {
+          "description": "Wraps each replacement in a highlight so a reviewer can find it.",
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "excel": {
+      "description": "Settings for the parts of an Excel (.xlsx) workbook outside its cell text. Cell text and comments (legacy notes and threaded comments) are always redacted by the policy's identifiers. Author names and the authorship properties (dc:creator, cp:lastModifiedBy, Company, Manager, comment authors, persons) are always cleared, and no setting keeps them. In runtimes without Excel support this block has no effect.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "printHeadersFooters": {
+          "description": "redact redacts print headers and footers. keep leaves them unscanned.",
+          "type": "string",
+          "enum": ["redact", "keep"],
+          "default": "redact"
+        },
+        "charts": {
+          "description": "redact redacts chart titles, labels, and cached data values. keep leaves them as they are.",
+          "type": "string",
+          "enum": ["redact", "keep"],
+          "default": "redact"
+        },
+        "formulaCaches": {
+          "description": "redact turns a formula whose cached result holds a detected value into a static redacted value, clears the remaining cached results, and sets the workbook to recalculate on open. keep leaves cached results as they are, so a cached copy of a redacted value may remain.",
+          "type": "string",
+          "enum": ["redact", "keep"],
+          "default": "redact"
+        },
+        "pivotCaches": {
+          "description": "redact redacts the pivot cache's copy of the source data and sets it to refresh on open. keep leaves it as it is.",
+          "type": "string",
+          "enum": ["redact", "keep"],
+          "default": "redact"
+        },
+        "uninspectableObjects": {
+          "description": "What happens to embedded objects the runtime cannot read (legacy OLE objects, other programs' files). remove deletes them. keep leaves them and reports them as uninspected. Embedded Word and Excel documents are always redacted in place.",
+          "type": "string",
+          "enum": ["remove", "keep"],
+          "default": "remove"
+        },
+        "removeDocumentProperties": {
+          "description": "Clears the document properties beyond the always-cleared authorship fields: title, subject, keywords, categories, the comments field, and custom properties. false clears only the authorship fields; it never keeps authorship.",
+          "type": "boolean",
+          "default": true
         }
       }
     },

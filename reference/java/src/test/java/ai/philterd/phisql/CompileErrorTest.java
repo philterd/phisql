@@ -245,4 +245,55 @@ class CompileErrorTest {
             assertTrue(ex.getMessage().contains(c[1]), "Expected '" + c[1] + "': " + ex.getMessage());
         }
     }
+
+    @Test
+    void compilesWordAndExcelConfig() {
+        JsonNode config = json(new Compiler().compile(
+                "REDACT SSN WITH MASK;\nCONFIGURE word (comments = 'redact', trackedChanges = 'redact',"
+                        + " removeDocumentProperties = FALSE, highlight = TRUE);\n"
+                        + "CONFIGURE Excel (formulaCaches = 'keep', uninspectableObjects = 'keep');"))
+                .path("config");
+        JsonNode word = config.path("word");
+        JsonNode excel = config.path("excel");
+        assertTrue(word.path("comments").asString().equals("redact")
+                        && word.path("trackedChanges").asString().equals("redact")
+                        && word.path("removeDocumentProperties").isBoolean()
+                        && !word.path("removeDocumentProperties").asBoolean()
+                        && word.path("highlight").asBoolean()
+                        && word.size() == 4,
+                "CONFIGURE WORD should write config.word: " + word);
+        assertTrue(excel.path("formulaCaches").asString().equals("keep")
+                        && excel.path("uninspectableObjects").asString().equals("keep")
+                        && excel.size() == 2,
+                "CONFIGURE EXCEL should write config.excel: " + excel);
+    }
+
+    @Test
+    void wordAndExcelAreNotReserved() {
+        JsonNode policy = json(new Compiler().compile("POLICY word;\nREDACT SSN WITH MASK;"));
+        assertTrue(policy.path("identifiers").has("ssn"), "POLICY word should compile: " + policy);
+        policy = json(new Compiler().compile("POLICY excel;\nREDACT SSN WITH MASK;"));
+        assertTrue(policy.path("identifiers").has("ssn"), "POLICY excel should compile: " + policy);
+    }
+
+    @Test
+    void rejectsInvalidWordAndExcelConfig() {
+        String[][] cases = {
+                {"WORD", "comment = 'remove'", "Unknown word setting: comment"},
+                {"WORD", "comments = 'strip'", "word setting comments must be one of remove, redact"},
+                {"WORD", "trackedChanges = 'reject'", "word setting trackedChanges must be one of accept, redact"},
+                {"WORD", "headersFooters = TRUE", "word setting headersFooters must be one of redact, keep"},
+                {"WORD", "highlight = 'yes'", "word setting highlight must be TRUE or FALSE"},
+                {"EXCEL", "comments = 'remove'", "Unknown excel setting: comments"},
+                {"EXCEL", "formulaCaches = 'remove'", "excel setting formulaCaches must be one of redact, keep"},
+                {"EXCEL", "removeDocumentProperties = 1", "excel setting removeDocumentProperties must be TRUE or FALSE"},
+        };
+        for (String[] c : cases) {
+            Compiler.CompileException ex = assertThrows(
+                    Compiler.CompileException.class,
+                    () -> new Compiler().compile(
+                            "REDACT SSN WITH MASK;\nCONFIGURE " + c[0] + " (" + c[1] + ");"));
+            assertTrue(ex.getMessage().contains(c[2]), "Expected '" + c[2] + "': " + ex.getMessage());
+        }
+    }
 }

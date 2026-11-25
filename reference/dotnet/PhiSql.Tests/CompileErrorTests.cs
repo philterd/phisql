@@ -200,4 +200,49 @@ public class CompileErrorTests
             "REDACT SSN WITH MASK;\nCONFIGURE REVIEW (" + settings + ");"));
         Assert.Contains(message, ex.Message);
     }
+
+    [Fact]
+    public void CompilesWordAndExcelConfig()
+    {
+        var config = new Compiler().Compile(
+                "REDACT SSN WITH MASK;\nCONFIGURE word (comments = 'redact', trackedChanges = 'redact',"
+                + " removeDocumentProperties = FALSE, highlight = TRUE);\n"
+                + "CONFIGURE Excel (formulaCaches = 'keep', uninspectableObjects = 'keep');")
+            .PolicyJson["config"]!;
+        var word = config["word"]!.AsObject();
+        Assert.Equal("redact", word["comments"]!.GetValue<string>());
+        Assert.Equal("redact", word["trackedChanges"]!.GetValue<string>());
+        Assert.False(word["removeDocumentProperties"]!.GetValue<bool>());
+        Assert.True(word["highlight"]!.GetValue<bool>());
+        Assert.Equal(4, word.Count);
+        var excel = config["excel"]!.AsObject();
+        Assert.Equal("keep", excel["formulaCaches"]!.GetValue<string>());
+        Assert.Equal("keep", excel["uninspectableObjects"]!.GetValue<string>());
+        Assert.Equal(2, excel.Count);
+    }
+
+    [Theory]
+    [InlineData("word")]
+    [InlineData("excel")]
+    public void WordAndExcelAreNotReserved(string name)
+    {
+        var policy = new Compiler().Compile("POLICY " + name + ";\nREDACT SSN WITH MASK;").PolicyJson;
+        Assert.NotNull(policy["identifiers"]!["ssn"]);
+    }
+
+    [Theory]
+    [InlineData("WORD", "comment = 'remove'", "Unknown word setting: comment")]
+    [InlineData("WORD", "comments = 'strip'", "word setting comments must be one of remove, redact")]
+    [InlineData("WORD", "trackedChanges = 'reject'", "word setting trackedChanges must be one of accept, redact")]
+    [InlineData("WORD", "headersFooters = TRUE", "word setting headersFooters must be one of redact, keep")]
+    [InlineData("WORD", "highlight = 'yes'", "word setting highlight must be TRUE or FALSE")]
+    [InlineData("EXCEL", "comments = 'remove'", "Unknown excel setting: comments")]
+    [InlineData("EXCEL", "formulaCaches = 'remove'", "excel setting formulaCaches must be one of redact, keep")]
+    [InlineData("EXCEL", "removeDocumentProperties = 1", "excel setting removeDocumentProperties must be TRUE or FALSE")]
+    public void RejectsInvalidWordAndExcelConfig(string block, string settings, string message)
+    {
+        var ex = Assert.Throws<CompileException>(() => new Compiler().Compile(
+            "REDACT SSN WITH MASK;\nCONFIGURE " + block + " (" + settings + ");"));
+        Assert.Contains(message, ex.Message);
+    }
 }

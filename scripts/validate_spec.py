@@ -89,7 +89,7 @@ TOPLEVEL_EXPOSED = {
     "identifiers": "entity statements, DEFINE IDENTIFIER/DICTIONARY/SECTION, DETECT PHEYE",
     "ignored": "IGNORE TERMS",
     "ignoredPatterns": "IGNORE PATTERN",
-    "config": "CONFIGURE SPLITTING | PDF | POSTFILTERS | ANALYSIS | REVIEW | EMAIL ( ... )",
+    "config": "CONFIGURE SPLITTING | PDF | POSTFILTERS | ANALYSIS | REVIEW | EMAIL | WORD | EXCEL ( ... )",
     "graphical": "CONFIGURE GRAPHICAL BOX ( ... )",
     "generators": "DEFINE GENERATOR '<name>' TYPE '<type>' OPTIONS ( ... )",
     "metadata": "POLICY <name> DESCRIPTION '<text>'",
@@ -115,7 +115,7 @@ TOPLEVEL_DEFERRED: dict[str, str] = {}
 FIELD_PASSTHROUGH_CONTAINERS = {
     "filterCustomDictionary", "filterSection", "filterIdentifier", "filterPhEye",
     "baseFilterStrategy", "dateFilterStrategy",
-    "splitting", "pdf", "postFilters", "analysis", "review", "email", "boundingBox",
+    "splitting", "pdf", "postFilters", "analysis", "review", "email", "word", "excel", "boundingBox",
     "ignored", "ignoredPattern", "phEyeConfiguration",
     # A generator's leaves are reachable by name through DEFINE GENERATOR's
     # OPTIONS ( ... ) passthrough (with `type` also set by the dedicated TYPE clause).
