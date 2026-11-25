@@ -1,0 +1,19 @@
+{
+  "identifiers": {
+    "medicalRecordNumber": {
+      "medicalRecordNumberFilterStrategies": [
+        {
+          "strategy": "LAST_4"
+        }
+      ],
+      "patterns": [
+        "[A-Z]{2}[0-9]{6}",
+        "[0-9]{8}"
+      ],
+      "cueWords": [
+        "Patient ID"
+      ],
+      "windowSize": 5
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "identifiers": {
+    "medicalRecordNumber": {
+      "medicalRecordNumberFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  }
+}

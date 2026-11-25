@@ -14,6 +14,8 @@ As of v1.0.0 this project follows [Semantic Versioning](https://semver.org/): ad
 - **`spec/v1.3.0/examples/member-and-device-ids`** example pair, and the `accept/entities/health-plan-member-id` and `accept/entities/device-identifier` conformance cases.
 - **Review sampling rate** ([#84](https://github.com/philterd/phisql/issues/84)). An optional `config.review.samplingRate` in schema `1.3.0` (edited in place, additive and backward-compatible): a number from `0.0` to `1.0`, default `0.0`, giving the probability that a filter request is selected for human spot review regardless of what was detected. Written `CONFIGURE REVIEW (samplingRate = 0.10)`. `REVIEW` is matched as an identifier, not a reserved keyword: the grammar gains a `CONFIGURE <identifier> ( ... )` form, the compilers accept only `REVIEW` (case-insensitive) there, and any other name is a compile error (`Unknown config block`). A `samplingRate` outside `0.0` to `1.0`, or one that is not a number, is a compile error. The catalog documents the setting in `policy.yaml` under `review_sampling`.
 - **`spec/v1.3.0/examples/review-sampling`** example pair, the `accept/configure/review` conformance case, and the `reject/semantic/review-sampling-rate-out-of-range` and `reject/semantic/unknown-config-block` cases.
+- **`MEDICAL_RECORD_NUMBER` entity type** ([#83](https://github.com/philterd/phisql/issues/83)). Medical record numbers, HIPAA Safe Harbor item (H) of 45 CFR 164.514(b)(2)(i). Adds a `medicalRecordNumber` identifier and a `filterMedicalRecordNumber` definition to schema `1.3.0` (edited in place, additive and backward-compatible), built like `filterHealthPlanMemberId` on the shared `cueWordFilterProperties`, and a `MEDICAL_RECORD_NUMBER` row to the entity-types catalog. `patterns`, `cueWords`, and `defaultCueWords` work as they do for the member ID and go through the existing `OPTIONS` passthrough, so no grammar change was required.
+- **`spec/v1.3.0/examples/medical-record-numbers`** example pair, and the `accept/entities/medical-record-number` conformance case.
 
 ### Changed
 
@@ -44,6 +46,14 @@ As of v1.0.0 this project follows [Semantic Versioning](https://semver.org/): ad
   - **Selection.** Per request and stateless: a request is selected when a value drawn uniformly from [0, 1) is below `samplingRate`. The draw happens once per request, even when splitting filters the input in chunks. No count is kept per policy or shared between nodes, so the achieved rate converges on the configured one but is not exact for small volumes.
   - **Output.** Selection never changes the redacted output. The runtime reports it on the filter result as `reviewSampled`, so filter and explain results both carry it. How a server surfaces it (a response header, an audit record) is outside this spec.
   - Because `config` has `additionalProperties: false`, a runtime embedding the schema from before this change rejects a policy that sets `config.review`.
+- Detection of `MEDICAL_RECORD_NUMBER` is a Phileas runtime behavior (philterd/phileas#508, philterd/phileas-python#133, philterd/phileas-dotnet#217). The contract is:
+  - **Cue words.** The same rules as the health plan member ID: matched case-insensitively as whole words, a multi-word cue word as a phrase, and may be followed by punctuation such as `:` or `#`. A value only counts when a cue word comes within `windowSize` tokens before it. The cue word itself is not redacted.
+  - **Default pattern.** 6 to 12 letters, digits, and hyphens, with at least one digit.
+  - **Default cue words.** `MRN`, `MR #`, `med rec #`, `medical record #`, `medical record no.`, `medical record number`, `chart #`, `chart number`. In these, a `#` may follow the word with no space and a trailing `.` may be left out, so `MR#`, `MRN:`, and `Medical Record No:` are cues too. `patient ID` is not a default cue word, because some systems use it for other IDs; a policy can add it with `cueWords`.
+  - **Span type.** `medical-record-number`.
+  - **Overlaps.** An `MBI`, `SSN`, `NPI`, phone number, or date span takes priority over an overlapping medical record number, the same as for a member ID.
+  - The `patterns` get the same load-time check and match timeout as the identifier filter's `pattern`.
+- A Phileas build that bundles this schema fails its schema conformance test until it implements the filter, so this change and philterd/phileas#508 must ship together.
 
 ## [1.5.0] - 2026-10-21
 

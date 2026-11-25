@@ -1,0 +1,12 @@
+-- MEDICAL_RECORD_NUMBER filter, for HIPAA Safe Harbor identifier (H). A medical
+-- record number only matches when a cue word comes within windowSize tokens
+-- before it, e.g. "MRN: 00482913" or "Patient ID KD104552". patterns replaces the
+-- default pattern, and cueWords adds to the default cue words (set
+-- defaultCueWords = false to use only your own). Set through the existing OPTIONS
+-- passthrough; no grammar change. Added to schema 1.3.0 in place (additive).
+-- Compiles to medical-record-numbers.json.
+
+POLICY medical_record_numbers;
+
+REDACT MEDICAL_RECORD_NUMBER WITH LAST_4
+  OPTIONS (patterns = ['[A-Z]{2}[0-9]{6}', '[0-9]{8}'], cueWords = ['Patient ID'], windowSize = 5);
