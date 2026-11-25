@@ -1,0 +1,3 @@
+REDACT EMAIL_ADDRESS WITH REDACT;
+CONFIGURE TABULAR SHEET (worksheet = 'Patients');
+CONFIGURE TABULAR SHEET (worksheet = 'patients');

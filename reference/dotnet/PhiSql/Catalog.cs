@@ -111,6 +111,10 @@ public sealed class Catalog
         return _strategiesByName.TryGetValue(name.ToUpperInvariant(), out Strategy? s) ? s : null;
     }
 
+    /// <summary>Every Phileas strategy enum in the catalog.</summary>
+    public IReadOnlySet<string> StrategyEnums() =>
+        _strategiesByName.Values.Select(s => s.PhileasEnum).ToHashSet();
+
     /// <summary>The Phileas strategy enums classified date-only (dateFilterStrategy).</summary>
     public IReadOnlySet<string> DateOnlyStrategyEnums() =>
         _strategiesByName.Values.Where(s => s.DateOnly).Select(s => s.PhileasEnum).ToHashSet();

@@ -1,0 +1,67 @@
+{
+  "identifiers": {
+    "emailAddress": {
+      "emailAddressFilterStrategies": [
+        {
+          "strategy": "REDACT"
+        }
+      ]
+    },
+    "phoneNumber": {
+      "phoneNumberFilterStrategies": [
+        {
+          "strategy": "REDACT"
+        }
+      ]
+    }
+  },
+  "tabular": {
+    "sheets": [
+      {
+        "worksheet": "Patients",
+        "unlistedColumns": "redact",
+        "unlistedStrategies": [
+          {
+            "strategy": "HASH_SHA256_REPLACE"
+          }
+        ],
+        "columns": [
+          {
+            "header": "Visit Date",
+            "action": "ignore"
+          },
+          {
+            "header": "Department",
+            "action": "ignore"
+          },
+          {
+            "header": "Comments",
+            "action": "filter",
+            "filters": [
+              "emailAddress"
+            ]
+          }
+        ]
+      },
+      {
+        "worksheet": "Codes",
+        "headerRows": 0,
+        "unlistedColumns": "ignore",
+        "columns": [
+          {
+            "index": 2,
+            "action": "redact",
+            "strategies": [
+              {
+                "strategy": "MASK"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "unlistedColumns": "identifiers"
+      }
+    ]
+  }
+}

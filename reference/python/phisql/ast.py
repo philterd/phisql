@@ -202,7 +202,8 @@ class ConfigureStmt:
     fpe_key_env_raw: Optional[str] = None
     fpe_tweak_env_raw: Optional[str] = None
     config_block: Optional[str] = None     # SPLITTING/PDF/POSTFILTERS/ANALYSIS
-    block_name: Optional[str] = None       # identifier-named block (REVIEW, EMAIL, WORD, EXCEL), as written
+    block_name: Optional[str] = None       # identifier-named block (REVIEW, EMAIL, WORD, EXCEL, CSV, TABULAR), as written
+    sub_name: Optional[str] = None         # second identifier of a two-word block (SHEET in TABULAR SHEET)
     graphical_box: bool = False
     settings: Optional[List] = None        # list[Setting] for config/graphical forms
 

@@ -149,6 +149,10 @@ public sealed class Compiler
 
         string? policyName = ResolvePolicyName(expectedName, declaredName);
         EnforceDateOnlyStrategies(policyJson);
+        IReadOnlySet<string> dateOnly = _catalog.DateOnlyStrategyEnums();
+        var columnStrategies = new HashSet<string>(_catalog.StrategyEnums());
+        columnStrategies.ExceptWith(dateOnly);
+        ValidateTabular(policyJson, columnStrategies, dateOnly);
 
         // DESCRIPTION travels in the policy itself, so it survives export and sharing.
         // It stays on CompileResult as well for callers that write it elsewhere.
@@ -228,8 +232,9 @@ public sealed class Compiler
         }
         else if (ctx.BlockName is not null)
         {
-            // A block named by an identifier, so the name is not a reserved keyword.
-            string name = ctx.BlockName.ToUpperInvariant();
+            // A block named by one or two identifiers, so the names are not reserved keywords.
+            string written = ctx.SubName is null ? ctx.BlockName : ctx.BlockName + " " + ctx.SubName;
+            string name = written.ToUpperInvariant();
             if (name == "REVIEW")
             {
                 JsonObject review = GetOrCreateObject(GetOrCreateObject(policyJson, "config"), "review");
@@ -254,9 +259,25 @@ public sealed class Compiler
                 ApplySettings(settings, ctx.Settings!);
                 ValidateDocumentSettings(block, settings, name == "WORD" ? WordSettings : ExcelSettings);
             }
+            else if (name == "CSV")
+            {
+                JsonObject csv = GetOrCreateObject(GetOrCreateObject(policyJson, "config"), "csv");
+                ApplySettings(csv, ctx.Settings!);
+                ValidateCsv(csv);
+            }
+            else if (name == "TABULAR SHEET")
+            {
+                // Each statement adds a sheet entry. Its rules are checked by
+                // ValidateTabular once every statement is compiled, since a
+                // column's filters may name identifiers defined later in the script.
+                JsonArray sheets = GetOrCreateArray(GetOrCreateObject(policyJson, "tabular"), "sheets");
+                var sheet = new JsonObject();
+                sheets.Add(sheet);
+                ApplySettings(sheet, ctx.Settings!);
+            }
             else
             {
-                throw new CompileException("Unknown config block: " + ctx.BlockName);
+                throw new CompileException("Unknown config block: " + written);
             }
         }
         else
@@ -292,6 +313,208 @@ public sealed class Compiler
                 default:
                     throw new CompileException("Unknown leftoverCheck setting: " + key);
             }
+        }
+    }
+
+    // Checks config.csv, as ValidateEmail does for email.
+    private static void ValidateCsv(JsonObject csv)
+    {
+        foreach (var (key, value) in csv)
+        {
+            switch (key)
+            {
+                case "delimiter":
+                case "quote":
+                    if (!IsSingleCharacter(value))
+                        throw new CompileException(
+                            "csv " + key + " must be a single character other than a line break: " + Json(value));
+                    break;
+                case "encoding":
+                    if (AsString(value) is not { } encoding || string.IsNullOrWhiteSpace(encoding))
+                        throw new CompileException("csv encoding must be a non-empty string: " + Json(value));
+                    break;
+                default:
+                    throw new CompileException("Unknown csv setting: " + key);
+            }
+        }
+        string delimiter = csv.ContainsKey("delimiter") ? AsString(csv["delimiter"])! : ",";
+        string quote = csv.ContainsKey("quote") ? AsString(csv["quote"])! : "\"";
+        if (delimiter == quote)
+            throw new CompileException("csv delimiter and quote must be different characters");
+    }
+
+    private static string? AsString(JsonNode? node) =>
+        node is JsonValue v && v.TryGetValue(out string? s) ? s : null;
+
+    private static bool IsSingleCharacter(JsonNode? node) =>
+        AsString(node) is { } s && s.EnumerateRunes().Count() == 1 && s != "\r" && s != "\n";
+
+    private static readonly string[] SheetSettings =
+        { "worksheet", "headerRows", "unlistedColumns", "unlistedStrategies", "columns" };
+    private static readonly string[] ColumnSettings = { "header", "index", "action", "strategies", "filters" };
+
+    private static bool IsWholeNumber(JsonNode? node, long minimum, out long number)
+    {
+        number = 0;
+        if (node is not JsonValue v) return false;
+        if (v.GetValueKind() != JsonValueKind.Number) return false;
+        if (v.TryGetValue(out long asLong)) number = asLong;
+        else if (v.TryGetValue(out int asInt)) number = asInt;
+        else return false;
+        return number >= minimum;
+    }
+
+    // Checks the tabular sheets here rather than leaving it to schema validation,
+    // so a mistake in a column rule fails at compile time instead of leaving a
+    // column unredacted. Runs after every statement, once identifiers is complete.
+    private static void ValidateTabular(
+        JsonObject policyJson, IReadOnlySet<string> columnStrategies, IReadOnlySet<string> dateOnly)
+    {
+        if (policyJson["tabular"] is not JsonObject tabular) return;
+        JsonObject identifiers = policyJson["identifiers"] as JsonObject ?? new JsonObject();
+        var worksheets = new HashSet<string>();
+        bool unnamed = false;
+        foreach (JsonNode? node in tabular["sheets"]!.AsArray())
+        {
+            JsonObject sheet = node!.AsObject();
+            foreach (var (key, _) in sheet)
+                if (Array.IndexOf(SheetSettings, key) < 0)
+                    throw new CompileException("Unknown tabular sheet setting: " + key);
+            if (sheet.TryGetPropertyValue("worksheet", out JsonNode? worksheetNode))
+            {
+                if (AsString(worksheetNode) is not { } worksheet || string.IsNullOrWhiteSpace(worksheet))
+                    throw new CompileException(
+                        "tabular sheet worksheet must be a non-empty string: " + Json(worksheetNode));
+                // Worksheet names match case-insensitively, as Excel compares them.
+                if (!worksheets.Add(worksheet.ToLowerInvariant()))
+                    throw new CompileException("More than one tabular sheet for worksheet '" + worksheet + "'");
+            }
+            else if (unnamed)
+            {
+                throw new CompileException("More than one tabular sheet without a worksheet");
+            }
+            else
+            {
+                unnamed = true;
+            }
+            long headerRows = 1;
+            if (sheet.TryGetPropertyValue("headerRows", out JsonNode? headerRowsNode)
+                && !IsWholeNumber(headerRowsNode, 0, out headerRows))
+                throw new CompileException(
+                    "tabular sheet headerRows must be a whole number of 0 or more: " + Json(headerRowsNode));
+            string unlisted = "identifiers";
+            if (sheet.TryGetPropertyValue("unlistedColumns", out JsonNode? unlistedNode))
+            {
+                if (!IsOneOf(unlistedNode, "identifiers", "ignore", "redact"))
+                    throw new CompileException(
+                        "tabular sheet unlistedColumns must be one of identifiers, ignore, redact: "
+                        + Json(unlistedNode));
+                unlisted = AsString(unlistedNode)!;
+            }
+            if (sheet.TryGetPropertyValue("unlistedStrategies", out JsonNode? unlistedStrategies))
+            {
+                if (unlisted != "redact")
+                    throw new CompileException("unlistedStrategies applies only when unlistedColumns is 'redact'");
+                ValidateColumnStrategies("unlistedStrategies", unlistedStrategies, columnStrategies, dateOnly);
+            }
+            if (!sheet.TryGetPropertyValue("columns", out JsonNode? columnsNode)) continue;
+            if (columnsNode is not JsonArray columns)
+                throw new CompileException(
+                    "tabular sheet columns must be a list of column rules: " + Json(columnsNode));
+            var selected = new HashSet<string>();
+            foreach (JsonNode? column in columns)
+            {
+                long index = ValidateColumn(column, headerRows, identifiers, columnStrategies, dateOnly);
+                string selector = column!["header"] is { } header
+                    ? "header '" + AsString(header)!.Trim() + "'"
+                    : "index " + index;
+                if (!selected.Add(selector))
+                    throw new CompileException("More than one column rule for " + selector);
+            }
+        }
+    }
+
+    // Returns the column's index, or 0 when it is picked by header.
+    private static long ValidateColumn(JsonNode? node, long headerRows, JsonObject identifiers,
+        IReadOnlySet<string> columnStrategies, IReadOnlySet<string> dateOnly)
+    {
+        if (node is not JsonObject column)
+            throw new CompileException("A tabular column rule must be a setting list: " + Json(node));
+        foreach (var (key, _) in column)
+            if (Array.IndexOf(ColumnSettings, key) < 0)
+                throw new CompileException("Unknown tabular column setting: " + key);
+        bool hasHeader = column.ContainsKey("header");
+        if (hasHeader == column.ContainsKey("index"))
+            throw new CompileException("A tabular column rule needs exactly one of header or index");
+        long index = 0;
+        if (hasHeader)
+        {
+            if (AsString(column["header"]) is not { } header || string.IsNullOrWhiteSpace(header))
+                throw new CompileException(
+                    "tabular column header must be a non-empty string: " + Json(column["header"]));
+            if (headerRows == 0)
+                throw new CompileException(
+                    "The column rule for header '" + header + "' needs headerRows of 1 or more");
+        }
+        else if (!IsWholeNumber(column["index"], 1, out index))
+        {
+            throw new CompileException(
+                "tabular column index must be a whole number of 1 or more: " + Json(column["index"]));
+        }
+        if (!column.TryGetPropertyValue("action", out JsonNode? actionNode))
+            throw new CompileException("A tabular column rule needs an action");
+        if (!IsOneOf(actionNode, "redact", "ignore", "filter"))
+            throw new CompileException(
+                "tabular column action must be one of redact, ignore, filter: " + Json(actionNode));
+        string action = AsString(actionNode)!;
+        if (action == "redact")
+        {
+            if (!column.TryGetPropertyValue("strategies", out JsonNode? strategies))
+                throw new CompileException("A redact column rule needs strategies");
+            ValidateColumnStrategies("column strategies", strategies, columnStrategies, dateOnly);
+        }
+        else if (column.ContainsKey("strategies"))
+        {
+            throw new CompileException("strategies apply only to a redact column rule");
+        }
+        if (action == "filter")
+        {
+            if (!column.TryGetPropertyValue("filters", out JsonNode? filtersNode))
+                throw new CompileException("A filter column rule needs filters");
+            var names = new HashSet<string>();
+            bool valid = filtersNode is JsonArray { Count: > 0 } filters
+                && filters.All(f => AsString(f) is { } name && names.Add(name));
+            if (!valid)
+                throw new CompileException(
+                    "column filters must be a non-empty list of distinct identifiers names: " + Json(filtersNode));
+            foreach (JsonNode? f in filtersNode!.AsArray())
+                if (!identifiers.ContainsKey(AsString(f)!))
+                    throw new CompileException("column filter '" + AsString(f) + "' is not defined in identifiers");
+        }
+        else if (column.ContainsKey("filters"))
+        {
+            throw new CompileException("filters apply only to a filter column rule");
+        }
+        return index;
+    }
+
+    private static void ValidateColumnStrategies(string where, JsonNode? node,
+        IReadOnlySet<string> columnStrategies, IReadOnlySet<string> dateOnly)
+    {
+        if (node is not JsonArray { Count: > 0 } strategies || !strategies.All(s => s is JsonObject))
+            throw new CompileException(where + " must be a non-empty list of strategies: " + Json(node));
+        foreach (JsonNode? s in strategies)
+        {
+            JsonObject strategy = s!.AsObject();
+            if (strategy.ContainsKey("condition"))
+                throw new CompileException(
+                    where + " cannot have a condition: a whole-column strategy replaces every cell");
+            if (!strategy.TryGetPropertyValue("strategy", out JsonNode? nameNode)) continue; // the schema default, REDACT
+            string? name = AsString(nameNode);
+            if (name is not null && dateOnly.Contains(name))
+                throw new CompileException(name + " is a date-only strategy and cannot be applied to a column");
+            if (name is null || !columnStrategies.Contains(name))
+                throw new CompileException("Unknown strategy in " + where + ": " + Json(nameNode));
         }
     }
 

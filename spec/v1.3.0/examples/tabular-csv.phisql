@@ -1,0 +1,29 @@
+-- Redacting a semicolon-delimited CSV export of claims. The SSN column is replaced
+-- whole, malformed and partial values included, with no detection, and the same
+-- SSN gets the same random stand-in throughout the context (consistent
+-- pseudonymization), so rows for one person still join. The Claim ID column is left
+-- alone, the free-text Notes column is scanned with only the email and phone
+-- filters, and every other column is scanned with every filter this policy defines
+-- (unlistedColumns = 'identifiers', the default). Detection in the Notes column and
+-- the unlisted columns is probabilistic, so validate the output against your own
+-- data; the SSN column does not depend on detection. Header rows are never redacted.
+-- CSV, TABULAR, and SHEET are matched contextually and are not reserved keywords.
+-- Added to schema 1.3.0 in place (additive). Compiles to tabular-csv.json.
+
+POLICY tabular_csv;
+
+REDACT EMAIL_ADDRESS, PHONE_NUMBER WITH REDACT;
+REDACT SSN WITH LAST_4;
+
+CONFIGURE CSV (delimiter = ';', quote = '"', encoding = 'UTF-8');
+
+CONFIGURE TABULAR SHEET (
+  headerRows = 1,
+  unlistedColumns = 'identifiers',
+  columns = [
+    (header = 'SSN', action = 'redact',
+     strategies = [(strategy = 'RANDOM_REPLACE', replacementScope = 'CONTEXT')]),
+    (header = 'Claim ID', action = 'ignore'),
+    (header = 'Notes', action = 'filter', filters = ['emailAddress', 'phoneNumber'])
+  ]
+);

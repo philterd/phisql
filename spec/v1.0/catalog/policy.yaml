@@ -78,9 +78,9 @@ review_sampling:
     carry it. How a server surfaces it to callers is outside this spec.
   keyword: |
     REVIEW is matched as an identifier, not a reserved keyword, so it stays
-    usable as a policy name or setting key. REVIEW, EMAIL, WORD, and EXCEL
-    are the only identifiers accepted in that position; any other is a
-    compile error.
+    usable as a policy name or setting key. REVIEW, EMAIL, WORD, EXCEL, CSV,
+    and TABULAR SHEET are the only names accepted in that position; any
+    other is a compile error.
   on_out_of_range: compile_error
 
 leftover_check:
@@ -288,8 +288,7 @@ word:
     Philter Desktop's, which remove rather than redact wherever both are
     possible: a removed comment or an accepted deletion leaves nothing for a
     detector to miss. In a runtime without Word or RTF support the block has
-    no effect. Worksheet selection and per-column rules for .xlsx are a
-    separate proposal (philterd/phisql#80).
+    no effect.
   settings:
     headersFooters:
       default: redact
@@ -379,8 +378,8 @@ excel:
     How the parts of an Excel (.xlsx) workbook outside its cell text are
     handled. Every setting is optional, and the defaults are Philter
     Desktop's. In a runtime without Excel support the block has no effect.
-    Worksheet selection and per-column rules are a separate proposal
-    (philterd/phisql#80).
+    Worksheet and column rules are in the top-level tabular section (see
+    tabular).
   settings:
     printHeadersFooters:
       default: redact
@@ -435,3 +434,167 @@ excel:
     - An unknown key in the block.
     - A value outside a setting's list.
     - A removeDocumentProperties value that is not TRUE or FALSE.
+
+csv:
+  syntax: |
+    CONFIGURE CSV (
+      delimiter = '<one character>',
+      quote = '<one character>',
+      encoding = '<IANA encoding name>'
+    )
+  destination: config.csv
+  applies_to: [.csv]
+  description: |
+    How a CSV document is read: its field delimiter, quote character, and
+    encoding. Every setting is optional. No effect on .xlsx. Which columns
+    are redacted is decided by the top-level tabular section, not here. In a
+    runtime without CSV support the block has no effect.
+  settings:
+    delimiter:
+      default: ","
+      effect: The field delimiter. One character, not a line break.
+    quote:
+      default: '"'
+      effect: |
+        The quote character around fields that contain the delimiter, a
+        quote, or a line break. One character, not a line break.
+    encoding:
+      default: UTF-8
+      effect: The character encoding the document is read in, by its IANA name.
+  string_escapes: |
+    PhiSQL string literals support only the \' , \n, and \\ escapes, so a tab
+    delimiter is written as a literal tab character between the quotes.
+  keyword: |
+    CSV is matched as an identifier, not a reserved keyword.
+  on_invalid: compile_error
+  compile_errors:
+    - An unknown key in the block.
+    - A delimiter or quote that is not exactly one character, or is a line break.
+    - A delimiter and quote that are the same character.
+    - An encoding that is not a non-empty string.
+
+tabular:
+  syntax: |
+    CONFIGURE TABULAR SHEET (
+      worksheet = '<name>',
+      headerRows = <integer>,
+      unlistedColumns = 'identifiers' | 'ignore' | 'redact',
+      unlistedStrategies = [ ( strategy = '<STRATEGY>', ... ), ... ],
+      columns = [
+        ( header = '<text>' | index = <integer>,
+          action = 'redact', strategies = [ ( strategy = '<STRATEGY>', ... ), ... ] ),
+        ( header = '<text>' | index = <integer>, action = 'ignore' ),
+        ( header = '<text>' | index = <integer>,
+          action = 'filter', filters = [ '<identifiers key>', ... ] ),
+        ...
+      ]
+    )
+  destination: tabular.sheets
+  applies_to: [.csv, .xlsx]
+  description: |
+    Column rules for tabular documents. In tabular data a column has a
+    meaning, so a rule on a column can replace every value in it, including
+    malformed or partial values a detector would miss, and can leave a column
+    of non-sensitive identifiers alone. Each CONFIGURE TABULAR SHEET statement
+    adds one sheet entry. Column rules decide what is redacted, so they are a
+    top-level section beside graphical, not part of config. Row numbers and
+    cell ranges change from one file to the next, so they stay per-request
+    options and are not part of the policy.
+  sheet_settings:
+    worksheet:
+      effect: |
+        The worksheet the entry applies to, matched case-insensitively, as
+        Excel compares sheet names. When absent, the entry applies to every
+        worksheet without an entry of its own and to a CSV document.
+    headerRows:
+      default: 1
+      effect: |
+        The number of leading header rows. Header rows are never redacted. A
+        column rule's header is matched against the last header row. 0 means
+        the sheet has no header, and columns can only be picked by index.
+    unlistedColumns:
+      default: identifiers
+      values:
+        identifiers: Columns without a rule are scanned with every filter in identifiers.
+        ignore: Columns without a rule are left unchanged.
+        redact: |
+          Columns without a rule are replaced whole with unlistedStrategies,
+          with no detection: an allow-list, where only columns with a rule
+          (for example ignore) survive unchanged.
+    unlistedStrategies:
+      default: "[ ( strategy = 'REDACT' ) ]"
+      effect: |
+        The strategies for columns without a rule. Allowed only when
+        unlistedColumns is redact.
+    columns:
+      effect: The column rules. At most one per header and per index.
+  column_settings:
+    header:
+      effect: |
+        Picks the column whose cell in the last header row shows this text,
+        trimmed: a formula by its result, rich text as plain text, and a
+        merged cell by its top-left value. When several columns share the
+        header, the rule applies to every one of them, so an ambiguous header
+        fails closed.
+    index:
+      effect: Picks the column at this position, counting from 1.
+    action:
+      values:
+        redact: |
+          Replaces every data cell whole with strategies, with no detection,
+          whatever identifiers contains.
+        ignore: Leaves the data cells unchanged.
+        filter: |
+          Scans each data cell with only the filters named in filters and
+          replaces only what they find. Detection is probabilistic, as it is
+          for identifiers, so this is the action for free-text columns.
+    strategies:
+      effect: |
+        Required for redact, not allowed otherwise. The same shape as a
+        filter's strategy list, so CRYPTO_REPLACE, FPE_ENCRYPT_REPLACE, and
+        consistent pseudonymization (replacementScope) work unchanged. A
+        condition is not allowed, since a whole-column rule replaces every
+        cell, and date-only strategies are not allowed.
+    filters:
+      effect: |
+        Required for filter, not allowed otherwise. Keys of identifiers, as
+        they appear in the compiled policy (for example pheyes, emailAddress),
+        not PhiSQL entity names. Each must be defined in identifiers. A key
+        that holds several filters, such as pheyes (every DETECT PHEYE
+        filter), uses all of them.
+  sheet_selection: |
+    At most one entry may name a given worksheet, and at most one entry may
+    omit worksheet. An .xlsx worksheet follows the entry that names it, or
+    else the entry without a worksheet, if there is one. A CSV is one unnamed
+    sheet, so only the entry without a worksheet applies to it, and
+    config.csv has no effect on .xlsx. One policy can therefore cover a
+    pipeline that receives both formats.
+  processing: |
+    Each column is handled by its own rule, all in one pass over the cells.
+    A redact rule never runs detection. With an empty identifiers and the
+    default unlistedColumns, only columns with a rule are changed.
+  runtime_contract: |
+    The %t placeholder in redactionFormat expands to full-column for a
+    whole-column replacement; the header name is not used, since a header can
+    itself be sensitive. A header that matches no column is reported as a
+    warning, not an error, since one policy may cover files whose columns
+    differ. Per-request options that pick columns (an interactive column
+    picker, for example) override the policy's rules for that request.
+  unsupported_runtimes: |
+    A runtime that does not implement tabular rules must reject a policy that
+    sets tabular rather than ignore it, since ignoring it would leave columns
+    unredacted without warning.
+  keyword: |
+    TABULAR and SHEET are matched as identifiers, not reserved keywords.
+  on_invalid: compile_error
+  compile_errors:
+    - An unknown key in a sheet entry or a column rule.
+    - Two entries naming the same worksheet (case-insensitively), or two entries without one.
+    - A headerRows that is not a whole number of 0 or more.
+    - An unlistedColumns value outside its list, or unlistedStrategies without unlistedColumns = 'redact'.
+    - A column rule with both or neither of header and index, an index below 1, or a header when headerRows is 0.
+    - Two column rules for the same header or the same index in one sheet.
+    - A missing or unknown action.
+    - A redact rule without strategies, or strategies on another action.
+    - A filter rule without filters, a filters name not defined in identifiers, or filters on another action.
+    - A strategy with a condition, a date-only strategy, or an unknown strategy.

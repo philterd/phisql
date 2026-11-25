@@ -245,4 +245,57 @@ public class CompileErrorTests
             "REDACT SSN WITH MASK;\nCONFIGURE " + block + " (" + settings + ");"));
         Assert.Contains(message, ex.Message);
     }
+
+    [Fact]
+    public void CompilesCsvAndTabularConfig()
+    {
+        // The filter column names emailAddress before the REDACT that defines it.
+        var policy = new Compiler().Compile("CONFIGURE csv (delimiter = ';', quote = '\\'');\nCONFIGURE Tabular Sheet (worksheet = 'Patients', unlistedColumns = 'redact', columns = [(header = 'SSN', action = 'redact', strategies = [(strategy = 'MASK')]), (index = 2, action = 'filter', filters = ['emailAddress'])]);\nREDACT EMAIL_ADDRESS WITH REDACT;").PolicyJson;
+        Assert.Equal(";", policy["config"]!["csv"]!["delimiter"]!.GetValue<string>());
+        Assert.Equal("'", policy["config"]!["csv"]!["quote"]!.GetValue<string>());
+        var sheets = policy["tabular"]!["sheets"]!.AsArray();
+        Assert.Single(sheets);
+        Assert.Equal("Patients", sheets[0]!["worksheet"]!.GetValue<string>());
+        Assert.Equal("redact", sheets[0]!["unlistedColumns"]!.GetValue<string>());
+        var columns = sheets[0]!["columns"]!.AsArray();
+        Assert.Equal("MASK", columns[0]!["strategies"]![0]!["strategy"]!.GetValue<string>());
+        Assert.Equal(2, columns[1]!["index"]!.GetValue<long>());
+        Assert.Equal("emailAddress", columns[1]!["filters"]![0]!.GetValue<string>());
+    }
+
+    [Theory]
+    [InlineData("csv")]
+    [InlineData("tabular")]
+    [InlineData("sheet")]
+    public void CsvTabularAndSheetAreNotReserved(string name)
+    {
+        var policy = new Compiler().Compile("POLICY " + name + ";\nREDACT SSN WITH MASK;").PolicyJson;
+        Assert.NotNull(policy["identifiers"]!["ssn"]);
+    }
+
+    [Theory]
+    [InlineData("CONFIGURE TABULAR (headerRows = 1);", "Unknown config block: TABULAR")]
+    [InlineData("CONFIGURE CSV (quote = '\\n');", "csv quote must be a single character other than a line break")]
+    [InlineData("CONFIGURE CSV (encoding = '');", "csv encoding must be a non-empty string")]
+    [InlineData("CONFIGURE TABULAR SHEET (headerRows = 1.5);", "tabular sheet headerRows must be a whole number of 0 or more")]
+    [InlineData("CONFIGURE TABULAR SHEET (unlistedColumns = 'drop');", "tabular sheet unlistedColumns must be one of identifiers, ignore, redact")]
+    [InlineData("CONFIGURE TABULAR SHEET (headerRows = 1);\nCONFIGURE TABULAR SHEET (headerRows = 2);", "More than one tabular sheet without a worksheet")]
+    [InlineData("CONFIGURE TABULAR SHEET (columns = (header = 'SSN', action = 'ignore'));", "tabular sheet columns must be a list of column rules")]
+    [InlineData("CONFIGURE TABULAR SHEET (columns = [(header = 'SSN', action = 'ignore', note = 'x')]);", "Unknown tabular column setting: note")]
+    [InlineData("CONFIGURE TABULAR SHEET (columns = [(action = 'ignore')]);", "A tabular column rule needs exactly one of header or index")]
+    [InlineData("CONFIGURE TABULAR SHEET (columns = [(index = 0, action = 'ignore')]);", "tabular column index must be a whole number of 1 or more")]
+    [InlineData("CONFIGURE TABULAR SHEET (columns = [(header = 'SSN')]);", "A tabular column rule needs an action")]
+    [InlineData("CONFIGURE TABULAR SHEET (columns = [(index = 3, action = 'ignore'), (index = 3, action = 'ignore')]);", "More than one column rule for index 3")]
+    [InlineData("CONFIGURE TABULAR SHEET (columns = [(header = 'Notes', action = 'filter')]);", "A filter column rule needs filters")]
+    [InlineData("CONFIGURE TABULAR SHEET (columns = [(header = 'Notes', action = 'filter', filters = ['emailAddress', 'emailAddress'])]);", "column filters must be a non-empty list of distinct identifiers names")]
+    [InlineData("CONFIGURE TABULAR SHEET (columns = [(header = 'SSN', action = 'ignore', filters = ['emailAddress'])]);", "filters apply only to a filter column rule")]
+    [InlineData("CONFIGURE TABULAR SHEET (columns = [(header = 'SSN', action = 'redact', strategies = (strategy = 'MASK'))]);", "column strategies must be a non-empty list of strategies")]
+    [InlineData("CONFIGURE TABULAR SHEET (columns = [(header = 'SSN', action = 'redact', strategies = [(strategy = 'NOPE')])]);", "Unknown strategy in column strategies")]
+    [InlineData("CONFIGURE TABULAR SHEET (unlistedColumns = 'redact', unlistedStrategies = [(strategy = 'MASK', condition = 'x')]);", "unlistedStrategies cannot have a condition")]
+    public void RejectsInvalidCsvAndTabularConfig(string statements, string message)
+    {
+        var ex = Assert.Throws<CompileException>(() => new Compiler().Compile(
+            "REDACT EMAIL_ADDRESS WITH REDACT;\n" + statements));
+        Assert.Contains(message, ex.Message);
+    }
 }

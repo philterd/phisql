@@ -296,4 +296,61 @@ class CompileErrorTest {
             assertTrue(ex.getMessage().contains(c[2]), "Expected '" + c[2] + "': " + ex.getMessage());
         }
     }
+
+    @Test
+    void compilesCsvAndTabularConfig() {
+        // The filter column names emailAddress before the REDACT that defines it.
+        JsonNode policy = json(new Compiler().compile("CONFIGURE csv (delimiter = ';', quote = '\\'');\nCONFIGURE Tabular Sheet (worksheet = 'Patients', unlistedColumns = 'redact', columns = [(header = 'SSN', action = 'redact', strategies = [(strategy = 'MASK')]), (index = 2, action = 'filter', filters = ['emailAddress'])]);\nREDACT EMAIL_ADDRESS WITH REDACT;"));
+        JsonNode csv = policy.path("config").path("csv");
+        assertTrue(csv.path("delimiter").asString().equals(";") && csv.path("quote").asString().equals("'"),
+                "CONFIGURE CSV should write config.csv: " + csv);
+        JsonNode sheets = policy.path("tabular").path("sheets");
+        JsonNode columns = sheets.path(0).path("columns");
+        assertTrue(sheets.size() == 1
+                        && sheets.path(0).path("worksheet").asString().equals("Patients")
+                        && sheets.path(0).path("unlistedColumns").asString().equals("redact")
+                        && columns.path(0).path("strategies").path(0).path("strategy").asString().equals("MASK")
+                        && columns.path(1).path("index").asInt() == 2
+                        && columns.path(1).path("filters").path(0).asString().equals("emailAddress"),
+                "CONFIGURE TABULAR SHEET should write tabular.sheets: " + sheets);
+    }
+
+    @Test
+    void csvTabularAndSheetAreNotReserved() {
+        for (String name : new String[] {"csv", "tabular", "sheet"}) {
+            JsonNode policy = json(new Compiler().compile("POLICY " + name + ";\nREDACT SSN WITH MASK;"));
+            assertTrue(policy.path("identifiers").has("ssn"), "POLICY " + name + " should compile: " + policy);
+        }
+    }
+
+    @Test
+    void rejectsInvalidCsvAndTabularConfig() {
+        String[][] cases = {
+                {"CONFIGURE TABULAR (headerRows = 1);", "Unknown config block: TABULAR"},
+                {"CONFIGURE CSV (quote = '\\n');", "csv quote must be a single character other than a line break"},
+                {"CONFIGURE CSV (encoding = '');", "csv encoding must be a non-empty string"},
+                {"CONFIGURE TABULAR SHEET (headerRows = 1.5);", "tabular sheet headerRows must be a whole number of 0 or more"},
+                {"CONFIGURE TABULAR SHEET (unlistedColumns = 'drop');", "tabular sheet unlistedColumns must be one of identifiers, ignore, redact"},
+                {"CONFIGURE TABULAR SHEET (headerRows = 1);\nCONFIGURE TABULAR SHEET (headerRows = 2);", "More than one tabular sheet without a worksheet"},
+                {"CONFIGURE TABULAR SHEET (columns = (header = 'SSN', action = 'ignore'));", "tabular sheet columns must be a list of column rules"},
+                {"CONFIGURE TABULAR SHEET (columns = [(header = 'SSN', action = 'ignore', note = 'x')]);", "Unknown tabular column setting: note"},
+                {"CONFIGURE TABULAR SHEET (columns = [(action = 'ignore')]);", "A tabular column rule needs exactly one of header or index"},
+                {"CONFIGURE TABULAR SHEET (columns = [(index = 0, action = 'ignore')]);", "tabular column index must be a whole number of 1 or more"},
+                {"CONFIGURE TABULAR SHEET (columns = [(header = 'SSN')]);", "A tabular column rule needs an action"},
+                {"CONFIGURE TABULAR SHEET (columns = [(index = 3, action = 'ignore'), (index = 3, action = 'ignore')]);", "More than one column rule for index 3"},
+                {"CONFIGURE TABULAR SHEET (columns = [(header = 'Notes', action = 'filter')]);", "A filter column rule needs filters"},
+                {"CONFIGURE TABULAR SHEET (columns = [(header = 'Notes', action = 'filter', filters = ['emailAddress', 'emailAddress'])]);", "column filters must be a non-empty list of distinct identifiers names"},
+                {"CONFIGURE TABULAR SHEET (columns = [(header = 'SSN', action = 'ignore', filters = ['emailAddress'])]);", "filters apply only to a filter column rule"},
+                {"CONFIGURE TABULAR SHEET (columns = [(header = 'SSN', action = 'redact', strategies = (strategy = 'MASK'))]);", "column strategies must be a non-empty list of strategies"},
+                {"CONFIGURE TABULAR SHEET (columns = [(header = 'SSN', action = 'redact', strategies = [(strategy = 'NOPE')])]);", "Unknown strategy in column strategies"},
+                {"CONFIGURE TABULAR SHEET (unlistedColumns = 'redact', unlistedStrategies = [(strategy = 'MASK', condition = 'x')]);", "unlistedStrategies cannot have a condition"},
+        };
+        for (String[] c : cases) {
+            Compiler.CompileException ex = assertThrows(
+                    Compiler.CompileException.class,
+                    () -> new Compiler().compile("REDACT EMAIL_ADDRESS WITH REDACT;\n" + c[0]),
+                    c[0]);
+            assertTrue(ex.getMessage().contains(c[1]), "Expected '" + c[1] + "': " + ex.getMessage());
+        }
+    }
 }

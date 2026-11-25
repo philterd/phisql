@@ -93,6 +93,8 @@ class _AstBuilder(PhiSQLVisitor):
             stmt.settings = self.visit(ctx.settingList())
         elif ctx.blockName is not None:  # identifier-named block, e.g. REVIEW
             stmt.block_name = ctx.blockName.text
+            if ctx.subName is not None:
+                stmt.sub_name = ctx.subName.text
             stmt.settings = self.visit(ctx.settingList())
         else:  # config block: SPLITTING | PDF | POSTFILTERS | ANALYSIS
             stmt.config_block = ctx.configBlock.text.upper()

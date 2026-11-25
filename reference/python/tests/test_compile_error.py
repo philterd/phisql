@@ -245,3 +245,52 @@ def test_rejects_invalid_word_and_excel_config(block, settings, message):
     with pytest.raises(CompileException) as exc:
         Compiler().compile(f"REDACT SSN WITH MASK;\nCONFIGURE {block} ({settings});")
     assert message in str(exc.value)
+
+
+def test_compiles_csv_and_tabular_config():
+    # The filter column names emailAddress before the REDACT that defines it.
+    policy = Compiler().compile("CONFIGURE csv (delimiter = ';', quote = '\\'');\nCONFIGURE Tabular Sheet (worksheet = 'Patients', unlistedColumns = 'redact', columns = [(header = 'SSN', action = 'redact', strategies = [(strategy = 'MASK')]), (index = 2, action = 'filter', filters = ['emailAddress'])]);\nREDACT EMAIL_ADDRESS WITH REDACT;").policy_json()
+    assert policy["config"]["csv"] == {"delimiter": ";", "quote": "'"}
+    assert policy["tabular"] == {"sheets": [{
+        "worksheet": "Patients",
+        "unlistedColumns": "redact",
+        "columns": [
+            {"header": "SSN", "action": "redact", "strategies": [{"strategy": "MASK"}]},
+            {"index": 2, "action": "filter", "filters": ["emailAddress"]},
+        ],
+    }]}
+
+
+@pytest.mark.parametrize("name", ["csv", "tabular", "sheet"])
+def test_csv_tabular_and_sheet_are_not_reserved(name):
+    policy = Compiler().compile(f"POLICY {name};\nREDACT SSN WITH MASK;").policy_json()
+    assert "ssn" in policy["identifiers"]
+
+
+@pytest.mark.parametrize(
+    "statements,message",
+    [
+        ("CONFIGURE TABULAR (headerRows = 1);", "Unknown config block: TABULAR"),
+        ("CONFIGURE CSV (quote = '\\n');", "csv quote must be a single character other than a line break"),
+        ("CONFIGURE CSV (encoding = '');", "csv encoding must be a non-empty string"),
+        ("CONFIGURE TABULAR SHEET (headerRows = 1.5);", "tabular sheet headerRows must be a whole number of 0 or more"),
+        ("CONFIGURE TABULAR SHEET (unlistedColumns = 'drop');", "tabular sheet unlistedColumns must be one of identifiers, ignore, redact"),
+        ("CONFIGURE TABULAR SHEET (headerRows = 1);\nCONFIGURE TABULAR SHEET (headerRows = 2);", "More than one tabular sheet without a worksheet"),
+        ("CONFIGURE TABULAR SHEET (columns = (header = 'SSN', action = 'ignore'));", "tabular sheet columns must be a list of column rules"),
+        ("CONFIGURE TABULAR SHEET (columns = [(header = 'SSN', action = 'ignore', note = 'x')]);", "Unknown tabular column setting: note"),
+        ("CONFIGURE TABULAR SHEET (columns = [(action = 'ignore')]);", "A tabular column rule needs exactly one of header or index"),
+        ("CONFIGURE TABULAR SHEET (columns = [(index = 0, action = 'ignore')]);", "tabular column index must be a whole number of 1 or more"),
+        ("CONFIGURE TABULAR SHEET (columns = [(header = 'SSN')]);", "A tabular column rule needs an action"),
+        ("CONFIGURE TABULAR SHEET (columns = [(index = 3, action = 'ignore'), (index = 3, action = 'ignore')]);", "More than one column rule for index 3"),
+        ("CONFIGURE TABULAR SHEET (columns = [(header = 'Notes', action = 'filter')]);", "A filter column rule needs filters"),
+        ("CONFIGURE TABULAR SHEET (columns = [(header = 'Notes', action = 'filter', filters = ['emailAddress', 'emailAddress'])]);", "column filters must be a non-empty list of distinct identifiers names"),
+        ("CONFIGURE TABULAR SHEET (columns = [(header = 'SSN', action = 'ignore', filters = ['emailAddress'])]);", "filters apply only to a filter column rule"),
+        ("CONFIGURE TABULAR SHEET (columns = [(header = 'SSN', action = 'redact', strategies = (strategy = 'MASK'))]);", "column strategies must be a non-empty list of strategies"),
+        ("CONFIGURE TABULAR SHEET (columns = [(header = 'SSN', action = 'redact', strategies = [(strategy = 'NOPE')])]);", "Unknown strategy in column strategies"),
+        ("CONFIGURE TABULAR SHEET (unlistedColumns = 'redact', unlistedStrategies = [(strategy = 'MASK', condition = 'x')]);", "unlistedStrategies cannot have a condition"),
+    ],
+)
+def test_rejects_invalid_csv_and_tabular_config(statements, message):
+    with pytest.raises(CompileException) as exc:
+        Compiler().compile("REDACT EMAIL_ADDRESS WITH REDACT;\n" + statements)
+    assert message in str(exc.value)

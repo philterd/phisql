@@ -261,7 +261,8 @@ def page_verbs(rules: dict[str, str], examples: list[dict]) -> str:
         ("configure", "CONFIGURE", ["configure stmt"],
          "Sets document-wide configuration: encryption keys (read from "
          "environment variables), and splitting, PDF, post-filter, analysis, "
-         "review sampling, email, Word, Excel, and graphical-redaction settings."),
+         "review sampling, email, Word, Excel, CSV, graphical-redaction, and "
+         "tabular column settings."),
         ("redact", "REDACT", ["redact stmt"],
          "Applies a strategy to one or more entity types, optionally gated by "
          "a `WHERE` predicate and tuned with per-filter `OPTIONS`."),

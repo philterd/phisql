@@ -160,6 +160,8 @@ class Compiler:
 
         policy_name = _resolve_policy_name(expected_name, declared_name)
         self._enforce_date_only_strategies(policy_json)
+        date_only = self._catalog.date_only_strategy_enums()
+        _validate_tabular(policy_json, self._catalog.strategy_enums() - date_only, date_only)
 
         # DESCRIPTION travels in the policy itself, so it survives export and sharing.
         # It stays on CompileResult as well for callers that write it elsewhere.
@@ -213,8 +215,9 @@ class Compiler:
             config = _get_or_create_object(policy_json, "config")
             self._apply_settings(_get_or_create_object(config, block), ctx.settings)
         elif ctx.block_name is not None:
-            # A block named by an identifier, so the name is not a reserved keyword.
-            name = ctx.block_name.upper()
+            # A block named by one or two identifiers, so the names are not reserved keywords.
+            written = ctx.block_name if ctx.sub_name is None else f"{ctx.block_name} {ctx.sub_name}"
+            name = written.upper()
             if name == "REVIEW":
                 review = _get_or_create_object(_get_or_create_object(policy_json, "config"), "review")
                 self._apply_settings(review, ctx.settings)
@@ -236,8 +239,20 @@ class Compiler:
                 self._apply_settings(settings, ctx.settings)
                 _validate_document_settings(block, settings,
                                             _WORD_SETTINGS if name == "WORD" else _EXCEL_SETTINGS)
+            elif name == "CSV":
+                csv = _get_or_create_object(_get_or_create_object(policy_json, "config"), "csv")
+                self._apply_settings(csv, ctx.settings)
+                _validate_csv(csv)
+            elif name == "TABULAR SHEET":
+                # Each statement adds a sheet entry. Its rules are checked by
+                # _validate_tabular once every statement is compiled, since a
+                # column's filters may name identifiers defined later in the script.
+                sheets = _get_or_create_array(_get_or_create_object(policy_json, "tabular"), "sheets")
+                sheet = {}
+                sheets.append(sheet)
+                self._apply_settings(sheet, ctx.settings)
             else:
-                raise CompileException(f"Unknown config block: {ctx.block_name}")
+                raise CompileException(f"Unknown config block: {written}")
         else:
             # GRAPHICAL BOX ( ... ): append a fixed bounding box.
             graphical = _get_or_create_object(policy_json, "graphical")
@@ -776,3 +791,152 @@ def _validate_document_settings(block: str, settings: dict, allowed: dict) -> No
             raise CompileException(
                 f"{block} setting {key} must be one of {', '.join(values)}: {json.dumps(value)}"
             )
+
+
+def _validate_csv(csv: dict) -> None:
+    """Checks config.csv, as _validate_email does for email."""
+    for key, value in csv.items():
+        if key in ("delimiter", "quote"):
+            if not isinstance(value, str) or len(value) != 1 or value in "\r\n":
+                raise CompileException(
+                    f"csv {key} must be a single character other than a line break: {json.dumps(value)}"
+                )
+        elif key == "encoding":
+            if not isinstance(value, str) or not value.strip():
+                raise CompileException(f"csv encoding must be a non-empty string: {json.dumps(value)}")
+        else:
+            raise CompileException(f"Unknown csv setting: {key}")
+    if csv.get("delimiter", ",") == csv.get("quote", '"'):
+        raise CompileException("csv delimiter and quote must be different characters")
+
+
+_SHEET_SETTINGS = ("worksheet", "headerRows", "unlistedColumns", "unlistedStrategies", "columns")
+_COLUMN_SETTINGS = ("header", "index", "action", "strategies", "filters")
+_UNLISTED_COLUMNS = ("identifiers", "ignore", "redact")
+_COLUMN_ACTIONS = ("redact", "ignore", "filter")
+
+
+def _is_whole_number(value, minimum: int) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool) and value >= minimum
+
+
+def _validate_tabular(policy_json: dict, column_strategies: set, date_only: set) -> None:
+    """Checks the tabular sheets here rather than leaving it to schema validation,
+    so a mistake in a column rule fails at compile time instead of leaving a column
+    unredacted. Runs after every statement, once identifiers is complete."""
+    tabular = policy_json.get("tabular")
+    if tabular is None:
+        return
+    identifiers = policy_json.get("identifiers") or {}
+    worksheets = set()
+    unnamed = False
+    for sheet in tabular["sheets"]:
+        for key in sheet:
+            if key not in _SHEET_SETTINGS:
+                raise CompileException(f"Unknown tabular sheet setting: {key}")
+        if "worksheet" in sheet:
+            worksheet = sheet["worksheet"]
+            if not isinstance(worksheet, str) or not worksheet.strip():
+                raise CompileException(
+                    f"tabular sheet worksheet must be a non-empty string: {json.dumps(worksheet)}"
+                )
+            # Worksheet names match case-insensitively, as Excel compares them.
+            if worksheet.lower() in worksheets:
+                raise CompileException(f"More than one tabular sheet for worksheet '{worksheet}'")
+            worksheets.add(worksheet.lower())
+        elif unnamed:
+            raise CompileException("More than one tabular sheet without a worksheet")
+        else:
+            unnamed = True
+        header_rows = sheet.get("headerRows", 1)
+        if not _is_whole_number(header_rows, 0):
+            raise CompileException(
+                f"tabular sheet headerRows must be a whole number of 0 or more: {json.dumps(header_rows)}"
+            )
+        unlisted = sheet.get("unlistedColumns", "identifiers")
+        if not isinstance(unlisted, str) or unlisted not in _UNLISTED_COLUMNS:
+            raise CompileException(
+                f"tabular sheet unlistedColumns must be one of identifiers, ignore, redact: {json.dumps(unlisted)}"
+            )
+        if "unlistedStrategies" in sheet:
+            if unlisted != "redact":
+                raise CompileException("unlistedStrategies applies only when unlistedColumns is 'redact'")
+            _validate_column_strategies("unlistedStrategies", sheet["unlistedStrategies"],
+                                        column_strategies, date_only)
+        columns = sheet.get("columns", [])
+        if not isinstance(columns, list):
+            raise CompileException(f"tabular sheet columns must be a list of column rules: {json.dumps(columns)}")
+        selected = set()
+        for column in columns:
+            _validate_column(column, header_rows, identifiers, column_strategies, date_only)
+            if "header" in column:
+                selector = f"header '{column['header'].strip()}'"
+            else:
+                selector = f"index {column['index']}"
+            if selector in selected:
+                raise CompileException(f"More than one column rule for {selector}")
+            selected.add(selector)
+
+
+def _validate_column(column, header_rows: int, identifiers: dict,
+                     column_strategies: set, date_only: set) -> None:
+    if not isinstance(column, dict):
+        raise CompileException(f"A tabular column rule must be a setting list: {json.dumps(column)}")
+    for key in column:
+        if key not in _COLUMN_SETTINGS:
+            raise CompileException(f"Unknown tabular column setting: {key}")
+    if ("header" in column) == ("index" in column):
+        raise CompileException("A tabular column rule needs exactly one of header or index")
+    if "header" in column:
+        header = column["header"]
+        if not isinstance(header, str) or not header.strip():
+            raise CompileException(f"tabular column header must be a non-empty string: {json.dumps(header)}")
+        if header_rows == 0:
+            raise CompileException(f"The column rule for header '{header}' needs headerRows of 1 or more")
+    elif not _is_whole_number(column["index"], 1):
+        raise CompileException(
+            f"tabular column index must be a whole number of 1 or more: {json.dumps(column['index'])}"
+        )
+    if "action" not in column:
+        raise CompileException("A tabular column rule needs an action")
+    action = column["action"]
+    if not isinstance(action, str) or action not in _COLUMN_ACTIONS:
+        raise CompileException(
+            f"tabular column action must be one of redact, ignore, filter: {json.dumps(action)}"
+        )
+    if action == "redact":
+        if "strategies" not in column:
+            raise CompileException("A redact column rule needs strategies")
+        _validate_column_strategies("column strategies", column["strategies"], column_strategies, date_only)
+    elif "strategies" in column:
+        raise CompileException("strategies apply only to a redact column rule")
+    if action == "filter":
+        if "filters" not in column:
+            raise CompileException("A filter column rule needs filters")
+        filters = column["filters"]
+        if (not isinstance(filters, list) or not filters
+                or not all(isinstance(f, str) for f in filters) or len(set(filters)) != len(filters)):
+            raise CompileException(
+                f"column filters must be a non-empty list of distinct identifiers names: {json.dumps(filters)}"
+            )
+        for name in filters:
+            if name not in identifiers:
+                raise CompileException(f"column filter '{name}' is not defined in identifiers")
+    elif "filters" in column:
+        raise CompileException("filters apply only to a filter column rule")
+
+
+def _validate_column_strategies(where: str, strategies, column_strategies: set, date_only: set) -> None:
+    if (not isinstance(strategies, list) or not strategies
+            or not all(isinstance(s, dict) for s in strategies)):
+        raise CompileException(f"{where} must be a non-empty list of strategies: {json.dumps(strategies)}")
+    for strategy in strategies:
+        if "condition" in strategy:
+            raise CompileException(
+                f"{where} cannot have a condition: a whole-column strategy replaces every cell"
+            )
+        name = strategy.get("strategy", "REDACT")
+        if isinstance(name, str) and name in date_only:
+            raise CompileException(f"{name} is a date-only strategy and cannot be applied to a column")
+        if not isinstance(name, str) or name not in column_strategies:
+            raise CompileException(f"Unknown strategy in {where}: {json.dumps(name)}")

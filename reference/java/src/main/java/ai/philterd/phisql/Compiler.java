@@ -26,6 +26,7 @@ import tools.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -145,6 +146,10 @@ public final class Compiler {
 
         String policyName = resolvePolicyName(expectedName, declaredName);
         enforceDateOnlyStrategies(policyJson);
+        Set<String> dateOnly = catalog.dateOnlyStrategyEnums();
+        Set<String> columnStrategies = new HashSet<>(catalog.strategyEnums());
+        columnStrategies.removeAll(dateOnly);
+        validateTabular(policyJson, columnStrategies, dateOnly);
 
         // DESCRIPTION travels in the policy itself, so it survives export and sharing.
         // It stays on CompileResult as well for callers that write it elsewhere.
@@ -236,8 +241,11 @@ public final class Compiler {
             ObjectNode config = getOrCreateObject(policyJson, "config");
             applySettings(getOrCreateObject(config, block), ctx.settingList());
         } else if (ctx.blockName != null) {
-            // A block named by an identifier, so the name is not a reserved keyword.
-            String name = ctx.blockName.getText().toUpperCase(Locale.ROOT);
+            // A block named by one or two identifiers, so the names are not reserved keywords.
+            String written = ctx.subName == null
+                    ? ctx.blockName.getText()
+                    : ctx.blockName.getText() + " " + ctx.subName.getText();
+            String name = written.toUpperCase(Locale.ROOT);
             if (name.equals("REVIEW")) {
                 ObjectNode review = getOrCreateObject(getOrCreateObject(policyJson, "config"), "review");
                 applySettings(review, ctx.settingList());
@@ -260,8 +268,21 @@ public final class Compiler {
                 applySettings(settings, ctx.settingList());
                 validateDocumentSettings(block, settings,
                         name.equals("WORD") ? WORD_SETTINGS : EXCEL_SETTINGS);
+            } else if (name.equals("CSV")) {
+                ObjectNode csv = getOrCreateObject(getOrCreateObject(policyJson, "config"), "csv");
+                applySettings(csv, ctx.settingList());
+                validateCsv(csv);
+            } else if (name.equals("TABULAR SHEET")) {
+                // Each statement adds a sheet entry. Its rules are checked by
+                // validateTabular once every statement is compiled, since a
+                // column's filters may name identifiers defined later in the script.
+                ObjectNode tabular = getOrCreateObject(policyJson, "tabular");
+                ArrayNode sheets = tabular.has("sheets")
+                        ? (ArrayNode) tabular.get("sheets")
+                        : tabular.putArray("sheets");
+                applySettings(sheets.addObject(), ctx.settingList());
             } else {
-                throw new CompileException("Unknown config block: " + ctx.blockName.getText());
+                throw new CompileException("Unknown config block: " + written);
             }
         } else {
             // GRAPHICAL BOX ( ... ): append a fixed bounding box.
@@ -294,6 +315,222 @@ public final class Compiler {
                     }
                 }
                 default -> throw new CompileException("Unknown leftoverCheck setting: " + key);
+            }
+        }
+    }
+
+    /** Checks {@code config.csv}, as {@link #validateEmail} does for email. */
+    private static void validateCsv(ObjectNode csv) {
+        for (String key : csv.propertyNames()) {
+            JsonNode value = csv.get(key);
+            switch (key) {
+                case "delimiter", "quote" -> {
+                    if (!isSingleCharacter(value)) {
+                        throw new CompileException(
+                                "csv " + key + " must be a single character other than a line break: " + value);
+                    }
+                }
+                case "encoding" -> {
+                    if (!value.isString() || value.asString().isBlank()) {
+                        throw new CompileException("csv encoding must be a non-empty string: " + value);
+                    }
+                }
+                default -> throw new CompileException("Unknown csv setting: " + key);
+            }
+        }
+        String delimiter = csv.has("delimiter") ? csv.get("delimiter").asString() : ",";
+        String quote = csv.has("quote") ? csv.get("quote").asString() : "\"";
+        if (delimiter.equals(quote)) {
+            throw new CompileException("csv delimiter and quote must be different characters");
+        }
+    }
+
+    private static boolean isSingleCharacter(JsonNode value) {
+        if (!value.isString()) return false;
+        String s = value.asString();
+        return s.codePointCount(0, s.length()) == 1 && !s.equals("\r") && !s.equals("\n");
+    }
+
+    private static final Set<String> SHEET_SETTINGS =
+            Set.of("worksheet", "headerRows", "unlistedColumns", "unlistedStrategies", "columns");
+    private static final Set<String> COLUMN_SETTINGS = Set.of("header", "index", "action", "strategies", "filters");
+    private static final Set<String> UNLISTED_COLUMNS = Set.of("identifiers", "ignore", "redact");
+    private static final Set<String> COLUMN_ACTIONS = Set.of("redact", "ignore", "filter");
+
+    private static boolean isWholeNumber(JsonNode value, int minimum) {
+        return value.isIntegralNumber() && value.canConvertToLong() && value.asLong() >= minimum;
+    }
+
+    /**
+     * Checks the tabular sheets here rather than leaving it to schema
+     * validation, so a mistake in a column rule fails at compile time instead
+     * of leaving a column unredacted. Runs after every statement, once
+     * {@code identifiers} is complete.
+     */
+    private static void validateTabular(ObjectNode policyJson, Set<String> columnStrategies, Set<String> dateOnly) {
+        JsonNode tabular = policyJson.get("tabular");
+        if (tabular == null) return;
+        JsonNode identifiers = policyJson.path("identifiers");
+        Set<String> worksheets = new HashSet<>();
+        boolean unnamed = false;
+        for (JsonNode sheet : tabular.get("sheets")) {
+            for (String key : sheet.propertyNames()) {
+                if (!SHEET_SETTINGS.contains(key)) {
+                    throw new CompileException("Unknown tabular sheet setting: " + key);
+                }
+            }
+            if (sheet.has("worksheet")) {
+                JsonNode worksheet = sheet.get("worksheet");
+                if (!worksheet.isString() || worksheet.asString().isBlank()) {
+                    throw new CompileException("tabular sheet worksheet must be a non-empty string: " + worksheet);
+                }
+                // Worksheet names match case-insensitively, as Excel compares them.
+                if (!worksheets.add(worksheet.asString().toLowerCase(Locale.ROOT))) {
+                    throw new CompileException(
+                            "More than one tabular sheet for worksheet '" + worksheet.asString() + "'");
+                }
+            } else if (unnamed) {
+                throw new CompileException("More than one tabular sheet without a worksheet");
+            } else {
+                unnamed = true;
+            }
+            JsonNode headerRowsNode = sheet.get("headerRows");
+            if (headerRowsNode != null && !isWholeNumber(headerRowsNode, 0)) {
+                throw new CompileException(
+                        "tabular sheet headerRows must be a whole number of 0 or more: " + headerRowsNode);
+            }
+            long headerRows = headerRowsNode == null ? 1 : headerRowsNode.asLong();
+            JsonNode unlistedNode = sheet.get("unlistedColumns");
+            if (unlistedNode != null
+                    && (!unlistedNode.isString() || !UNLISTED_COLUMNS.contains(unlistedNode.asString()))) {
+                throw new CompileException(
+                        "tabular sheet unlistedColumns must be one of identifiers, ignore, redact: " + unlistedNode);
+            }
+            String unlisted = unlistedNode == null ? "identifiers" : unlistedNode.asString();
+            if (sheet.has("unlistedStrategies")) {
+                if (!unlisted.equals("redact")) {
+                    throw new CompileException("unlistedStrategies applies only when unlistedColumns is 'redact'");
+                }
+                validateColumnStrategies("unlistedStrategies", sheet.get("unlistedStrategies"),
+                        columnStrategies, dateOnly);
+            }
+            if (!sheet.has("columns")) continue;
+            JsonNode columns = sheet.get("columns");
+            if (!columns.isArray()) {
+                throw new CompileException("tabular sheet columns must be a list of column rules: " + columns);
+            }
+            Set<String> selected = new HashSet<>();
+            for (JsonNode column : columns) {
+                validateColumn(column, headerRows, identifiers, columnStrategies, dateOnly);
+                String selector = column.has("header")
+                        ? "header '" + column.get("header").asString().strip() + "'"
+                        : "index " + column.get("index").asLong();
+                if (!selected.add(selector)) {
+                    throw new CompileException("More than one column rule for " + selector);
+                }
+            }
+        }
+    }
+
+    private static void validateColumn(JsonNode column, long headerRows, JsonNode identifiers,
+                                       Set<String> columnStrategies, Set<String> dateOnly) {
+        if (!column.isObject()) {
+            throw new CompileException("A tabular column rule must be a setting list: " + column);
+        }
+        for (String key : column.propertyNames()) {
+            if (!COLUMN_SETTINGS.contains(key)) {
+                throw new CompileException("Unknown tabular column setting: " + key);
+            }
+        }
+        if (column.has("header") == column.has("index")) {
+            throw new CompileException("A tabular column rule needs exactly one of header or index");
+        }
+        if (column.has("header")) {
+            JsonNode header = column.get("header");
+            if (!header.isString() || header.asString().isBlank()) {
+                throw new CompileException("tabular column header must be a non-empty string: " + header);
+            }
+            if (headerRows == 0) {
+                throw new CompileException("The column rule for header '" + header.asString()
+                        + "' needs headerRows of 1 or more");
+            }
+        } else if (!isWholeNumber(column.get("index"), 1)) {
+            throw new CompileException(
+                    "tabular column index must be a whole number of 1 or more: " + column.get("index"));
+        }
+        if (!column.has("action")) {
+            throw new CompileException("A tabular column rule needs an action");
+        }
+        JsonNode actionNode = column.get("action");
+        if (!actionNode.isString() || !COLUMN_ACTIONS.contains(actionNode.asString())) {
+            throw new CompileException(
+                    "tabular column action must be one of redact, ignore, filter: " + actionNode);
+        }
+        String action = actionNode.asString();
+        if (action.equals("redact")) {
+            if (!column.has("strategies")) {
+                throw new CompileException("A redact column rule needs strategies");
+            }
+            validateColumnStrategies("column strategies", column.get("strategies"), columnStrategies, dateOnly);
+        } else if (column.has("strategies")) {
+            throw new CompileException("strategies apply only to a redact column rule");
+        }
+        if (action.equals("filter")) {
+            if (!column.has("filters")) {
+                throw new CompileException("A filter column rule needs filters");
+            }
+            JsonNode filters = column.get("filters");
+            Set<String> names = new HashSet<>();
+            boolean valid = filters.isArray() && !filters.isEmpty();
+            if (valid) {
+                for (JsonNode f : filters) {
+                    if (!f.isString() || !names.add(f.asString())) {
+                        valid = false;
+                        break;
+                    }
+                }
+            }
+            if (!valid) {
+                throw new CompileException(
+                        "column filters must be a non-empty list of distinct identifiers names: " + filters);
+            }
+            for (JsonNode f : filters) {
+                if (!identifiers.has(f.asString())) {
+                    throw new CompileException("column filter '" + f.asString() + "' is not defined in identifiers");
+                }
+            }
+        } else if (column.has("filters")) {
+            throw new CompileException("filters apply only to a filter column rule");
+        }
+    }
+
+    private static void validateColumnStrategies(String where, JsonNode strategies,
+                                                 Set<String> columnStrategies, Set<String> dateOnly) {
+        boolean valid = strategies.isArray() && !strategies.isEmpty();
+        if (valid) {
+            for (JsonNode s : strategies) {
+                if (!s.isObject()) {
+                    valid = false;
+                    break;
+                }
+            }
+        }
+        if (!valid) {
+            throw new CompileException(where + " must be a non-empty list of strategies: " + strategies);
+        }
+        for (JsonNode strategy : strategies) {
+            if (strategy.has("condition")) {
+                throw new CompileException(
+                        where + " cannot have a condition: a whole-column strategy replaces every cell");
+            }
+            JsonNode name = strategy.get("strategy");
+            if (name == null) continue;  // the schema default, REDACT
+            if (name.isString() && dateOnly.contains(name.asString())) {
+                throw new CompileException(
+                        name.asString() + " is a date-only strategy and cannot be applied to a column");
+            }
+            if (!name.isString() || !columnStrategies.contains(name.asString())) {
+                throw new CompileException("Unknown strategy in " + where + ": " + name);
             }
         }
     }

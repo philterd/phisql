@@ -144,6 +144,15 @@ public final class Catalog {
         return strategiesByName.get(name.toUpperCase(Locale.ROOT));
     }
 
+    /** Every Phileas strategy enum in the catalog. */
+    public java.util.Set<String> strategyEnums() {
+        java.util.Set<String> out = new java.util.HashSet<>();
+        for (Strategy s : strategiesByName.values()) {
+            out.add(s.phileasEnum());
+        }
+        return out;
+    }
+
     /** The Phileas strategy enums classified date-only (dateFilterStrategy). */
     public java.util.Set<String> dateOnlyStrategyEnums() {
         java.util.Set<String> out = new java.util.HashSet<>();

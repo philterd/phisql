@@ -1,0 +1,64 @@
+{
+  "identifiers": {
+    "emailAddress": {
+      "emailAddressFilterStrategies": [
+        {
+          "strategy": "REDACT"
+        }
+      ]
+    },
+    "phoneNumber": {
+      "phoneNumberFilterStrategies": [
+        {
+          "strategy": "REDACT"
+        }
+      ]
+    },
+    "ssn": {
+      "ssnFilterStrategies": [
+        {
+          "strategy": "LAST_4"
+        }
+      ]
+    }
+  },
+  "config": {
+    "csv": {
+      "delimiter": ";",
+      "quote": "\"",
+      "encoding": "UTF-8"
+    }
+  },
+  "tabular": {
+    "sheets": [
+      {
+        "headerRows": 1,
+        "unlistedColumns": "identifiers",
+        "columns": [
+          {
+            "header": "SSN",
+            "action": "redact",
+            "strategies": [
+              {
+                "strategy": "RANDOM_REPLACE",
+                "replacementScope": "CONTEXT"
+              }
+            ]
+          },
+          {
+            "header": "Claim ID",
+            "action": "ignore"
+          },
+          {
+            "header": "Notes",
+            "action": "filter",
+            "filters": [
+              "emailAddress",
+              "phoneNumber"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

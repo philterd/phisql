@@ -45,6 +45,10 @@
       "description": "Graphical redaction settings for image and PDF redaction.",
       "$ref": "#/$defs/graphical"
     },
+    "tabular": {
+      "description": "Column rules for tabular documents (CSV and Excel .xlsx): redact a whole column, leave it unchanged, or scan it with only some filters.",
+      "$ref": "#/$defs/tabular"
+    },
     "generators": {
       "description": "Named, reusable replacement generators referenced by the MAP_REPLACE strategy's generator property.",
       "$ref": "#/$defs/generators"
@@ -115,6 +119,10 @@
         "excel": {
           "description": "Settings for Excel (.xlsx) workbooks beyond their cell text: print headers and footers, charts, formula and pivot caches, embedded objects, and document properties.",
           "$ref": "#/$defs/excel"
+        },
+        "csv": {
+          "description": "Settings for reading CSV documents: delimiter, quote character, and encoding.",
+          "$ref": "#/$defs/csv"
         }
       }
     },
@@ -412,6 +420,35 @@
         }
       }
     },
+    "csv": {
+      "description": "Settings for reading CSV documents. No effect on .xlsx. Column rules for CSV are in the top-level tabular section. In runtimes without CSV support this block has no effect.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "delimiter": {
+          "description": "The field delimiter: one character, not a line break. Must differ from quote.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1,
+          "not": { "enum": ["\r", "\n"] },
+          "default": ","
+        },
+        "quote": {
+          "description": "The quote character around fields that contain the delimiter, a quote, or a line break: one character, not a line break. Must differ from delimiter.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1,
+          "not": { "enum": ["\r", "\n"] },
+          "default": "\""
+        },
+        "encoding": {
+          "description": "The character encoding the document is read in, by its IANA name (for example UTF-8, ISO-8859-1).",
+          "type": "string",
+          "minLength": 1,
+          "default": "UTF-8"
+        }
+      }
+    },
     "crypto": {
       "description": "AES-GCM encryption settings used by the CRYPTO_REPLACE strategy. A fresh random nonce is generated per value, so no initialization vector is configured. Values may be prefixed with 'env:' to read from environment variables.",
       "type": "object",
@@ -543,6 +580,151 @@
         }
       },
       "additionalProperties": false
+    },
+    "tabular": {
+      "description": "Column rules for tabular documents: CSV and Excel (.xlsx). Each column is handled by its own rule, all in one pass over the cells: a column with a rule follows it, and a column without one follows its sheet's unlistedColumns, by default scanned with every filter in identifiers. Header rows are never redacted. With an empty identifiers and the default unlistedColumns, only columns with a rule are changed. A runtime that does not support tabular rules must reject a policy that sets this section rather than ignore it, since ignoring it would leave columns unredacted without warning. Per-request options that pick columns (for example an interactive column picker) override the policy's rules for that request.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sheets"],
+      "properties": {
+        "sheets": {
+          "description": "Sheet entries: at most one per worksheet name, and at most one without a worksheet. An .xlsx worksheet follows the entry that names it, or else the entry without a worksheet, if there is one. A CSV is one unnamed sheet, so only the entry without a worksheet applies to it.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/tabularSheet"
+          }
+        }
+      }
+    },
+    "tabularSheet": {
+      "description": "Column rules for one worksheet, or for every worksheet without an entry of its own and for a CSV document.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "worksheet": {
+          "description": "Worksheet name, matched case-insensitively, as Excel compares sheet names. When absent, the entry applies to every worksheet without an entry of its own and to a CSV document. No effect on CSV: an entry that names a worksheet never applies to a CSV.",
+          "type": "string",
+          "minLength": 1
+        },
+        "headerRows": {
+          "description": "Number of leading header rows. Header rows are never redacted. A column rule's header is matched against the last header row. 0 means the sheet has no header row, and columns can only be picked by index.",
+          "type": "integer",
+          "minimum": 0,
+          "default": 1
+        },
+        "unlistedColumns": {
+          "description": "What happens to columns without a rule. identifiers scans them with every filter in identifiers. ignore leaves them unchanged. redact replaces every data cell whole with unlistedStrategies, with no detection, so only columns with a rule (for example ignore) survive unchanged.",
+          "type": "string",
+          "enum": ["identifiers", "ignore", "redact"],
+          "default": "identifiers"
+        },
+        "unlistedStrategies": {
+          "description": "The strategies that replace the data cells of columns without a rule when unlistedColumns is redact. Allowed only then. Defaults to a single REDACT strategy.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/columnStrategy"
+          }
+        },
+        "columns": {
+          "description": "Column rules. At most one rule per header and per index.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/tabularColumn"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "required": ["unlistedStrategies"] },
+          "then": {
+            "required": ["unlistedColumns"],
+            "properties": { "unlistedColumns": { "const": "redact" } }
+          }
+        },
+        {
+          "if": {
+            "required": ["headerRows"],
+            "properties": { "headerRows": { "const": 0 } }
+          },
+          "then": {
+            "properties": {
+              "columns": { "items": { "not": { "required": ["header"] } } }
+            }
+          }
+        }
+      ]
+    },
+    "tabularColumn": {
+      "description": "A rule for one column, picked by exactly one of header or index.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action"],
+      "properties": {
+        "header": {
+          "description": "Matched against the displayed text of the column's cell in the last header row, trimmed: a formula by its result, rich text as plain text, and a merged cell by its top-left value. When several columns share the header, the rule applies to every one of them. A header that matches no column is reported as a warning, not an error, since one policy may cover files whose columns differ.",
+          "type": "string",
+          "minLength": 1
+        },
+        "index": {
+          "description": "The column's position, counting from 1.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "action": {
+          "description": "redact replaces every data cell whole with strategies, with no detection, whatever identifiers contains; malformed and partial values are replaced too. ignore leaves the data cells unchanged. filter scans each data cell with only the filters named in filters and replaces only what they find, so detection is probabilistic, as it is for identifiers.",
+          "type": "string",
+          "enum": ["redact", "ignore", "filter"]
+        },
+        "strategies": {
+          "description": "The strategies a redact rule replaces each data cell with. Required for redact and not allowed otherwise. The %t placeholder in redactionFormat expands to full-column.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/columnStrategy"
+          }
+        },
+        "filters": {
+          "description": "The filters a filter rule scans each data cell with, by their key in identifiers (for example pheyes, emailAddress). Each must be defined in identifiers, and a key that holds several filters, such as pheyes (every DETECT PHEYE filter), uses all of them. Required for filter and not allowed otherwise.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "oneOf": [
+        { "required": ["header"] },
+        { "required": ["index"] }
+      ],
+      "allOf": [
+        {
+          "if": {
+            "required": ["action"],
+            "properties": { "action": { "const": "redact" } }
+          },
+          "then": { "required": ["strategies"] },
+          "else": { "not": { "required": ["strategies"] } }
+        },
+        {
+          "if": {
+            "required": ["action"],
+            "properties": { "action": { "const": "filter" } }
+          },
+          "then": { "required": ["filters"] },
+          "else": { "not": { "required": ["filters"] } }
+        }
+      ]
+    },
+    "columnStrategy": {
+      "description": "A strategy that replaces a whole cell: a filter strategy without a condition, since a whole-column rule replaces every cell. Consistent pseudonymization (replacementScope), CRYPTO_REPLACE, and FPE_ENCRYPT_REPLACE work as they do for a filter.",
+      "allOf": [
+        { "$ref": "#/$defs/baseFilterStrategy" },
+        { "not": { "required": ["condition"] } }
+      ]
     },
     "identifiers": {
       "description": "Defines which types of sensitive information to detect and how to handle each type.",

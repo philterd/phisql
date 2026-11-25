@@ -1,0 +1,35 @@
+-- Redacting a multi-sheet Excel workbook. The Patients worksheet is an allow-list:
+-- only the Visit Date and Department columns survive unchanged, the free-text
+-- Comments column is scanned with the email filter, and every other column is
+-- replaced whole with a SHA-256 hash (unlistedColumns = 'redact'). The Codes
+-- worksheet has no header row, so its second column is picked by index and masked,
+-- and its other columns are left unchanged (unlistedColumns = 'ignore'). Any other
+-- worksheet follows the entry without a worksheet, and is scanned with every filter
+-- this policy defines. Worksheet names match case-insensitively.
+-- Added to schema 1.3.0 in place (additive). Compiles to tabular-workbook.json.
+
+POLICY tabular_workbook;
+
+REDACT EMAIL_ADDRESS, PHONE_NUMBER WITH REDACT;
+
+CONFIGURE TABULAR SHEET (
+  worksheet = 'Patients',
+  unlistedColumns = 'redact',
+  unlistedStrategies = [(strategy = 'HASH_SHA256_REPLACE')],
+  columns = [
+    (header = 'Visit Date', action = 'ignore'),
+    (header = 'Department', action = 'ignore'),
+    (header = 'Comments', action = 'filter', filters = ['emailAddress'])
+  ]
+);
+
+CONFIGURE TABULAR SHEET (
+  worksheet = 'Codes',
+  headerRows = 0,
+  unlistedColumns = 'ignore',
+  columns = [
+    (index = 2, action = 'redact', strategies = [(strategy = 'MASK')])
+  ]
+);
+
+CONFIGURE TABULAR SHEET (unlistedColumns = 'identifiers');

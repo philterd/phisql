@@ -59,10 +59,11 @@ configureStmt
       | FPE KEY FROM ENV fpeKeyEnv=STRING_LITERAL TWEAK FROM ENV fpeTweakEnv=STRING_LITERAL
       | configBlock=(SPLITTING | PDF | POSTFILTERS | ANALYSIS) '(' settingList ')'
       | GRAPHICAL BOX '(' settingList ')'
-      // A config block named by an identifier, so its name is not a reserved
-      // keyword. The compiler accepts only REVIEW, EMAIL, WORD, and EXCEL
-      // (case-insensitive) and rejects any other name as a semantic error.
-      | blockName=ID '(' settingList ')'
+      // A config block named by one or two identifiers, so its name is not a
+      // reserved keyword. The compiler accepts only REVIEW, EMAIL, WORD, EXCEL,
+      // CSV, and TABULAR SHEET (case-insensitive) and rejects any other name as
+      // a semantic error.
+      | blockName=ID subName=ID? '(' settingList ')'
       )
     ;
 

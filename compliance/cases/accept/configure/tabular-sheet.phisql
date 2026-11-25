@@ -1,0 +1,12 @@
+REDACT EMAIL_ADDRESS WITH REDACT;
+CONFIGURE TABULAR SHEET (
+  worksheet = 'Patients',
+  unlistedColumns = 'redact',
+  unlistedStrategies = [(strategy = 'REDACT')],
+  columns = [
+    (header = 'SSN', action = 'redact', strategies = [(strategy = 'CRYPTO_REPLACE')]),
+    (header = 'Account ID', action = 'ignore'),
+    (header = 'Notes', action = 'filter', filters = ['emailAddress']),
+    (index = 7, action = 'redact', strategies = [(strategy = 'REDACT')])
+  ]
+);

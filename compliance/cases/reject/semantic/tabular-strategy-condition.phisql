@@ -1,0 +1,2 @@
+REDACT EMAIL_ADDRESS WITH REDACT;
+CONFIGURE TABULAR SHEET (columns = [(header = 'SSN', action = 'redact', strategies = [(strategy = 'MASK', condition = 'token startswith "9"')])]);

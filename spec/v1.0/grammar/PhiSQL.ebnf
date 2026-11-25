@@ -41,12 +41,12 @@ configure stmt   = "CONFIGURE"
                    | ( "SPLITTING" | "PDF" | "POSTFILTERS" | "ANALYSIS" )
                          , "(" , setting list , ")"
                    | "GRAPHICAL" , "BOX" , "(" , setting list , ")"
-                   | id , "(" , setting list , ")" ) ;
+                   | id , [ id ] , "(" , setting list , ")" ) ;
 
-(* The last configure form names its block with an identifier rather than a
-   keyword, so the name is not reserved. The only such blocks are REVIEW,
-   EMAIL, WORD, and EXCEL (case-insensitive); any other name is a compile
-   error. *)
+(* The last configure form names its block with one or two identifiers rather
+   than keywords, so the names are not reserved. The only such blocks are
+   REVIEW, EMAIL, WORD, EXCEL, CSV, and TABULAR SHEET (case-insensitive); any
+   other name is a compile error. *)
 
 setting list     = setting , { "," , setting } ;
 

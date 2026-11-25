@@ -123,6 +123,7 @@ public sealed class Parser
             else if (ctx.blockName is not null) // identifier-named block, e.g. REVIEW
             {
                 stmt.BlockName = ctx.blockName.Text;
+                stmt.SubName = ctx.subName?.Text;
                 stmt.Settings = V<List<Setting>>(ctx.settingList());
             }
             else // config block: SPLITTING | PDF | POSTFILTERS | ANALYSIS

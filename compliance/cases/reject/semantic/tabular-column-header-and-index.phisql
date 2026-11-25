@@ -1,0 +1,2 @@
+REDACT EMAIL_ADDRESS WITH REDACT;
+CONFIGURE TABULAR SHEET (columns = [(header = 'SSN', index = 3, action = 'ignore')]);

@@ -140,6 +140,10 @@ class Catalog:
             return None
         return self._strategies_by_name.get(name.upper())
 
+    def strategy_enums(self) -> set:
+        """Every Phileas strategy enum in the catalog."""
+        return {s.phileas_enum for s in self._strategies_by_name.values()}
+
     def date_only_strategy_enums(self) -> set:
         """The Phileas strategy enums classified date-only (dateFilterStrategy)."""
         return {s.phileas_enum for s in self._strategies_by_name.values() if s.date_only}
