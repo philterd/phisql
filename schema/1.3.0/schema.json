@@ -700,9 +700,10 @@
           "default": "SAME"
         },
         "truncateLeaveCharacters": {
-          "description": "Number of characters to leave visible when using TRUNCATE strategy.",
+          "description": "Number of characters to leave visible when using TRUNCATE strategy. At most length - 1 characters are kept, so a value no longer than this setting still has at least one character replaced: with the default, ABCD becomes ABC* and AB becomes A*.",
           "type": "integer",
-          "minimum": 1
+          "minimum": 1,
+          "default": 4
         },
         "truncateCharacter": {
           "description": "Character used to replace truncated portions.",
@@ -839,9 +840,10 @@
           "default": "SAME"
         },
         "truncateLeaveCharacters": {
-          "description": "Number of characters to leave visible when using TRUNCATE strategy.",
+          "description": "Number of characters to leave visible when using TRUNCATE strategy. At most length - 1 characters are kept, so a value no longer than this setting still has at least one character replaced: with the default, ABCD becomes ABC* and AB becomes A*.",
           "type": "integer",
-          "minimum": 1
+          "minimum": 1,
+          "default": 4
         },
         "truncateCharacter": {
           "description": "Character used to replace truncated portions.",
