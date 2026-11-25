@@ -224,6 +224,8 @@ class Compiler:
                     raise CompileException(
                         f"samplingRate must be a number from 0.0 to 1.0: {json.dumps(rate)}"
                     )
+                if "leftoverCheck" in review:
+                    _validate_leftover_check(review["leftoverCheck"])
             elif name == "EMAIL":
                 email = _get_or_create_object(_get_or_create_object(policy_json, "config"), "email")
                 self._apply_settings(email, ctx.settings)
@@ -675,6 +677,29 @@ def _condition_warnings(document: ast.Document) -> List[str]:
     if found["paren"]:
         warnings.append(PAREN_WARNING)
     return warnings
+
+
+_LEFTOVER_MODES = ("off", "onRequest", "always")
+_LEFTOVER_USING = ("broad", "samePolicy")
+
+
+def _validate_leftover_check(leftover_check) -> None:
+    """Checks config.review.leftoverCheck, as _validate_email does for email."""
+    if not isinstance(leftover_check, dict):
+        raise CompileException(f"leftoverCheck must be a setting list: {json.dumps(leftover_check)}")
+    for key, value in leftover_check.items():
+        if key == "mode":
+            if not isinstance(value, str) or value not in _LEFTOVER_MODES:
+                raise CompileException(
+                    f"leftoverCheck mode must be one of off, onRequest, always: {json.dumps(value)}"
+                )
+        elif key == "using":
+            if not isinstance(value, str) or value not in _LEFTOVER_USING:
+                raise CompileException(
+                    f"leftoverCheck using must be one of broad, samePolicy: {json.dumps(value)}"
+                )
+        else:
+            raise CompileException(f"Unknown leftoverCheck setting: {key}")
 
 
 _EMAIL_HEADER_SETTINGS = ("removeTechnical", "removeIdentity", "removeDate", "removeSubject")

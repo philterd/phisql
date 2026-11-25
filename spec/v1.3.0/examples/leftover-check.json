@@ -1,0 +1,41 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [
+        {
+          "strategy": "LAST_4"
+        }
+      ]
+    },
+    "creditCard": {
+      "creditCardFilterStrategies": [
+        {
+          "strategy": "LAST_4"
+        }
+      ]
+    },
+    "emailAddress": {
+      "emailAddressFilterStrategies": [
+        {
+          "strategy": "REDACT"
+        }
+      ]
+    },
+    "phoneNumber": {
+      "phoneNumberFilterStrategies": [
+        {
+          "strategy": "REDACT"
+        }
+      ]
+    }
+  },
+  "config": {
+    "review": {
+      "samplingRate": 0.05,
+      "leftoverCheck": {
+        "mode": "always",
+        "using": "broad"
+      }
+    }
+  }
+}

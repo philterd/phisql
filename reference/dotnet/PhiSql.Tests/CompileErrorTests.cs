@@ -174,4 +174,30 @@ public class CompileErrorTests
             "REDACT SSN WITH MASK;\nCONFIGURE EMAIL (" + settings + ");"));
         Assert.Contains(message, ex.Message);
     }
+
+    [Fact]
+    public void CompilesLeftoverCheck()
+    {
+        var review = new Compiler().Compile(
+                "REDACT SSN WITH MASK;\nCONFIGURE REVIEW (samplingRate = 0.1,"
+                + " leftoverCheck = (mode = 'always', using = 'samePolicy'));")
+            .PolicyJson["config"]!["review"]!;
+        Assert.Equal(0.1, review["samplingRate"]!.GetValue<double>());
+        Assert.Equal("always", review["leftoverCheck"]!["mode"]!.GetValue<string>());
+        Assert.Equal("samePolicy", review["leftoverCheck"]!["using"]!.GetValue<string>());
+    }
+
+    [Theory]
+    [InlineData("leftoverCheck = TRUE", "leftoverCheck must be a setting list")]
+    [InlineData("leftoverCheck = (depth = 'broad')", "Unknown leftoverCheck setting: depth")]
+    [InlineData("leftoverCheck = (mode = 'sometimes')", "leftoverCheck mode must be one of off, onRequest, always")]
+    [InlineData("leftoverCheck = (mode = 'onrequest')", "leftoverCheck mode must be one of off, onRequest, always")]
+    [InlineData("leftoverCheck = (using = 'everything')", "leftoverCheck using must be one of broad, samePolicy")]
+    [InlineData("leftoverCheck = (using = TRUE)", "leftoverCheck using must be one of broad, samePolicy")]
+    public void RejectsInvalidLeftoverCheck(string settings, string message)
+    {
+        var ex = Assert.Throws<CompileException>(() => new Compiler().Compile(
+            "REDACT SSN WITH MASK;\nCONFIGURE REVIEW (" + settings + ");"));
+        Assert.Contains(message, ex.Message);
+    }
 }

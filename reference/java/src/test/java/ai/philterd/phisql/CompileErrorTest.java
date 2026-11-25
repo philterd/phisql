@@ -215,4 +215,34 @@ class CompileErrorTest {
             assertTrue(ex.getMessage().contains(c[1]), "Expected '" + c[1] + "': " + ex.getMessage());
         }
     }
+
+    @Test
+    void compilesLeftoverCheck() {
+        JsonNode review = json(new Compiler().compile(
+                "REDACT SSN WITH MASK;\nCONFIGURE REVIEW (samplingRate = 0.1,"
+                        + " leftoverCheck = (mode = 'always', using = 'samePolicy'));"))
+                .path("config").path("review");
+        assertTrue(review.path("samplingRate").asDouble() == 0.1
+                        && review.path("leftoverCheck").path("mode").asString().equals("always")
+                        && review.path("leftoverCheck").path("using").asString().equals("samePolicy"),
+                "CONFIGURE REVIEW should write config.review.leftoverCheck: " + review);
+    }
+
+    @Test
+    void rejectsInvalidLeftoverCheck() {
+        String[][] cases = {
+                {"leftoverCheck = TRUE", "leftoverCheck must be a setting list"},
+                {"leftoverCheck = (depth = 'broad')", "Unknown leftoverCheck setting: depth"},
+                {"leftoverCheck = (mode = 'sometimes')", "leftoverCheck mode must be one of off, onRequest, always"},
+                {"leftoverCheck = (mode = 'onrequest')", "leftoverCheck mode must be one of off, onRequest, always"},
+                {"leftoverCheck = (using = 'everything')", "leftoverCheck using must be one of broad, samePolicy"},
+                {"leftoverCheck = (using = TRUE)", "leftoverCheck using must be one of broad, samePolicy"},
+        };
+        for (String[] c : cases) {
+            Compiler.CompileException ex = assertThrows(
+                    Compiler.CompileException.class,
+                    () -> new Compiler().compile("REDACT SSN WITH MASK;\nCONFIGURE REVIEW (" + c[0] + ");"));
+            assertTrue(ex.getMessage().contains(c[1]), "Expected '" + c[1] + "': " + ex.getMessage());
+        }
+    }
 }

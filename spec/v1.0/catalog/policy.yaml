@@ -82,6 +82,81 @@ review_sampling:
     identifiers accepted in that position; any other is a compile error.
   on_out_of_range: compile_error
 
+leftover_check:
+  syntax: |
+    CONFIGURE REVIEW (
+      leftoverCheck = ( mode = 'off' | 'onRequest' | 'always',
+                        using = 'broad' | 'samePolicy' )
+    )
+  destination: config.review.leftoverCheck
+  description: |
+    After a request is redacted, the runtime runs detection again over the
+    redacted output and reports anything still detectable. Random review
+    sampling selects requests with no signal about where a miss is; the
+    leftover check selects a request because something detectable remains,
+    including kinds of information the policy never looked for.
+  settings:
+    mode:
+      default: "off"
+      values:
+        "off": The check never runs.
+        onRequest: |
+          The check runs only when the caller asks for it through the
+          runtime's API for that call.
+        always: |
+          The check runs on every request. A caller cannot turn it off for
+          a single call.
+    using:
+      default: broad
+      values:
+        broad: |
+          Every filter the policy defines, including custom identifiers,
+          dictionaries, and PhEye filters, configured as written, plus every
+          other built-in identifier at its defaults. It finds kinds of
+          information the policy did not cover, and is always a superset of
+          samePolicy.
+        samePolicy: |
+          Only the policy's own filters, configured as written. This confirms
+          the policy took effect, for example in parts of a binary document
+          that may not have been processed.
+  exclusions: |
+    The values the redaction itself inserted are not findings: stand-ins from
+    strategies such as RANDOM_REPLACE look like PII on purpose. Values on the
+    policy's top-level ignore lists (ignored, ignoredPatterns) are not
+    findings either. Nothing else suppresses a finding: the policy's filters
+    run in the check with their per-filter ignore lists (ignored,
+    ignoredPatterns, ignoredFiles) stripped, and a strategy condition that
+    leaves a value unredacted does not hide it from the check, so a reviewer
+    sees it.
+  split_input: |
+    Findings are what a scan of the reassembled output would give. A runtime
+    may scan in pieces, but must overlap them so a value spanning a chunk
+    boundary is found.
+  output: |
+    The check never changes the redacted output. The runtime reports it on
+    the filter result, alongside reviewSampled: whether the check was
+    performed and, when it was not, why (for example unreadableOutput); the
+    number of findings; and each finding's type, position in the output, and
+    confidence. An output with no readable text, such as a PDF whose redacted
+    pages are flattened to images, is reported as not performed, never as
+    zero findings. For an email, findings in redacted attachments are part of
+    the message's own result, each naming its attachment.
+  matched_text: |
+    Findings in the filter result do not carry the matched text; it is in the
+    output the caller already has, and leaving it out keeps it out of headers,
+    logs, and audit records. A runtime library may return the text in-process
+    when the calling application asks for it. A server never puts it in
+    headers, logs, or audit records.
+  outside_this_spec: |
+    How a server surfaces the result (a response header, an explain field, an
+    audit record, a metric), how a caller requests an onRequest check, and
+    whether findings also select the request for human review.
+  on_invalid: compile_error
+  compile_errors:
+    - leftoverCheck that is not a setting list.
+    - An unknown key inside leftoverCheck.
+    - A mode or using value outside its list.
+
 email:
   syntax: |
     CONFIGURE EMAIL (

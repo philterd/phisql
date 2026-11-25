@@ -1,0 +1,19 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  },
+  "config": {
+    "review": {
+      "leftoverCheck": {
+        "mode": "onRequest",
+        "using": "samePolicy"
+      }
+    }
+  }
+}

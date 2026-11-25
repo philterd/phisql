@@ -1,0 +1,17 @@
+-- Leftover check for court filings. After each request is redacted, the runtime
+-- scans the redacted output again with every filter this policy defines plus
+-- every other built-in identifier, and reports anything still detectable, such
+-- as a bank routing number this policy never looked for. The check never changes
+-- the redacted output, and findings carry type, position, and confidence, not the
+-- matched text. A random 5% of requests is also selected for spot review.
+-- Added to schema 1.3.0 in place (additive). Compiles to leftover-check.json.
+
+POLICY leftover_check;
+
+REDACT SSN, CREDIT_CARD WITH LAST_4;
+REDACT EMAIL_ADDRESS, PHONE_NUMBER WITH REDACT;
+
+CONFIGURE REVIEW (
+  samplingRate = 0.05,
+  leftoverCheck = (mode = 'always', using = 'broad')
+);

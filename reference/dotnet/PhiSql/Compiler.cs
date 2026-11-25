@@ -238,6 +238,8 @@ public sealed class Compiler
                 if (rate is not null && !IsRate(rate))
                     throw new CompileException(
                         "samplingRate must be a number from 0.0 to 1.0: " + rate.ToJsonString());
+                if (review.TryGetPropertyValue("leftoverCheck", out JsonNode? leftoverCheck))
+                    ValidateLeftoverCheck(leftoverCheck);
             }
             else if (name == "EMAIL")
             {
@@ -258,6 +260,31 @@ public sealed class Compiler
             var box = new JsonObject();
             boxes.Add(box);
             ApplySettings(box, ctx.Settings!);
+        }
+    }
+
+    // Checks config.review.leftoverCheck, as ValidateEmail does for email.
+    private static void ValidateLeftoverCheck(JsonNode? leftoverCheck)
+    {
+        if (leftoverCheck is not JsonObject settings)
+            throw new CompileException("leftoverCheck must be a setting list: " + Json(leftoverCheck));
+        foreach (var (key, value) in settings)
+        {
+            switch (key)
+            {
+                case "mode":
+                    if (!IsOneOf(value, "off", "onRequest", "always"))
+                        throw new CompileException(
+                            "leftoverCheck mode must be one of off, onRequest, always: " + Json(value));
+                    break;
+                case "using":
+                    if (!IsOneOf(value, "broad", "samePolicy"))
+                        throw new CompileException(
+                            "leftoverCheck using must be one of broad, samePolicy: " + Json(value));
+                    break;
+                default:
+                    throw new CompileException("Unknown leftoverCheck setting: " + key);
+            }
         }
     }
 

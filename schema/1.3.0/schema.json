@@ -231,7 +231,7 @@
       }
     },
     "review": {
-      "description": "Settings for selecting filter requests for human review.",
+      "description": "Settings for selecting filter requests for human review: a random sample of requests, and a leftover check of the redacted output.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -241,6 +241,25 @@
           "minimum": 0,
           "maximum": 1,
           "default": 0
+        },
+        "leftoverCheck": {
+          "description": "A second detection pass over the redacted output that reports anything still detectable. The check never changes the redacted output. Findings exclude the values the redaction itself inserted (stand-ins from strategies such as RANDOM_REPLACE look like PII on purpose) and values on the policy's top-level ignore lists (ignored, ignoredPatterns). The policy's filters run in the check with their per-filter ignore lists (ignored, ignoredPatterns, ignoredFiles) stripped, and strategy conditions do not suppress a finding. Findings are what a scan of the reassembled output would give, even when the input is split into chunks. The runtime reports the check with the filter result: whether it was performed (and, when not, why, such as an output with no readable text, which is not reported as zero findings), the number of findings, and each finding's type, position in the output, and confidence. Findings do not carry the matched text in the result.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "mode": {
+              "description": "When the check runs. off: never. onRequest: only when the caller asks for it through the runtime's API for that call. always: on every request; a caller cannot turn it off for a single call.",
+              "type": "string",
+              "enum": ["off", "onRequest", "always"],
+              "default": "off"
+            },
+            "using": {
+              "description": "What the check detects with. broad: every filter the policy defines (including custom identifiers, dictionaries, and PhEye filters) as configured, plus every other built-in identifier at its defaults, so it finds kinds of information the policy did not cover; always a superset of samePolicy. samePolicy: only the policy's own filters, which confirms the policy took effect.",
+              "type": "string",
+              "enum": ["broad", "samePolicy"],
+              "default": "broad"
+            }
+          }
         }
       }
     },

@@ -244,6 +244,10 @@ public final class Compiler {
                     throw new CompileException(
                             "samplingRate must be a number from 0.0 to 1.0: " + rate);
                 }
+                JsonNode leftoverCheck = review.get("leftoverCheck");
+                if (leftoverCheck != null) {
+                    validateLeftoverCheck(leftoverCheck);
+                }
             } else if (name.equals("EMAIL")) {
                 ObjectNode email = getOrCreateObject(getOrCreateObject(policyJson, "config"), "email");
                 applySettings(email, ctx.settingList());
@@ -258,6 +262,31 @@ public final class Compiler {
                     ? (ArrayNode) graphical.get("boundingBoxes")
                     : graphical.putArray("boundingBoxes");
             applySettings(boxes.addObject(), ctx.settingList());
+        }
+    }
+
+    /** Checks {@code config.review.leftoverCheck}, as {@link #validateEmail} does for email. */
+    private static void validateLeftoverCheck(JsonNode leftoverCheck) {
+        if (!leftoverCheck.isObject()) {
+            throw new CompileException("leftoverCheck must be a setting list: " + leftoverCheck);
+        }
+        for (String key : leftoverCheck.propertyNames()) {
+            JsonNode value = leftoverCheck.get(key);
+            switch (key) {
+                case "mode" -> {
+                    if (!value.isString() || !Set.of("off", "onRequest", "always").contains(value.asString())) {
+                        throw new CompileException(
+                                "leftoverCheck mode must be one of off, onRequest, always: " + value);
+                    }
+                }
+                case "using" -> {
+                    if (!value.isString() || !Set.of("broad", "samePolicy").contains(value.asString())) {
+                        throw new CompileException(
+                                "leftoverCheck using must be one of broad, samePolicy: " + value);
+                    }
+                }
+                default -> throw new CompileException("Unknown leftoverCheck setting: " + key);
+            }
         }
     }
 

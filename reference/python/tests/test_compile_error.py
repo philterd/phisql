@@ -174,3 +174,31 @@ def test_rejects_invalid_email_config(settings, message):
     with pytest.raises(CompileException) as exc:
         Compiler().compile(f"REDACT SSN WITH MASK;\nCONFIGURE EMAIL ({settings});")
     assert message in str(exc.value)
+
+
+def test_compiles_leftover_check():
+    review = (
+        Compiler().compile(
+            "REDACT SSN WITH MASK;\nCONFIGURE REVIEW (samplingRate = 0.1,"
+            " leftoverCheck = (mode = 'always', using = 'samePolicy'));"
+        )
+        .policy_json()["config"]["review"]
+    )
+    assert review == {"samplingRate": 0.1, "leftoverCheck": {"mode": "always", "using": "samePolicy"}}
+
+
+@pytest.mark.parametrize(
+    "settings,message",
+    [
+        ("leftoverCheck = TRUE", "leftoverCheck must be a setting list"),
+        ("leftoverCheck = (depth = 'broad')", "Unknown leftoverCheck setting: depth"),
+        ("leftoverCheck = (mode = 'sometimes')", "leftoverCheck mode must be one of off, onRequest, always"),
+        ("leftoverCheck = (mode = 'onrequest')", "leftoverCheck mode must be one of off, onRequest, always"),
+        ("leftoverCheck = (using = 'everything')", "leftoverCheck using must be one of broad, samePolicy"),
+        ("leftoverCheck = (using = TRUE)", "leftoverCheck using must be one of broad, samePolicy"),
+    ],
+)
+def test_rejects_invalid_leftover_check(settings, message):
+    with pytest.raises(CompileException) as exc:
+        Compiler().compile(f"REDACT SSN WITH MASK;\nCONFIGURE REVIEW ({settings});")
+    assert message in str(exc.value)
