@@ -2396,6 +2396,34 @@
   
   
     <li class="md-nav__item">
+      <a href="office-production/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    office-production
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="pheye-physician-name/" class="md-nav__link">
         
   
@@ -2460,6 +2488,62 @@
     
   
     review-sampling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tabular-csv/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tabular-csv
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tabular-workbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tabular-workbook
   
 
     
@@ -2577,7 +2661,7 @@
 
 <h1 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h1>
 <p><em>This page is generated from the PhiSQL <a href="https://github.com/philterd/phisql/blob/main/spec/v1.0">spec artifacts</a> for <code>v1.0</code>. Do not edit it by hand; change the artifact and rebuild.</em></p>
-<p>50 worked examples, each a PhiSQL source paired with the redaction policy JSON it compiles to. Every example is parsed by the reference implementation's test suite on each build. Grouped by the spec version that introduced it.</p>
+<p>53 worked examples, each a PhiSQL source paired with the redaction policy JSON it compiles to. Every example is parsed by the reference implementation's test suite on each build. Grouped by the spec version that introduced it.</p>
 <h2 id="v10">v1.0<a class="headerlink" href="#v10" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -2809,6 +2893,10 @@
 <td>HEALTH_PLAN_MEMBER_ID and DEVICE_IDENTIFIER filters, for HIPAA Safe Harbor</td>
 </tr>
 <tr>
+<td><a href="office-production/"><code>office-production</code></a></td>
+<td>Producing Word and Excel files in e-discovery, where reviewers' comments and</td>
+</tr>
+<tr>
 <td><a href="pheye-physician-name/"><code>pheye-physician-name</code></a></td>
 <td>Physician-name detection after the removal of PHYSICIAN_NAME. The</td>
 </tr>
@@ -2819,6 +2907,14 @@
 <tr>
 <td><a href="review-sampling/"><code>review-sampling</code></a></td>
 <td>Random spot review of court filings. Each filter request is selected for human</td>
+</tr>
+<tr>
+<td><a href="tabular-csv/"><code>tabular-csv</code></a></td>
+<td>Redacting a semicolon-delimited CSV export of claims. The SSN column is replaced</td>
+</tr>
+<tr>
+<td><a href="tabular-workbook/"><code>tabular-workbook</code></a></td>
+<td>Redacting a multi-sheet Excel workbook. The Patients worksheet is an allow-list:</td>
 </tr>
 </tbody>
 </table>

@@ -185,6 +185,10 @@
          <lastmod>2026-11-25</lastmod>
     </url>
     <url>
+         <loc>https://philterd.github.io/phisql/v1.0/examples/office-production/</loc>
+         <lastmod>2026-11-25</lastmod>
+    </url>
+    <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/pdf-strategy-color/</loc>
          <lastmod>2026-11-25</lastmod>
     </url>
@@ -214,6 +218,14 @@
     </url>
     <url>
          <loc>https://philterd.github.io/phisql/v1.0/examples/splitting-overlap/</loc>
+         <lastmod>2026-11-25</lastmod>
+    </url>
+    <url>
+         <loc>https://philterd.github.io/phisql/v1.0/examples/tabular-csv/</loc>
+         <lastmod>2026-11-25</lastmod>
+    </url>
+    <url>
+         <loc>https://philterd.github.io/phisql/v1.0/examples/tabular-workbook/</loc>
          <lastmod>2026-11-25</lastmod>
     </url>
     <url>
