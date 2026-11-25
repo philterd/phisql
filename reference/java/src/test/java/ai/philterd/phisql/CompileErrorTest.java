@@ -177,4 +177,42 @@ class CompileErrorTest {
         assertTrue(ex.getMessage().contains("Unknown config block: AUDIT"),
                 "Expected an unknown-block error: " + ex.getMessage());
     }
+
+    @Test
+    void compilesEmailConfig() {
+        JsonNode email = json(new Compiler().compile(
+                "REDACT SSN WITH MASK;\nCONFIGURE email (headers = (removeDate = TRUE, removeSubject = FALSE),"
+                        + " attachments = 'redact', inlineImages = 'remove');"))
+                .path("config").path("email");
+        assertTrue(email.path("headers").path("removeDate").asBoolean()
+                        && email.path("headers").has("removeSubject")
+                        && email.path("attachments").asString().equals("redact")
+                        && email.path("inlineImages").asString().equals("remove"),
+                "CONFIGURE EMAIL should write config.email: " + email);
+    }
+
+    @Test
+    void emailIsNotReserved() {
+        JsonNode policy = json(new Compiler().compile("POLICY email;\nREDACT SSN WITH MASK;"));
+        assertTrue(policy.path("identifiers").has("ssn"), "POLICY email should compile: " + policy);
+    }
+
+    @Test
+    void rejectsInvalidEmailConfig() {
+        String[][] cases = {
+                {"attachment = 'remove'", "Unknown email setting: attachment"},
+                {"headers = (removeBcc = TRUE)", "Unknown email header setting: removeBcc"},
+                {"headers = (removeDate = 'yes')", "email header setting removeDate must be TRUE or FALSE"},
+                {"headers = TRUE", "email headers must be a setting list"},
+                {"attachments = 'strip'", "attachments must be one of keep, remove, redact"},
+                {"attachments = TRUE", "attachments must be one of keep, remove, redact"},
+                {"inlineImages = 'redact'", "inlineImages must be one of keep, remove"},
+        };
+        for (String[] c : cases) {
+            Compiler.CompileException ex = assertThrows(
+                    Compiler.CompileException.class,
+                    () -> new Compiler().compile("REDACT SSN WITH MASK;\nCONFIGURE EMAIL (" + c[0] + ");"));
+            assertTrue(ex.getMessage().contains(c[1]), "Expected '" + c[1] + "': " + ex.getMessage());
+        }
+    }
 }

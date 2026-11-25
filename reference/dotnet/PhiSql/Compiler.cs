@@ -229,14 +229,26 @@ public sealed class Compiler
         else if (ctx.BlockName is not null)
         {
             // A block named by an identifier, so the name is not a reserved keyword.
-            if (!string.Equals(ctx.BlockName, "REVIEW", StringComparison.OrdinalIgnoreCase))
+            string name = ctx.BlockName.ToUpperInvariant();
+            if (name == "REVIEW")
+            {
+                JsonObject review = GetOrCreateObject(GetOrCreateObject(policyJson, "config"), "review");
+                ApplySettings(review, ctx.Settings!);
+                JsonNode? rate = review["samplingRate"];
+                if (rate is not null && !IsRate(rate))
+                    throw new CompileException(
+                        "samplingRate must be a number from 0.0 to 1.0: " + rate.ToJsonString());
+            }
+            else if (name == "EMAIL")
+            {
+                JsonObject email = GetOrCreateObject(GetOrCreateObject(policyJson, "config"), "email");
+                ApplySettings(email, ctx.Settings!);
+                ValidateEmail(email);
+            }
+            else
+            {
                 throw new CompileException("Unknown config block: " + ctx.BlockName);
-            JsonObject review = GetOrCreateObject(GetOrCreateObject(policyJson, "config"), "review");
-            ApplySettings(review, ctx.Settings!);
-            JsonNode? rate = review["samplingRate"];
-            if (rate is not null && !IsRate(rate))
-                throw new CompileException(
-                    "samplingRate must be a number from 0.0 to 1.0: " + rate.ToJsonString());
+            }
         }
         else
         {
@@ -248,6 +260,49 @@ public sealed class Compiler
             ApplySettings(box, ctx.Settings!);
         }
     }
+
+    private static readonly string[] EmailHeaderSettings =
+        { "removeTechnical", "removeIdentity", "removeDate", "removeSubject" };
+
+    // Checks config.email here rather than leaving it to schema validation, so a
+    // misspelled setting fails at compile time instead of silently changing what
+    // an email keeps.
+    private static void ValidateEmail(JsonObject email)
+    {
+        foreach (var (key, value) in email)
+        {
+            switch (key)
+            {
+                case "headers":
+                    if (value is not JsonObject headers)
+                        throw new CompileException("email headers must be a setting list: " + Json(value));
+                    foreach (var (header, flag) in headers)
+                    {
+                        if (Array.IndexOf(EmailHeaderSettings, header) < 0)
+                            throw new CompileException("Unknown email header setting: " + header);
+                        if (flag is not JsonValue v || v.GetValueKind() is not (JsonValueKind.True or JsonValueKind.False))
+                            throw new CompileException(
+                                "email header setting " + header + " must be TRUE or FALSE: " + Json(flag));
+                    }
+                    break;
+                case "attachments":
+                    if (!IsOneOf(value, "keep", "remove", "redact"))
+                        throw new CompileException("attachments must be one of keep, remove, redact: " + Json(value));
+                    break;
+                case "inlineImages":
+                    if (!IsOneOf(value, "keep", "remove"))
+                        throw new CompileException("inlineImages must be one of keep, remove: " + Json(value));
+                    break;
+                default:
+                    throw new CompileException("Unknown email setting: " + key);
+            }
+        }
+    }
+
+    private static bool IsOneOf(JsonNode? node, params string[] allowed) =>
+        node is JsonValue v && v.TryGetValue(out string? s) && Array.IndexOf(allowed, s) >= 0;
+
+    private static string Json(JsonNode? node) => node?.ToJsonString() ?? "null";
 
     private static bool IsRate(JsonNode node)
     {

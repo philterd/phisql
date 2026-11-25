@@ -139,4 +139,39 @@ public class CompileErrorTests
             "REDACT SSN WITH MASK;\nCONFIGURE AUDIT (samplingRate = 0.1);"));
         Assert.Contains("Unknown config block: AUDIT", ex.Message);
     }
+
+    [Fact]
+    public void CompilesEmailConfig()
+    {
+        var email = new Compiler().Compile(
+                "REDACT SSN WITH MASK;\nCONFIGURE email (headers = (removeDate = TRUE, removeSubject = FALSE),"
+                + " attachments = 'redact', inlineImages = 'remove');")
+            .PolicyJson["config"]!["email"]!;
+        Assert.True(email["headers"]!["removeDate"]!.GetValue<bool>());
+        Assert.False(email["headers"]!["removeSubject"]!.GetValue<bool>());
+        Assert.Equal("redact", email["attachments"]!.GetValue<string>());
+        Assert.Equal("remove", email["inlineImages"]!.GetValue<string>());
+    }
+
+    [Fact]
+    public void EmailIsNotReserved()
+    {
+        var policy = new Compiler().Compile("POLICY email;\nREDACT SSN WITH MASK;").PolicyJson;
+        Assert.NotNull(policy["identifiers"]!["ssn"]);
+    }
+
+    [Theory]
+    [InlineData("attachment = 'remove'", "Unknown email setting: attachment")]
+    [InlineData("headers = (removeBcc = TRUE)", "Unknown email header setting: removeBcc")]
+    [InlineData("headers = (removeDate = 'yes')", "email header setting removeDate must be TRUE or FALSE")]
+    [InlineData("headers = TRUE", "email headers must be a setting list")]
+    [InlineData("attachments = 'strip'", "attachments must be one of keep, remove, redact")]
+    [InlineData("attachments = TRUE", "attachments must be one of keep, remove, redact")]
+    [InlineData("inlineImages = 'redact'", "inlineImages must be one of keep, remove")]
+    public void RejectsInvalidEmailConfig(string settings, string message)
+    {
+        var ex = Assert.Throws<CompileException>(() => new Compiler().Compile(
+            "REDACT SSN WITH MASK;\nCONFIGURE EMAIL (" + settings + ");"));
+        Assert.Contains(message, ex.Message);
+    }
 }

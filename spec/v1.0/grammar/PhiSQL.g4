@@ -60,8 +60,8 @@ configureStmt
       | configBlock=(SPLITTING | PDF | POSTFILTERS | ANALYSIS) '(' settingList ')'
       | GRAPHICAL BOX '(' settingList ')'
       // A config block named by an identifier, so its name is not a reserved
-      // keyword. The compiler accepts only REVIEW (case-insensitive) and rejects
-      // any other name as a semantic error.
+      // keyword. The compiler accepts only REVIEW and EMAIL (case-insensitive)
+      // and rejects any other name as a semantic error.
       | blockName=ID '(' settingList ')'
       )
     ;

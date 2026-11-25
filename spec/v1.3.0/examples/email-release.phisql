@@ -1,0 +1,18 @@
+-- Releasing redacted email, as for a public records request. The delivery trail
+-- and hidden recipients are removed outright rather than scanned, the Date and
+-- Subject headers go too, attachments the runtime can redact are redacted with
+-- this policy (any it cannot redact are removed and reported), and inline images
+-- are removed. From, To, Cc, and the body are always redacted by the identifiers.
+-- EMAIL is matched contextually and is not a reserved keyword.
+-- Added to schema 1.3.0 in place (additive). Compiles to email-release.json.
+
+POLICY email_release;
+
+REDACT EMAIL_ADDRESS, PHONE_NUMBER WITH REDACT;
+REDACT SSN WITH LAST_4;
+
+CONFIGURE EMAIL (
+  headers = (removeTechnical = TRUE, removeIdentity = TRUE, removeDate = TRUE, removeSubject = TRUE),
+  attachments = 'redact',
+  inlineImages = 'remove'
+);

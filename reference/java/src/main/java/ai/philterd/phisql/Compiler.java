@@ -209,7 +209,8 @@ public final class Compiler {
      * policy's top-level {@code crypto}/{@code fpe} blocks, with secrets stored
      * as {@code env:} references Phileas resolves at runtime (never inline). The
      * SPLITTING/PDF/POSTFILTERS/ANALYSIS forms write the corresponding
-     * {@code config} sub-block, REVIEW writes {@code config.review}, and
+     * {@code config} sub-block, REVIEW and EMAIL write {@code config.review}
+     * and {@code config.email}, and
      * GRAPHICAL BOX appends a fixed bounding box to
      * {@code graphical.boundingBoxes}.
      */
@@ -234,15 +235,21 @@ public final class Compiler {
             applySettings(getOrCreateObject(config, block), ctx.settingList());
         } else if (ctx.blockName != null) {
             // A block named by an identifier, so the name is not a reserved keyword.
-            if (!ctx.blockName.getText().equalsIgnoreCase("REVIEW")) {
+            String name = ctx.blockName.getText().toUpperCase(Locale.ROOT);
+            if (name.equals("REVIEW")) {
+                ObjectNode review = getOrCreateObject(getOrCreateObject(policyJson, "config"), "review");
+                applySettings(review, ctx.settingList());
+                JsonNode rate = review.get("samplingRate");
+                if (rate != null && (!rate.isNumber() || rate.asDouble() < 0 || rate.asDouble() > 1)) {
+                    throw new CompileException(
+                            "samplingRate must be a number from 0.0 to 1.0: " + rate);
+                }
+            } else if (name.equals("EMAIL")) {
+                ObjectNode email = getOrCreateObject(getOrCreateObject(policyJson, "config"), "email");
+                applySettings(email, ctx.settingList());
+                validateEmail(email);
+            } else {
                 throw new CompileException("Unknown config block: " + ctx.blockName.getText());
-            }
-            ObjectNode review = getOrCreateObject(getOrCreateObject(policyJson, "config"), "review");
-            applySettings(review, ctx.settingList());
-            JsonNode rate = review.get("samplingRate");
-            if (rate != null && (!rate.isNumber() || rate.asDouble() < 0 || rate.asDouble() > 1)) {
-                throw new CompileException(
-                        "samplingRate must be a number from 0.0 to 1.0: " + rate);
             }
         } else {
             // GRAPHICAL BOX ( ... ): append a fixed bounding box.
@@ -251,6 +258,48 @@ public final class Compiler {
                     ? (ArrayNode) graphical.get("boundingBoxes")
                     : graphical.putArray("boundingBoxes");
             applySettings(boxes.addObject(), ctx.settingList());
+        }
+    }
+
+    private static final Set<String> EMAIL_HEADER_SETTINGS =
+            Set.of("removeTechnical", "removeIdentity", "removeDate", "removeSubject");
+
+    /**
+     * Checks {@code config.email} here rather than leaving it to schema
+     * validation, so a misspelled setting fails at compile time with a clear
+     * message instead of silently changing what an email keeps.
+     */
+    private static void validateEmail(ObjectNode email) {
+        for (String key : email.propertyNames()) {
+            JsonNode value = email.get(key);
+            switch (key) {
+                case "headers" -> {
+                    if (!value.isObject()) {
+                        throw new CompileException("email headers must be a setting list: " + value);
+                    }
+                    for (String header : value.propertyNames()) {
+                        if (!EMAIL_HEADER_SETTINGS.contains(header)) {
+                            throw new CompileException("Unknown email header setting: " + header);
+                        }
+                        if (!value.get(header).isBoolean()) {
+                            throw new CompileException("email header setting " + header
+                                    + " must be TRUE or FALSE: " + value.get(header));
+                        }
+                    }
+                }
+                case "attachments" -> {
+                    if (!value.isString() || !Set.of("keep", "remove", "redact").contains(value.asString())) {
+                        throw new CompileException(
+                                "attachments must be one of keep, remove, redact: " + value);
+                    }
+                }
+                case "inlineImages" -> {
+                    if (!value.isString() || !Set.of("keep", "remove").contains(value.asString())) {
+                        throw new CompileException("inlineImages must be one of keep, remove: " + value);
+                    }
+                }
+                default -> throw new CompileException("Unknown email setting: " + key);
+            }
         }
     }
 

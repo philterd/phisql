@@ -136,3 +136,41 @@ def test_rejects_unknown_config_block():
     with pytest.raises(CompileException) as exc:
         Compiler().compile("REDACT SSN WITH MASK;\nCONFIGURE AUDIT (samplingRate = 0.1);")
     assert "Unknown config block: AUDIT" in str(exc.value)
+
+
+def test_compiles_email_config():
+    email = (
+        Compiler().compile(
+            "REDACT SSN WITH MASK;\nCONFIGURE email (headers = (removeDate = TRUE, removeSubject = FALSE),"
+            " attachments = 'redact', inlineImages = 'remove');"
+        )
+        .policy_json()["config"]["email"]
+    )
+    assert email == {
+        "headers": {"removeDate": True, "removeSubject": False},
+        "attachments": "redact",
+        "inlineImages": "remove",
+    }
+
+
+def test_email_is_not_reserved():
+    policy = Compiler().compile("POLICY email;\nREDACT SSN WITH MASK;").policy_json()
+    assert "ssn" in policy["identifiers"]
+
+
+@pytest.mark.parametrize(
+    "settings,message",
+    [
+        ("attachment = 'remove'", "Unknown email setting: attachment"),
+        ("headers = (removeBcc = TRUE)", "Unknown email header setting: removeBcc"),
+        ("headers = (removeDate = 'yes')", "email header setting removeDate must be TRUE or FALSE"),
+        ("headers = TRUE", "email headers must be a setting list"),
+        ("attachments = 'strip'", "attachments must be one of keep, remove, redact"),
+        ("attachments = TRUE", "attachments must be one of keep, remove, redact"),
+        ("inlineImages = 'redact'", "inlineImages must be one of keep, remove"),
+    ],
+)
+def test_rejects_invalid_email_config(settings, message):
+    with pytest.raises(CompileException) as exc:
+        Compiler().compile(f"REDACT SSN WITH MASK;\nCONFIGURE EMAIL ({settings});")
+    assert message in str(exc.value)

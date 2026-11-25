@@ -196,7 +196,7 @@ public sealed class ConfigureStmt : IStatement
     public string? FpeKeyEnvRaw { get; set; }
     public string? FpeTweakEnvRaw { get; set; }
     public string? ConfigBlock { get; set; }   // SPLITTING/PDF/POSTFILTERS/ANALYSIS
-    public string? BlockName { get; set; }     // identifier-named block (REVIEW), as written
+    public string? BlockName { get; set; }     // identifier-named block (REVIEW, EMAIL), as written
     public bool GraphicalBox { get; set; }
     public List<Setting>? Settings { get; set; }
 }

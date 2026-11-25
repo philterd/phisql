@@ -214,16 +214,22 @@ class Compiler:
             self._apply_settings(_get_or_create_object(config, block), ctx.settings)
         elif ctx.block_name is not None:
             # A block named by an identifier, so the name is not a reserved keyword.
-            if ctx.block_name.upper() != "REVIEW":
+            name = ctx.block_name.upper()
+            if name == "REVIEW":
+                review = _get_or_create_object(_get_or_create_object(policy_json, "config"), "review")
+                self._apply_settings(review, ctx.settings)
+                rate = review.get("samplingRate")
+                if rate is not None and (isinstance(rate, bool) or not isinstance(rate, (int, float))
+                                         or not 0 <= rate <= 1):
+                    raise CompileException(
+                        f"samplingRate must be a number from 0.0 to 1.0: {json.dumps(rate)}"
+                    )
+            elif name == "EMAIL":
+                email = _get_or_create_object(_get_or_create_object(policy_json, "config"), "email")
+                self._apply_settings(email, ctx.settings)
+                _validate_email(email)
+            else:
                 raise CompileException(f"Unknown config block: {ctx.block_name}")
-            review = _get_or_create_object(_get_or_create_object(policy_json, "config"), "review")
-            self._apply_settings(review, ctx.settings)
-            rate = review.get("samplingRate")
-            if rate is not None and (isinstance(rate, bool) or not isinstance(rate, (int, float))
-                                     or not 0 <= rate <= 1):
-                raise CompileException(
-                    f"samplingRate must be a number from 0.0 to 1.0: {json.dumps(rate)}"
-                )
         else:
             # GRAPHICAL BOX ( ... ): append a fixed bounding box.
             graphical = _get_or_create_object(policy_json, "graphical")
@@ -669,3 +675,35 @@ def _condition_warnings(document: ast.Document) -> List[str]:
     if found["paren"]:
         warnings.append(PAREN_WARNING)
     return warnings
+
+
+_EMAIL_HEADER_SETTINGS = ("removeTechnical", "removeIdentity", "removeDate", "removeSubject")
+_EMAIL_ATTACHMENTS = ("keep", "remove", "redact")
+_EMAIL_INLINE_IMAGES = ("keep", "remove")
+
+
+def _validate_email(email: dict) -> None:
+    """Checks config.email here rather than leaving it to schema validation, so a
+    misspelled setting fails at compile time instead of silently changing what an
+    email keeps."""
+    for key, value in email.items():
+        if key == "headers":
+            if not isinstance(value, dict):
+                raise CompileException(f"email headers must be a setting list: {json.dumps(value)}")
+            for header, flag in value.items():
+                if header not in _EMAIL_HEADER_SETTINGS:
+                    raise CompileException(f"Unknown email header setting: {header}")
+                if not isinstance(flag, bool):
+                    raise CompileException(
+                        f"email header setting {header} must be TRUE or FALSE: {json.dumps(flag)}"
+                    )
+        elif key == "attachments":
+            if not isinstance(value, str) or value not in _EMAIL_ATTACHMENTS:
+                raise CompileException(
+                    f"attachments must be one of keep, remove, redact: {json.dumps(value)}"
+                )
+        elif key == "inlineImages":
+            if not isinstance(value, str) or value not in _EMAIL_INLINE_IMAGES:
+                raise CompileException(f"inlineImages must be one of keep, remove: {json.dumps(value)}")
+        else:
+            raise CompileException(f"Unknown email setting: {key}")

@@ -44,8 +44,8 @@ configure stmt   = "CONFIGURE"
                    | id , "(" , setting list , ")" ) ;
 
 (* The last configure form names its block with an identifier rather than a
-   keyword, so the name is not reserved. The only such block is REVIEW
-   (case-insensitive); any other name is a compile error. *)
+   keyword, so the name is not reserved. The only such blocks are REVIEW and
+   EMAIL (case-insensitive); any other name is a compile error. *)
 
 setting list     = setting , { "," , setting } ;
 

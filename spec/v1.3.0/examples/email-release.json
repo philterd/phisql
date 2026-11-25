@@ -1,0 +1,37 @@
+{
+  "identifiers": {
+    "emailAddress": {
+      "emailAddressFilterStrategies": [
+        {
+          "strategy": "REDACT"
+        }
+      ]
+    },
+    "phoneNumber": {
+      "phoneNumberFilterStrategies": [
+        {
+          "strategy": "REDACT"
+        }
+      ]
+    },
+    "ssn": {
+      "ssnFilterStrategies": [
+        {
+          "strategy": "LAST_4"
+        }
+      ]
+    }
+  },
+  "config": {
+    "email": {
+      "headers": {
+        "removeTechnical": true,
+        "removeIdentity": true,
+        "removeDate": true,
+        "removeSubject": true
+      },
+      "attachments": "redact",
+      "inlineImages": "remove"
+    }
+  }
+}

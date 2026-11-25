@@ -103,6 +103,10 @@
         "review": {
           "description": "Settings for selecting filter requests for human review.",
           "$ref": "#/$defs/review"
+        },
+        "email": {
+          "description": "Settings for redacting email messages beyond their text: headers removed outright, attachments, and inline images.",
+          "$ref": "#/$defs/email"
         }
       }
     },
@@ -237,6 +241,52 @@
           "minimum": 0,
           "maximum": 1,
           "default": 0
+        }
+      }
+    },
+    "email": {
+      "description": "Settings for redacting email messages (.eml, and Outlook .msg written out as .eml) beyond their text. Subject, From, To, Cc, and every text body part (plain text, and HTML as markup) are always redacted by the policy's identifiers. Header names match case-insensitively. Removing a header removes the field entirely; removed headers are not scanned, and kept headers outside the redacted set are kept as they are. A message nested inside another (message/rfc822) is processed the same way, recursively. A signed message is redacted and its signature part dropped; an encrypted message is refused. The runtime reports, with the filter result, every attachment or inline image kept without being inspected, every attachment it removed because it could not redact it, and every dropped signature. In runtimes without email support this block has no effect.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "headers": {
+          "description": "Header fields removed outright.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "removeTechnical": {
+              "description": "Removes the technical headers: Received, Return-Path, Message-ID, User-Agent, X-Mailer, X-MimeOLE, DKIM-Signature, Authentication-Results, Received-SPF, Autocrypt, and every header beginning X- or ARC-.",
+              "type": "boolean",
+              "default": true
+            },
+            "removeIdentity": {
+              "description": "Removes the identity headers: Bcc, Reply-To, Sender, and every header beginning Resent-.",
+              "type": "boolean",
+              "default": true
+            },
+            "removeDate": {
+              "description": "Removes the Date header, whatever its format, without relying on a date identifier.",
+              "type": "boolean",
+              "default": false
+            },
+            "removeSubject": {
+              "description": "Removes the Subject header instead of redacting it, for releases where even a redacted subject should not ship.",
+              "type": "boolean",
+              "default": false
+            }
+          }
+        },
+        "attachments": {
+          "description": "What happens to attachments. keep leaves them as they are, uninspected, and reports them. remove deletes them, including their filenames. redact redacts each attachment the runtime supports as a document (for example PDF, Word, Excel) with the same policy, and removes and reports any attachment it cannot redact.",
+          "type": "string",
+          "enum": ["keep", "remove", "redact"],
+          "default": "keep"
+        },
+        "inlineImages": {
+          "description": "What happens to images embedded in the body and referenced by cid:. keep leaves them, uninspected, and reports them. remove deletes them and neutralizes the references. Independent of attachments.",
+          "type": "string",
+          "enum": ["keep", "remove"],
+          "default": "keep"
         }
       }
     },
