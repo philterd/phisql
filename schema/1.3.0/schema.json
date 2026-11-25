@@ -628,7 +628,7 @@
           }
         },
         "columns": {
-          "description": "Column rules. At most one rule per header and per index.",
+          "description": "Column rules. At most one rule per header and per index. A header rule and an index rule can pick the same column, which cannot be checked when the policy is compiled, since the column a header names depends on the document. The column then follows the more protective rule: redact, then filter, then ignore. Two filter rules scan the column with the filters of both, and of two redact rules the one listed first applies.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/tabularColumn"
