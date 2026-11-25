@@ -254,7 +254,7 @@
               "default": "off"
             },
             "using": {
-              "description": "What the check detects with. broad: every filter the policy defines (including custom identifiers, dictionaries, and PhEye filters) as configured, plus every other built-in identifier at its defaults, so it finds kinds of information the policy did not cover; always a superset of samePolicy. samePolicy: only the policy's own filters, which confirms the policy took effect.",
+              "description": "What the check detects with. broad: every filter the policy defines (including custom identifiers, dictionaries, and PhEye filters) as configured, plus every other built-in identifier at its defaults except the firstName and surname dictionaries, which match common words and run only as the policy defines them, so it finds kinds of information the policy did not cover; always a superset of samePolicy. samePolicy: only the policy's own filters, which confirms the policy took effect.",
               "type": "string",
               "enum": ["broad", "samePolicy"],
               "default": "broad"

@@ -1,6 +1,7 @@
 -- Leftover check for court filings. After each request is redacted, the runtime
 -- scans the redacted output again with every filter this policy defines plus
--- every other built-in identifier, and reports anything still detectable, such
+-- every other built-in identifier but the name dictionaries, which match common
+-- words, and reports anything still detectable, such
 -- as a bank routing number this policy never looked for. The check never changes
 -- the redacted output, and findings carry type, position, and confidence, not the
 -- matched text. A random 5% of requests is also selected for spot review.

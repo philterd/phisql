@@ -112,8 +112,10 @@ leftover_check:
         broad: |
           Every filter the policy defines, including custom identifiers,
           dictionaries, and PhEye filters, configured as written, plus every
-          other built-in identifier at its defaults. It finds kinds of
-          information the policy did not cover, and is always a superset of
+          other built-in identifier at its defaults. The firstName and surname
+          dictionaries are the exception: they match common words at their
+          defaults, so they run only as the policy defines them. It finds kinds
+          of information the policy did not cover, and is always a superset of
           samePolicy.
         samePolicy: |
           Only the policy's own filters, configured as written. This confirms
