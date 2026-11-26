@@ -138,12 +138,17 @@ leftover_check:
   output: |
     The check never changes the redacted output. The runtime reports it on
     the filter result, alongside reviewSampled: whether the check was
-    performed and, when it was not, why (for example unreadableOutput); the
-    number of findings; and each finding's type, position in the output, and
+    performed and, when it was not, why (notRequested when the policy's mode
+    did not call for it, unreadableOutput, or checkFailed); the number of
+    findings; and each finding's type, position in the output, and
     confidence. An output with no readable text, such as a PDF whose redacted
-    pages are flattened to images, is reported as not performed, never as
-    zero findings. For an email, findings in redacted attachments are part of
-    the message's own result, each naming its attachment.
+    pages are flattened to images, is reported as not performed
+    (unreadableOutput), never as zero findings. A check that fails with an
+    error is reported as not performed (checkFailed), and the redacted output
+    is returned as it would be without the check: the redaction has already
+    succeeded, so it does not fail because the check did. For an email,
+    findings in redacted attachments are part of the message's own result,
+    each naming its attachment.
   matched_text: |
     Findings in the filter result do not carry the matched text; it is in the
     output the caller already has, and leaving it out keeps it out of headers,
@@ -255,7 +260,9 @@ email:
     dropped signature, so a caller can
     warn that the content was not checked. The leftover check covers redacted
     attachments as part of the message's own result, each finding naming its
-    attachment.
+    attachment. A redacted attachment the check could not cover, because its
+    output has no readable text or its own check failed, is listed as
+    unchecked.
   resource_limits: |
     Limits on email processing (largest message, attachment count, nesting
     depth) protect the server rather than decide redaction, so they are each
