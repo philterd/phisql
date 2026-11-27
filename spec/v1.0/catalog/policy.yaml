@@ -205,7 +205,8 @@ email:
         keep: |
           Returns attachments as they are, uninspected and unredacted, and
           reports them.
-        remove: Deletes attachments, including their filenames.
+        remove: |
+          Deletes attachments, including their filenames, and reports them.
         redact: |
           Redacts each attachment the runtime supports as a document (for
           example PDF, Word, Excel) with the same policy. An attachment the
@@ -218,8 +219,9 @@ email:
           Returns images embedded in the body as they are, uninspected and
           unredacted, and reports them.
         remove: |
-          Deletes images embedded in the body (referenced by cid:) and
-          neutralizes the references. Independent of attachments.
+          Deletes images embedded in the body (referenced by cid:),
+          neutralizes the references, and reports them. Independent of
+          attachments.
   header_groups:
     technical:
       - Received
@@ -260,10 +262,10 @@ email:
     unredacted.
   output: |
     A .msg input is written out as .eml. The runtime reports, with the filter
-    result, every attachment or inline image kept without being inspected and
-    every attachment removed because it could not be redacted, and every
-    dropped signature, so a caller can
-    warn that the content was not checked. The leftover check covers redacted
+    result, every attachment or inline image kept without being inspected,
+    every attachment or inline image removed (by remove, or under redact
+    because it could not be redacted), and every dropped signature, so a
+    caller can warn that content was not checked or was taken out. The leftover check covers redacted
     attachments as part of the message's own result, each finding naming its
     attachment. A redacted attachment the check could not cover, because its
     output has no readable text or its own check failed, is listed as
