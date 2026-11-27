@@ -177,10 +177,11 @@ email:
   description: |
     How an email message (.eml, and Outlook .msg) is redacted beyond its text:
     which headers are removed outright, and what happens to attachments and
-    inline images. Every setting is optional, and the defaults are Philter
-    Desktop's, so a policy without config.email redacts email as Philter
-    Desktop did before the setting moved into the policy. In a runtime
-    without email support the block has no effect.
+    inline images. Every setting is optional. Attachments and inline images
+    default to remove, the strictest option of each, so a policy that says
+    nothing about them does not return content nobody inspected; keep must
+    be chosen explicitly. In a runtime without email support the block has
+    no effect.
   settings:
     headers.removeTechnical:
       default: true
@@ -199,9 +200,11 @@ email:
         Removes the Subject header instead of redacting it, for releases
         where even a redacted subject line should not ship.
     attachments:
-      default: keep
+      default: remove
       values:
-        keep: Leaves attachments as they are, uninspected, and reports them.
+        keep: |
+          Returns attachments as they are, uninspected and unredacted, and
+          reports them.
         remove: Deletes attachments, including their filenames.
         redact: |
           Redacts each attachment the runtime supports as a document (for
@@ -209,9 +212,11 @@ email:
           runtime cannot redact (an image, an archive, a legacy .doc) is
           removed and reported, so content nobody inspected does not leave.
     inlineImages:
-      default: keep
+      default: remove
       values:
-        keep: Leaves images embedded in the body as they are, uninspected, and reports them.
+        keep: |
+          Returns images embedded in the body as they are, uninspected and
+          unredacted, and reports them.
         remove: |
           Deletes images embedded in the body (referenced by cid:) and
           neutralizes the references. Independent of attachments.

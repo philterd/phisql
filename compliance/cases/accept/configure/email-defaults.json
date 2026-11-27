@@ -1,0 +1,18 @@
+{
+  "identifiers": {
+    "ssn": {
+      "ssnFilterStrategies": [
+        {
+          "strategy": "MASK"
+        }
+      ]
+    }
+  },
+  "config": {
+    "email": {
+      "headers": {
+        "removeDate": true
+      }
+    }
+  }
+}

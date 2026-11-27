@@ -312,16 +312,16 @@
           }
         },
         "attachments": {
-          "description": "What happens to attachments. keep leaves them as they are, uninspected, and reports them. remove deletes them, including their filenames. redact redacts each attachment the runtime supports as a document (for example PDF, Word, Excel) with the same policy, and removes and reports any attachment it cannot redact.",
+          "description": "What happens to attachments. remove (the default) deletes them, including their filenames. redact redacts each attachment the runtime supports as a document (for example PDF, Word, Excel) with the same policy, and removes and reports any attachment it cannot redact. keep returns them as they are, uninspected and unredacted, and reports them.",
           "type": "string",
           "enum": ["keep", "remove", "redact"],
-          "default": "keep"
+          "default": "remove"
         },
         "inlineImages": {
-          "description": "What happens to images embedded in the body and referenced by cid:. keep leaves them, uninspected, and reports them. remove deletes them and neutralizes the references. Independent of attachments.",
+          "description": "What happens to images embedded in the body and referenced by cid:. remove (the default) deletes them and neutralizes the references. keep returns them as they are, uninspected and unredacted, and reports them. Independent of attachments.",
           "type": "string",
           "enum": ["keep", "remove"],
-          "default": "keep"
+          "default": "remove"
         }
       }
     },
